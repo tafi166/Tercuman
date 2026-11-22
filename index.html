@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
 <style>
+@font-face{font-family:Unbounded;font-style:normal;font-weight:900;font-display:swap;src:url(fonts/unbounded-latin-900-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* VOICE: warm, instant, nothing to learn; two people at one table
    IDEA: a folded table tent card, each face turned to its reader
    PICTURE: the two halves themselves, live bubbles and one big mic each
@@ -101,11 +102,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 }
 .spl{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--tr);color:#fff;text-align:center;padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));cursor:pointer;transition:opacity .35s}
 .spl.open{display:flex}.spl.out{opacity:0;pointer-events:none}
-.logo{display:flex;align-items:center;font-weight:800;font-size:clamp(30px,9vw,42px);letter-spacing:.06em;line-height:1;margin-bottom:8px;animation:rise .7s ease-out both}
-.logo .le{height:.9em;width:1.18em;margin:0 .06em 0 0;overflow:visible}
+.logo{display:flex;align-items:center;font-family:Unbounded,Figtree,system-ui,sans-serif;font-weight:900;font-size:clamp(26px,7.6vw,38px);letter-spacing:.01em;line-height:1;margin-bottom:10px;animation:rise .7s ease-out both}
+.logo .le{height:.8em;width:1.25em;margin:0 .08em 0 .02em;overflow:visible}
 .logo .s1,.logo .s2,.logo .s3{animation:talk 1.2s ease-in-out infinite}
 .logo .s2{animation-delay:.15s}.logo .s3{animation-delay:.3s}
-.logo .tg{transform-origin:13px 16px;animation:tongue 1.2s ease-in-out infinite}
+.logo .tg{transform-origin:16px 16px;animation:tongue 1.2s ease-in-out infinite}
 @keyframes talk{0%,100%{opacity:.45}40%{opacity:1}}
 @keyframes tongue{0%,100%{transform:scaleX(.7)}40%{transform:scaleX(1)}}
 .spl .sky{width:150px;height:100px;animation:rise .7s ease-out both}
@@ -195,7 +196,7 @@ button.ln{display:block;width:100%;text-align:start}
 </div>
 
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
- <div class="logo" role="img" aria-label="Tercüman"><span>T</span><svg class="le" viewBox="0 0 42 32" aria-hidden="true"><path fill="#fff" d="M7 2H21A5 5 0 0 1 26 7V9L13 13.5V18.5L26 23V25A5 5 0 0 1 21 30H7A5 5 0 0 1 2 25V7A5 5 0 0 1 7 2Z"/><rect class="tg" x="12.5" y="14.6" width="8.5" height="2.8" rx="1.4" fill="#ff8fa3"/><circle cx="10" cy="7.6" r="2.1" fill="#1b1b1b"/><g fill="none" stroke="#ffd23f" stroke-width="3" stroke-linecap="round"><path class="s1" d="M29.5 12.5Q32 16 29.5 19.5"/><path class="s2" d="M34 9.5Q38.5 16 34 22.5"/><path class="s3" d="M38.5 6.5Q44 16 38.5 25.5"/></g></svg><span>RCÜMAN</span></div>
+ <div class="logo" role="img" aria-label="Tercüman"><span>T</span><svg class="le" viewBox="0 0 50 32" aria-hidden="true"><path fill="#fff" d="M7 2H27A5 5 0 0 1 32 7V9L16 13.5V18.5L32 23V25A5 5 0 0 1 27 30H7A5 5 0 0 1 2 25V7A5 5 0 0 1 7 2Z"/><rect class="tg" x="15.5" y="14.5" width="10" height="3" rx="1.5" fill="#ff8fa3"/><circle cx="11" cy="8.2" r="2.4" fill="#1b1b1b"/><g fill="none" stroke="#ffd23f" stroke-width="3.2" stroke-linecap="round"><path class="s1" d="M35.5 12.5Q38 16 35.5 19.5"/><path class="s2" d="M40 9.5Q44.5 16 40 22.5"/><path class="s3" d="M44.5 6.5Q50 16 44.5 25.5"/></g></svg><span>RCÜMAN</span></div>
  <svg class="sky" id="sky" viewBox="0 0 120 80" aria-hidden="true"></svg>
  <b id="wtx"></b>
  <small class="go">Başlamak için dokun</small>
