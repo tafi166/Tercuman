@@ -401,7 +401,7 @@ document.addEventListener('click',e=>{
   if(typing){typing=false;document.activeElement.blur();return}
   if(live)stopListen();else startListen(half.id);return}
  const sg=e.target.closest('.seg button');
- if(sg&&sg.dataset.far!==prefs.far){if(live)finish();stopSpeak();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
+ if(sg&&sg.dataset.far!==prefs.far){if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();archive();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
 });
 document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
  e.preventDefault();unlock();const s=f.dataset.side,i=$('#in-'+s),v=i.value.trim();if(!v)return;i.value='';i.blur();send(s,v);
