@@ -75,6 +75,22 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .seg button{min-width:48px;height:38px;border-radius:9px;font-size:14px;font-weight:800;letter-spacing:.02em}
 .seg button[aria-pressed=true]{background:var(--far);color:#fff}
 .off .sOn,.bar .sOff{display:none}.off .sOff{display:block}
+.fix{align-self:flex-end;max-width:88%;background:#fff3c4;color:#3a2d00;border-radius:14px;padding:8px 12px;font-size:16px;line-height:1.35;margin-top:-3px;text-align:start}
+.fix b{font-weight:800}.fix small{display:block;opacity:.8;font-size:13px;margin-top:2px}
+.fix.need{background:rgba(255,255,255,.12);color:#fff;font-size:13px}
+.dlg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;padding:16px;z-index:9}
+.dlg.open{display:grid}
+.card{background:light-dark(#fff,#1c1e21);color:light-dark(#1b1b1b,#eceff1);border-radius:20px;padding:20px;width:min(460px,100%);max-height:90dvh;overflow:auto}
+.card h2{margin:0 0 12px;font-size:22px}
+.card p{margin:6px 0;font-size:14px;opacity:.85}
+.card label{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:600;margin:14px 0 6px}
+.card input[type=checkbox]{width:22px;height:22px;accent-color:#c4122f}
+.card input[type=password]{width:100%;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:1px solid light-dark(#ccc,#444);background:light-dark(#f7f7f7,#111);color:inherit}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.row button{min-height:44px;padding:0 18px;border-radius:12px;font-weight:700;background:light-dark(#eef0f2,#2a2d31)}
+.row .pri{background:#c4122f;color:#fff}
+#kst{font-weight:600;min-height:1.4em}
+#kst.ok{color:light-dark(#0b6b3a,#7fdca5)}#kst.bad{color:light-dark(#b3001b,#ff8a8a)}
 @media(min-width:820px){
  .side .app{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
  .side .bar,.side .seg{flex-direction:column}
@@ -107,6 +123,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
   <button id="bClr" title="Temizle (iki kez dokun)" aria-label="Konuşmayı temizle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Z"/></svg></button>
+  <button id="bSet" title="Ayarlar" aria-label="Ayarlar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58-1.92-3.32-2.39.96a7 7 0 0 0-1.62-.94L14.9 3.6h-3.8l-.36 2.58a7 7 0 0 0-1.62.94l-2.39-.96-1.92 3.32 2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58 1.92 3.32 2.39-.96c.5.39 1.04.7 1.62.94l.36 2.58h3.8l.36-2.58a7 7 0 0 0 1.62-.94l2.39.96 1.92-3.32-2.03-1.58ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg></button>
  </nav>
 
  <section class="half" id="tr" lang="tr">
@@ -119,6 +136,19 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   </div>
   <p class="hint" id="h-tr"></p>
  </section>
+</div>
+
+<div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgT">
+ <div class="card">
+  <h2 id="dlgT">Ayarlar</h2>
+  <label><input type="checkbox" id="gram"> Konuşmam bitince gramerimi düzelt</label>
+  <p>Alt taraftan hangi dilde konuşursan konuş, cümlende gerçek bir hata varsa doğrusu sarı kutuda çıkar. Yabancı dilde konuştuysan karşı taraf da düzeltilmiş halini görür ve duyar.</p>
+  <label for="key">Anthropic API anahtarı</label>
+  <input type="password" id="key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+  <p>console.anthropic.com adresinde API Keys bölümünden alınır. Anahtar sadece bu cihazda saklanır ve sadece Anthropic'e gönderilir. Konsolda aylık harcama limiti koyman iyi olur.</p>
+  <p id="kst" aria-live="polite"></p>
+  <div class="row"><button class="pri" id="kSave">Kaydet ve dene</button><button id="kDel">Anahtarı sil</button><button id="dClose">Kapat</button></div>
+ </div>
 </div>
 
 <script>
@@ -152,7 +182,8 @@ const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const code=e=>e&&(e.code||e.error||e.message)||String(e);
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
 
-let msgs=load('tercuman.msgs',[]),prefs=Object.assign({face:true,speak:true,far:'hu'},load('tercuman.prefs',{}));
+let msgs=load('tercuman.msgs',[]),prefs=Object.assign({face:true,speak:true,far:'hu',gram:true},load('tercuman.prefs',{}));
+let KEY=load('tercuman.key','');const MODEL='claude-haiku-5-5';let needShown=false;
 if(!L[prefs.far]||prefs.far==='tr')prefs.far='hu';
 let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=null,unlocked=false,silT=0,maxT=0,stopT=0;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -166,9 +197,14 @@ function render(){
  for(const s of ['far','tr']){
   const l=lang(s),T=L[l];let h='';
   if(!msgs.length&&!pending&&!live)h=`<p class="empty">${s==='tr'?`Mikrofona dokun ve Türkçe konuş. Karşındaki kişi çeviriyi ${L[prefs.far].trName} duyar.`:T.empty}</p>`;
-  let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
+  const who=m=>m.side||sideOf(m.from);
+  let lastThem=-1;msgs.forEach((m,i)=>{if(who(m)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
-   if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
+   if(who(m)===s){
+    let o=`<div class="b me">${esc(m.orig||m[m.from])}</div>`;
+    if(s==='tr'&&m.fix)o+=`<button class="fix" data-fix="${i}"><b>Doğrusu:</b> ${esc(m.fix.text)}${m.fix.note?`<small>${esc(m.fix.note)}</small>`:''}</button>`;
+    if(s==='tr'&&m.need)o+=`<div class="fix need">Gramer düzeltmesi için Ayarlar'dan API anahtarı ekle.</div>`;
+    return o}
    if(m.err)return `<div class="b them err">${T.err}</div>`;
    return `<button class="b them${i===lastThem?' last':''}" data-i="${i}">${esc(textFor(m,l))}</button>`}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
@@ -211,7 +247,7 @@ function speak(text,l){
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
-function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';speak(m[t],t)}}
+function speakMsg(m){if(prefs.speak&&!m.err){const l=lang((m.side||sideOf(m.from))==='tr'?'far':'tr');speak(textFor(m,l),l)}}
 
 /* ---------- speech in ---------- */
 function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
@@ -259,32 +295,51 @@ async function webTr(q,s,t){
  try{const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=${s}|${t}`);const j=await r.json();return j.responseData.translatedText||''}catch(e){}
  return '';
 }
-async function translate(src,text){
- const far=prefs.far,tgt=src==='tr'?far:'tr';
- if(samp){
+const hasAI=()=>!!(samp||KEY);
+async function callKey(prompt,max){
+ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+  body:JSON.stringify({model:MODEL,max_tokens:max||700,messages:[{role:'user',content:prompt}]})});
+ if(!r.ok){let m='';try{m=(await r.json()).error.message}catch(e){}throw{code:r.status,message:m}}
+ const j=await r.json();return (j.content||[]).map(c=>c.text||'').join('');
+}
+async function askAI(prompt){
+ if(samp){try{const r=await samp(prompt,{modelTier:'quick',cache:false});if(r&&r.text)return r.text}catch(e){if(code(e)==='not_granted')samp=null}}
+ if(KEY){try{return await callKey(prompt)}catch(e){}}
+ return '';
+}
+async function translate(src,text,side){
+ const far=prefs.far,tgt=src==='tr'?far:'tr',wantFix=side==='tr'&&prefs.gram;
+ if(hasAI()){
   const ctx=msgs.filter(m=>!m.err&&(m.from==='tr'||m.from===far)).slice(-4).map(m=>`${L[m.from].en} speaker: ${m[m.from]}`).join('\n');
   const prompt=`You are a live interpreter in a face-to-face conversation between a ${L[far].en} speaker and a Turkish speaker.
-The ${L[src].en} speaker just said the text below. It may come from speech recognition, so expect missing punctuation, misheard words, or words written phonetically in another language's spelling. Reconstruct the most likely intended sentence. If it is clearly in the other language of this conversation, treat it as that language.
-Translate it into natural, spoken ${L[tgt].en}. Keep tone, politeness level, names and numbers. Add nothing.
+The ${side==='tr'?'Turkish-side person (the app owner, a native Turkish speaker who sometimes tries to speak '+L[far].en+')':L[far].en+' speaker'} just said the text below. It may come from speech recognition, so expect missing punctuation, misheard words, or words written phonetically in another language's spelling. Reconstruct the most likely intended sentence. Decide whether it is in Turkish or in ${L[far].en}.
+Translate it into natural, spoken ${L[far].en} if they spoke Turkish, or into natural, spoken Turkish if they spoke ${L[far].en}. Keep tone, politeness level, names and numbers. Add nothing.
+${wantFix?`Also act as a grammar coach for this speaker. Judge the words they actually said. If the sentence has real grammar or sentence-construction mistakes (wrong suffixes or endings, word order, agreement, tense, case, articles, missing or wrong words, a clearly unnatural construction), give the corrected sentence in the SAME language they spoke, plus one very short explanation in Turkish. Ignore punctuation, capitalisation, speech-recognition noise and normal casual spoken style. If it is fine, "correction" must be null.`:''}
 ${ctx?'Recent conversation for context:\n'+ctx+'\n':''}
 Text: """${text}"""
-Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original text","translation":"translated text"}`;
+Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original text","translation":"translated text"${wantFix?',"correction":null or {"text":"corrected sentence","note":"short explanation in Turkish"}':''}}`;
   try{
-   const r=await samp(prompt,{modelTier:'quick',cache:false});const s=r.text||'';
-   const j=JSON.parse(s.slice(s.indexOf('{'),s.lastIndexOf('}')+1));
-   if(j&&j.translation){const f=j.from===far||j.from==='tr'?j.from:src;return{from:f,original:j.original||text,translation:j.translation}}
-  }catch(e){if(code(e)==='not_granted')samp=null}
+   const s=await askAI(prompt);
+   if(s){const j=JSON.parse(s.slice(s.indexOf('{'),s.lastIndexOf('}')+1));
+    if(j&&j.translation){const f=j.from===far||j.from==='tr'?j.from:src;const c=j.correction&&j.correction.text?j.correction:null;
+     return{from:f,original:j.original||text,translation:j.translation,fix:wantFix&&c?{text:String(c.text),note:String(c.note||'')}:null}}}
+  }catch(e){}
  }
- return{from:src,original:text,translation:await webTr(text,src,tgt)};
+ return{from:src,original:text,translation:await webTr(text,src,tgt),need:wantFix&&!hasAI()};
 }
 async function send(side,text,row){
  const src=lang(side),far=prefs.far;
- if(row){const m={from:src,tr:row[0]};m[far]=row[COL[far]];push(m);speakMsg(m);return}
+ if(row){const m={side,from:src,tr:row[0]};m[far]=row[COL[far]];push(m);speakMsg(m);return}
  if(pending)return;
  pending={side,text};render();
- let r;try{r=await translate(src,text)}catch(e){r={from:src,original:text,translation:''}}
+ let r;try{r=await translate(src,text,side)}catch(e){r={from:src,original:text,translation:''}}
  pending=null;
- const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation)m.err=true;
+ const m={side,from:r.from,orig:text};
+ m[r.from]=r.fix&&r.from!=='tr'?r.fix.text:r.original;
+ m[r.from==='tr'?far:'tr']=r.translation;
+ if(r.fix)m.fix=r.fix;
+ if(r.need&&!needShown){m.need=true;needShown=true}
+ if(!r.translation)m.err=true;
  push(m);speakMsg(m);
 }
 
@@ -294,6 +349,8 @@ document.addEventListener('click',e=>{
  if(mic){const s=mic.dataset.side;if(live)stopListen();else startListen(s);return}
  const chip=e.target.closest('.chip');
  if(chip){unlock();send(chip.dataset.side,'',PH[+chip.dataset.p]);return}
+ const fx=e.target.closest('.fix[data-fix]');
+ if(fx){unlock();const m=msgs[+fx.dataset.fix];if(m&&m.fix)speak(m.fix.text,m.from);return}
  const b=e.target.closest('.them[data-i]');
  if(b){unlock();const m=msgs[+b.dataset.i];const l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
  const sg=e.target.closest('.seg button');
@@ -307,6 +364,24 @@ $('#bSpk').onclick=()=>{prefs.speak=!prefs.speak;if(!prefs.speak)stopSpeak();app
 let clrT=0;$('#bClr').onclick=function(){
  if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');msgs=[];save('tercuman.msgs',msgs);stopSpeak();render()}
  else{this.classList.add('arm');clrT=setTimeout(()=>this.classList.remove('arm'),2500)}
+};
+
+/* ---------- settings ---------- */
+const dlg=$('#dlg'),kst=$('#kst');
+function st(t,c){kst.textContent=t;kst.className=c||''}
+function openSet(){$('#gram').checked=prefs.gram;$('#key').value='';
+ st(samp?'Claude içinde açıksın, anahtar gerekmiyor.':KEY?'Kayıtlı anahtar var: …'+KEY.slice(-4):'Henüz anahtar yok. Çeviri şimdilik Google ile yapılıyor.',KEY||samp?'ok':'');
+ dlg.classList.add('open')}
+$('#bSet').onclick=openSet;
+$('#dClose').onclick=()=>dlg.classList.remove('open');
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.classList.remove('open')});
+$('#gram').onchange=e=>{prefs.gram=e.target.checked;applyPrefs()};
+$('#kDel').onclick=()=>{KEY='';save('tercuman.key','');st('Anahtar silindi. Çeviri Google ile devam ediyor.')};
+$('#kSave').onclick=async()=>{
+ const v=$('#key').value.trim();if(!v){st('Önce anahtarı yapıştır.','bad');return}
+ const old=KEY;KEY=v;st('Deneniyor…');
+ try{await callKey('Reply with: OK',5);save('tercuman.key',KEY);$('#key').value='';st('Anahtar çalışıyor ve kaydedildi. Çeviri ve gramer düzeltme artık Claude ile.','ok')}
+ catch(e){KEY=old;st(e&&e.code===401?'Anahtar geçersiz. Kontrol edip tekrar dene.':e&&e.code?'Hata '+e.code+(e.message?': '+e.message:''):'Bağlantı kurulamadı. İnterneti kontrol et.','bad')}
 };
 
 /* ---------- Claude page capabilities (only inside claude.ai) ---------- */
