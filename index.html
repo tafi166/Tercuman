@@ -198,16 +198,40 @@ function applyPrefs(){
 function push(m){msgs.push(m);if(msgs.length>60)msgs=msgs.slice(-60);save('tercuman.msgs',msgs);render()}
 
 /* ---------- speech out ---------- */
-const SS=window.speechSynthesis;let voices=[];
-function loadV(){try{voices=SS?SS.getVoices():[]}catch(e){}}
+const SS=window.speechSynthesis;let voices=[];const vCache={};
+function loadV(){try{voices=SS?SS.getVoices():[];for(const k in vCache)delete vCache[k]}catch(e){}}
 if(SS){loadV();try{SS.onvoiceschanged=loadV}catch(e){}}
-const voiceFor=l=>{const vs=voices.filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(l));return vs.find(v=>v.lang.replace('_','-')===L[l].bcp)||vs[0]};
+/* novelty and robotic voices that ship with iOS/macOS: never pick them */
+const BAD=/\b(albert|bad news|bahh|bells|boing|bubbles|cellos|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|deranged|hysterical|junior|ralph|fred|kathy|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|princess|vicki|victoria|agnes|bruce)\b/i;
+const NICE={en:/samantha|ava|allison|susan|zoe|evan|nathan|tom|daniel|serena|kate|oliver|moira|karen|tessa|aaron|nicky|google us english|google uk english/i,
+ de:/anna|helena|petra|markus|yannick|martin|google deutsch/i,hu:/mariska|tünde|google magyar/i,tr:/yelda|cem|google türkçe/i};
+function vScore(v,l){
+ const n=(v.name||'')+' '+(v.voiceURI||'');
+ if(BAD.test(v.name||'')||/eloquence|novelty/i.test(n))return -1;
+ let s=0;
+ if(/premium/i.test(n))s+=100;else if(/enhanced|gelişmiş|verbessert|améliorée/i.test(n))s+=80;
+ if(/siri/i.test(n))s+=60;
+ if(/neural|natural|online/i.test(n))s+=50;
+ if(/google/i.test(n))s+=40;
+ if(NICE[l]&&NICE[l].test(n))s+=30;
+ if((v.lang||'').replace('_','-')===L[l].bcp)s+=10;
+ if(v.localService)s+=2;
+ return s;
+}
+
+function voiceFor(l){
+ if(vCache[l]&&voices.includes(vCache[l]))return vCache[l];
+ const vs=voices.filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(l)).map(v=>[vScore(v,l),v]).filter(x=>x[0]>=0).sort((a,b)=>b[0]-a[0]);
+ return vCache[l]=vs.length?vs[0][1]:null;
+}
+/* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
+function audioMode(t){try{if(navigator.audioSession)navigator.audioSession.type=t}catch(e){}}
 function stopSpeak(){try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
 function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
 function speak(text,l){
- if(!text)return;stopSpeak();const v=voiceFor(l);
+ if(!text)return;stopSpeak();audioMode('playback');const v=voiceFor(l);
  const done=()=>{speakingLang=null;render()};
- if(SS&&v){try{const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=.95;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render();return}catch(e){}}
+ if(SS&&v){try{const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=1;u.pitch=1;u.volume=1;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render();return}catch(e){}}
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
@@ -227,6 +251,7 @@ function startListen(side){
  }
  if(SR&&nativeOK){
   try{
+   audioMode('play-and-record');
    rec=new SR();rec.lang=L[lang(side)].bcp;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
    live={side,text:'',partial:'',eng:'native'};
    rec.onresult=e=>{let f='',p='';for(const r of e.results){if(r.isFinal)f+=r[0].transcript;else p+=r[0].transcript}if(live){live.text=f.trim();live.partial=p.trim();bump()}};
