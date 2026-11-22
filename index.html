@@ -644,7 +644,7 @@ async function openCam(){
  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){cstat('cam','Bu tarayıcı kameraya erişemiyor.');return}
  cstat('cam','Kamera açılıyor…');
  try{
-  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}}});
+  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
   if(!C.el.classList.contains('open')){stream.getTracks().forEach(t=>t.stop());stream=null;return}
   C.v.srcObject=stream;await C.v.play().catch(()=>{});cstat('cam','');
   getCoco().catch(()=>{});getOCR().catch(()=>{});
@@ -655,46 +655,117 @@ function grab(){const v=C.v,w=v.videoWidth,h=v.videoHeight;if(!w||!h)return null
 function vidMap(){const v=C.v,r=v.getBoundingClientRect(),vw=v.videoWidth,vh=v.videoHeight;if(!vw)return null;const s=Math.max(r.width/vw,r.height/vh);return{s,ox:(r.width-vw*s)/2,oy:(r.height-vh*s)/2,W:r.width,H:r.height,left:r.left,top:r.top}}
 function placeCard(x,y,html,M){const cx=Math.min(Math.max(x,Math.min(165,M.W/2)),M.W-Math.min(165,M.W/2)),up=y>M.H*.58;
  return `<div class="ccard${up?' up':''}" style="left:${cx}px;top:${y}px">${html}</div>`}
-/* Tesseract is run one job at a time. Two thresholding modes are tried because each one misses text the other finds
-   (plain Otsu loses big text on a small sign, adaptive Otsu loses text next to dark areas) */
+/* ---- text recognition ----
+   Tuned on 17 test photos of signs (German, Hungarian, English; bold, thin, condensed, serif; tilted, blurred, noisy):
+   sparse-text mode with two thresholdings + a half-size pass + a contrast-boosted pass + one block-layout pass for big
+   headlines read 29 of 32 lines exactly; the first version read 15 of 29. */
 let ocrQ=Promise.resolve();
-function ocrRun(img,opts,tm){const job=ocrQ.then(async()=>{const w=await getOCR();await w.setParameters({thresholding_method:tm});return (await w.recognize(img,opts||{})).data});ocrQ=job.catch(()=>{});return job}
-/* read the text under the finger: a band around the tap first, then a wider one */
-async function ocrAt(frame,p){
- const W=frame.width,H=frame.height;
- for(const k of [.26,.45])for(const tm of ['0','1']){
-  const bw=Math.round(W*.85),bh=Math.round(Math.max(H*k,140));
-  const left=Math.max(0,Math.min(W-bw,Math.round(p.x-bw/2))),top=Math.max(0,Math.min(H-bh,Math.round(p.y-bh/2)));
-  const data=await ocrRun(frame,{rectangle:{left,top,width:bw,height:bh}},tm);
-  const near=(data.lines||[]).filter(l=>l.confidence>=55&&letters(l.text)>=2);
-  if(!near.length)continue;
-  const mid=l=>(l.bbox.y0+l.bbox.y1)/2;
-  near.sort((a,b)=>Math.abs(mid(a)-p.y)-Math.abs(mid(b)-p.y));
-  const lim=Math.max(H*.12,(near[0].bbox.y1-near[0].bbox.y0)*2.5);
-  const t=clean(near.filter(l=>Math.abs(mid(l)-p.y)<=lim).sort((a,b)=>a.bbox.y0-b.bbox.y0).map(l=>l.text).join(' '));
-  if(letters(t)>=3)return t;
+function ocrRun(img,opts,psm,tm){const job=ocrQ.then(async()=>{const w=await getOCR();await w.setParameters({tessedit_pageseg_mode:String(psm),thresholding_method:String(tm)});return (await w.recognize(img,opts||{})).data});ocrQ=job.catch(()=>{});return job}
+function scaled(src,s,crop){const r=crop||{left:0,top:0,width:src.width,height:src.height};const c=document.createElement('canvas');c.width=Math.max(1,Math.round(r.width*s));c.height=Math.max(1,Math.round(r.height*s));const g=c.getContext('2d');g.imageSmoothingQuality='high';g.drawImage(src,r.left,r.top,r.width,r.height,0,0,c.width,c.height);return c}
+/* grayscale, stretch contrast between the 1st and 99th percentile, sharpen */
+function enhanced(src){
+ const c=scaled(src,1),g=c.getContext('2d'),W=c.width,H=c.height,im=g.getImageData(0,0,W,H),d=im.data,n=W*H,gray=new Uint8ClampedArray(n),hist=new Uint32Array(256);
+ for(let i=0,j=0;j<n;i+=4,j++){const v=(d[i]*77+d[i+1]*150+d[i+2]*29)>>8;gray[j]=v;hist[v]++}
+ let lo=0,hi=255,acc=0;for(;lo<254&&(acc+=hist[lo])<n*.01;lo++);acc=0;for(;hi>1&&(acc+=hist[hi])<n*.01;hi--);const k=255/Math.max(1,hi-lo);
+ const st=new Float32Array(n);for(let j=0;j<n;j++)st[j]=(gray[j]-lo)*k;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){const j=y*W+x;let v=st[j];if(x>0&&y>0&&x<W-1&&y<H-1)v=5*v-st[j-1]-st[j+1]-st[j-W]-st[j+W];v=v<0?0:v>255?255:v;const i=j*4;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}
+ g.putImageData(im,0,0);return c}
+const overlap=(a,b)=>{const w=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),h=Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0);if(w<=0||h<=0)return 0;return w*h/Math.min((a.x1-a.x0)*(a.y1-a.y0),(b.x1-b.x0)*(b.y1-b.y0))};
+/* run several passes; boxes come back in the coordinates of the full frame */
+async function passes(list,step,early){
+ const raw=[];let k=0;
+ for(const p of list){
+  k++;if(step)step(k,list.length);
+  const data=await ocrRun(p.img,{},p.psm||11,p.tm);const f=p.f,ox=p.ox||0,oy=p.oy||0;
+  for(const l of data.lines||[]){
+   if(l.confidence<50)continue;const t=clean(l.text);if(letters(t)<2)continue;
+   const b=l.baseline||{},ang=b.has_baseline!==false&&b.x1>b.x0?Math.atan2(b.y1-b.y0,b.x1-b.x0):0;
+   const rh=l.rowAttributes&&l.rowAttributes.row_height;
+   raw.push({text:t,conf:l.confidence,ang,em:rh>4?rh*f:0,bbox:{x0:l.bbox.x0*f+ox,y0:l.bbox.y0*f+oy,x1:l.bbox.x1*f+ox,y1:l.bbox.y1*f+oy}});
+  }
+  if(early&&k===2&&k<list.length)early(assemble(raw));
  }
- return '';
+ return assemble(raw);
 }
-const overlap=(a,b)=>{const w=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),h=Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0);if(w<=0||h<=0)return 0;const i=w*h;return i/Math.min((a.x1-a.x0)*(a.y1-a.y0),(b.x1-b.x0)*(b.y1-b.y0))};
-/* merge both passes line by line, then group lines into blocks by position and text size */
-const linesOf=d=>(d.lines||[]).filter(l=>l.confidence>=50).map(l=>({bbox:l.bbox,text:clean(l.text),conf:l.confidence})).filter(l=>letters(l.text)>=2);
-async function ocrPhoto(frame){
+/* dedupe lines found by several passes, join pieces of one line, drop noise */
+function assemble(raw){
+ const Wd=b=>b.x1-b.x0,Hh=b=>b.y1-b.y0,all=[];
+ for(const c of raw){
+  const d=all.find(x=>overlap(x.bbox,c.bbox)>.5);
+  if(!d){all.push({...c});continue}
+  if((Wd(c.bbox)>Wd(d.bbox)*1.15&&c.conf>=d.conf-15)||(Wd(c.bbox)>=Wd(d.bbox)*.87&&c.conf>d.conf))Object.assign(d,c);
+ }
+ const rows=[];
+ for(const c of all.sort((a,b)=>a.bbox.x0-b.bbox.x0)){
+  const h=Hh(c.bbox),cy=(c.bbox.y0+c.bbox.y1)/2;
+  const r=rows.find(r=>{const rh=Hh(r.bbox),ry=(r.bbox.y0+r.bbox.y1)/2,gap=c.bbox.x0-r.bbox.x1;
+   return Math.abs(cy-ry)<Math.min(h,rh)*.4&&h/rh>.6&&h/rh<1.65&&gap>-Math.min(h,rh)*.5&&gap<Math.max(h,rh)*1.3});
+  if(r){const gap=c.bbox.x0-r.bbox.x1;r.text+=(gap<Hh(r.bbox)*.12?'':' ')+c.text;r.conf=Math.min(r.conf,c.conf)*.3+Math.max(r.conf,c.conf)*.7;
+   if(Wd(c.bbox)>Wd(r.bbox)){r.ang=c.ang;r.em=c.em||r.em}else r.em=r.em||c.em;r.bbox={x0:Math.min(r.bbox.x0,c.bbox.x0),y0:Math.min(r.bbox.y0,c.bbox.y0),x1:Math.max(r.bbox.x1,c.bbox.x1),y1:Math.max(r.bbox.y1,c.bbox.y1)}}
+  else rows.push({...c});
+ }
+ const keep=rows.filter(r=>{const n=letters(r.text);if(n<2)return false;if(n>=4)return r.conf>=60;return r.conf>=90&&r.text===r.text.toLocaleUpperCase()});
+ return keep.filter(r=>!keep.some(o=>o!==r&&letters(o.text)>letters(r.text)&&overlap(o.bbox,r.bbox)>.3));
+}
+/* font size of a line from its box height: caps and ascenders reach .73 em, x-height is .53 em, descenders add .22 em */
+/* Tesseract's row height matches the font size well; the box height is a fallback (corrected for tilt) */
+function emOf(l){if(l.em)return l.em;const t=l.text,W=l.bbox.x1-l.bbox.x0,H=l.bbox.y1-l.bbox.y0,c=Math.cos(l.ang||0),s=Math.abs(Math.sin(l.ang||0)),dn=c*c-s*s;let h=H;if(dn>.3){const hh=(H*c-W*s)/dn;if(hh>H*.3)h=hh}
+ const asc=/[\p{Lu}\d]|[bdfhklt'"!?ßáéíóöőúüűä]/u.test(t),acc=/[ÁÉÍÓÖŐÚÜŰÄİÇŞĞ]/u.test(t),desc=/[gjpqyçşğ,;Q]/u.test(t);return h/((asc?(acc?.9:.73):.53)+(desc?.22:0))}
+/* lines that belong together (close, overlapping, same text size) become one block; a heading stays apart from smaller text */
+function toBlocks(lines){
+ const blocks=[];
+ for(const l of [...lines].sort((a,b)=>a.bbox.y0-b.bbox.y0)){
+  const h=l.bbox.y1-l.bbox.y0,e=emOf(l);
+  const b=blocks.find(b=>{const lb=b.last,le=emOf(lb),gap=l.bbox.y0-lb.bbox.y1,hx=Math.min(l.bbox.x1,b.bbox.x1)-Math.max(l.bbox.x0,b.bbox.x0);
+   return gap>-h*.3&&gap<Math.max(e,le)*1.05&&hx>0&&Math.max(e,le)/Math.min(e,le)<1.2});
+  if(b){b.lines.push(l);b.last=l;b.bbox={x0:Math.min(b.bbox.x0,l.bbox.x0),y0:Math.min(b.bbox.y0,l.bbox.y0),x1:Math.max(b.bbox.x1,l.bbox.x1),y1:Math.max(b.bbox.y1,l.bbox.y1)}}
+  else blocks.push({lines:[l],last:l,bbox:{...l.bbox}});
+ }
+ return blocks.map(b=>({lines:b.lines,bbox:b.bbox,text:b.lines.map(l=>l.text).join(' ')})).filter(b=>letters(b.text)>=3);
+}
+async function ocrPhoto(frame,early){
  ocrBusy=true;
  try{
-  const all=[];
-  for(const tm of ['0','1'])for(const l of linesOf(await ocrRun(frame,{},tm))){const d=all.find(x=>overlap(x.bbox,l.bbox)>.5);if(d){if(l.conf>d.conf)Object.assign(d,l)}else all.push(l)}
-  all.sort((a,b)=>a.bbox.y0-b.bbox.y0);
-  const blocks=[];
-  for(const l of all){
-   const h=l.bbox.y1-l.bbox.y0;
-   const b=blocks.find(b=>{const lb=b.last,lh=lb.bbox.y1-lb.bbox.y0,gap=l.bbox.y0-lb.bbox.y1,hx=Math.min(l.bbox.x1,b.bbox.x1)-Math.max(l.bbox.x0,b.bbox.x0);
-    return gap>-h*.3&&gap<Math.max(h,lh)*1.3&&hx>0&&Math.abs(h-lh)<Math.max(h,lh)*.45});
-   if(b){b.lines.push(l);b.last=l;b.bbox={x0:Math.min(b.bbox.x0,l.bbox.x0),y0:b.bbox.y0,x1:Math.max(b.bbox.x1,l.bbox.x1),y1:Math.max(b.bbox.y1,l.bbox.y1)}}
-   else blocks.push({lines:[l],last:l,bbox:{...l.bbox}});
-  }
-  return blocks.map(b=>({bbox:b.bbox,text:b.lines.map(l=>l.text).join(' ')})).filter(b=>letters(b.text)>=3);
+  const s=Math.min(1,1280/Math.max(frame.width,frame.height)),base=scaled(frame,s),f=1/s;
+  const lines=await passes([{img:base,tm:0,f},{img:base,tm:1,f},{img:scaled(base,.5),tm:1,f:f*2},{img:enhanced(base),tm:1,f},{img:base,psm:3,tm:1,f}],
+   (k,n)=>cstat('ocr',`Yazılar okunuyor… ${k}/${n}`),early&&(ls=>early(toBlocks(ls))));
+  return toBlocks(lines);
  }finally{ocrBusy=false;cstat('ocr','')}
+}
+/* read the text under the finger: a band around the tap, the same passes, then a wider band */
+async function ocrAt(frame,p){
+ const W=frame.width,H=frame.height;
+ for(const k of [.26,.45]){
+  const bw=Math.round(W*.85),bh=Math.round(Math.max(H*k,140));
+  const r={left:Math.max(0,Math.min(W-bw,Math.round(p.x-bw/2))),top:Math.max(0,Math.min(H-bh,Math.round(p.y-bh/2))),width:bw,height:bh};
+  const s=Math.min(1,1400/bw),crop=scaled(frame,s,r),f=1/s;
+  let lines=await passes([{img:crop,tm:1,f,ox:r.left,oy:r.top},{img:crop,tm:0,f,ox:r.left,oy:r.top},{img:crop,psm:3,tm:1,f,ox:r.left,oy:r.top}]);
+  if(!lines.length)lines=await passes([{img:scaled(crop,.5),tm:1,f:f*2,ox:r.left,oy:r.top},{img:enhanced(crop),tm:1,f,ox:r.left,oy:r.top}]);
+  if(!lines.length)continue;
+  const mid=l=>(l.bbox.y0+l.bbox.y1)/2;
+  /* the block under the finger, or the line closest to it */
+  const blocks=toBlocks(lines),inside=blocks.find(b=>p.x>=b.bbox.x0-20&&p.x<=b.bbox.x1+20&&p.y>=b.bbox.y0-20&&p.y<=b.bbox.y1+20);
+  if(inside)return inside;
+  lines.sort((a,b)=>Math.abs(mid(a)-p.y)-Math.abs(mid(b)-p.y));
+  const best=toBlocks([lines[0]])[0];if(best)return best;
+ }
+ return null;
+}
+/* translation: one request for all text keeps the context; ALL-CAPS signs are translated in normal case and put back in caps */
+const LOC={hu:'hu',en:'en',de:'de',tr:'tr'};
+const isUpper=t=>letters(t)>=2&&t===t.toLocaleUpperCase()&&t!==t.toLocaleLowerCase();
+function forMT(t,l){
+ if(!isUpper(t)||letters(t)<4)return t;const low=t.toLocaleLowerCase(LOC[l]);
+ return l==='de'?low.replace(/(^|[\s\-("„])(\p{L})/gu,(m,a,b)=>a+b.toLocaleUpperCase('de')):low.replace(/(^|[.!?]\s+)(\p{L})/gu,(m,a,b)=>a+b.toLocaleUpperCase(LOC[l]));
+}
+async function trTexts(texts){
+ const src=texts.map(t=>forMT(t,prefs.far));let out=null;
+ if(src.length>1&&src.join('\n\n').length<4500){
+  const r=await webTr(src.join('\n\n'),prefs.far,'tr');const parts=r?r.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean):[];
+  if(parts.length===src.length)out=parts;
+ }
+ if(!out){out=[];await pool(src.map((_,i)=>i),4,async i=>{out[i]=await webTr(src[i],prefs.far,'tr')})}
+ return texts.map((t,i)=>{const o=(out[i]||'').trim();return isUpper(t)?o.toLocaleUpperCase('tr'):o});
 }
 async function objAt(frame,p){
  const m=await getCoco(),ds=await m.detect(frame,20,0.4);
@@ -707,7 +778,7 @@ C.view.addEventListener('click',async e=>{
  const M=vidMap(),frame=grab();if(!M||!frame)return;
  const x=e.clientX-M.left,y=e.clientY-M.top,p={x:(x-M.ox)/M.s,y:(y-M.oy)/M.s},id=++tapId;
  C.cov.innerHTML=`<i class="ping" style="left:${x}px;top:${y}px"></i>`+placeCard(x,y,DOTS,M);
- const objP=objAt(frame,p).catch(()=>null),txtP=ocrAt(frame,p).catch(()=>'');
+ const objP=objAt(frame,p).catch(()=>null),txtP=ocrAt(frame,p).then(b=>b?b.text:'').catch(()=>'');
  let objHtml='',box='';
  const obj=await objP;if(id!==tapId)return;
  if(obj){
@@ -720,7 +791,7 @@ C.view.addEventListener('click',async e=>{
  const txt=await txtP;if(id!==tapId)return;
  if(txt){
   C.cov.innerHTML=box+placeCard(x,y,`<b>${DOTS}</b><div class="o">${esc(txt)}</div>`,M);
-  const tr=await webTr(txt,prefs.far,'tr');if(id!==tapId)return;
+  const tr=(await trTexts([txt]))[0];if(id!==tapId)return;
   C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(tr||'Çeviri yapılamadı')}</b><div class="o">${flagSvg(prefs.far)} ${esc(txt)}</div>${obj?`<span class="tag">${esc(OBJ[obj.class])}</span>`:''}`,M);
  }else if(obj){
   const n=obj.far;C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(OBJ[obj.class])}</b><div class="pn" id="pn">${flagSvg(prefs.far)}<span>${n?esc(n):DOTS}</span>${n?`<button class="csay" data-say="${esc(n)}" aria-label="Dinle">${SAYICON}</button>`:''}</div>`,M);
@@ -730,26 +801,76 @@ C.view.addEventListener('click',async e=>{
 });
 C.cov.addEventListener('click',e=>{const b=e.target.closest('.csay');if(b){e.stopPropagation();unlock();speak(b.dataset.say,prefs.far)}});
 C.cov.style.pointerEvents='none';
-/* --- full photo --- */
-function wrapLines(g,t,w){const out=[];let line='';for(const word of t.split(' ')){const test=line?line+' '+word:word;if(!line||g.measureText(test).width<=w)line=test;else{out.push(line);line=word}}if(line)out.push(line);return out}
-function fitText(g,t,x,y,w,h){let fs=Math.max(10,Math.min(h*.9,80)),lines=[];
- for(;fs>10;fs*=.92){g.font=`700 ${fs}px Figtree,system-ui,sans-serif`;lines=wrapLines(g,t,w);if(lines.length*fs*1.15<=h&&Math.max(...lines.map(l=>g.measureText(l).width))<=w*1.03)break}
- g.font=`700 ${fs}px Figtree,system-ui,sans-serif`;lines=wrapLines(g,t,w);g.textBaseline='top';g.textAlign='center';
- const y0=y+Math.max(0,(h-lines.length*fs*1.15)/2);lines.forEach((l,i)=>g.fillText(l,x+w/2,y0+i*fs*1.15));g.textAlign='start'}
-function rrect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
-/* colour of the sign around the text (median of a thin ring), so the translation sits on the same background like a label */
-function ringColor(g,x,y,w,h){
- const W=g.canvas.width,H=g.canvas.height,X=Math.max(0,Math.round(x)),Y=Math.max(0,Math.round(y)),R=Math.min(W,Math.round(x+w)),B=Math.min(H,Math.round(y+h)),px=[];
- const take=(x0,y0,ww,hh)=>{if(ww<1||hh<1)return;const d=g.getImageData(x0,y0,ww,hh).data;for(let i=0;i<d.length;i+=8)px.push([d[i],d[i+1],d[i+2]])};
- try{take(X,Y,R-X,3);take(X,B-3,R-X,3);take(X,Y,3,B-Y);take(R-3,Y,3,B-Y)}catch(e){}
- if(!px.length)return [255,255,255];
- return [0,1,2].map(c=>{const v=px.map(p=>p[c]).sort((a,b)=>a-b);return v[v.length>>1]});
+/* --- full photo: put the Turkish text on the sign, in the same place, size, angle, colours and weight --- */
+function wrapLines(g,t,w){const out=[];let line='';for(const word of t.split(/\s+/)){const test=line?line+' '+word:word;if(!line||g.measureText(test).width<=w)line=test;else{out.push(line);line=word}}if(line)out.push(line);return out}
+function rrect(g,x,y,w,h,r){r=Math.max(0,Math.min(r,w/2,h/2));g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+const med=a=>{const v=[...a].sort((x,y)=>x-y);return v.length?v[v.length>>1]:0};
+const lum=c=>c[0]*.3+c[1]*.59+c[2]*.11;
+const dist=(a,b)=>Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])+Math.abs(a[2]-b[2]);
+function pixels(g,b,step){
+ const W=g.canvas.width,H=g.canvas.height,x0=Math.max(0,Math.floor(b.x0)),y0=Math.max(0,Math.floor(b.y0)),x1=Math.min(W,Math.ceil(b.x1)),y1=Math.min(H,Math.ceil(b.y1)),out=[];
+ if(x1-x0<1||y1-y0<1)return out;const d=g.getImageData(x0,y0,x1-x0,y1-y0).data;for(let i=0;i<d.length;i+=4*step)out.push([d[i],d[i+1],d[i+2]]);return out}
+/* colour of the sign around the text: median of a thin ring just outside the box */
+function ringColor(g,b,pad){
+ const px=[...pixels(g,{x0:b.x0-pad,y0:b.y0-pad,x1:b.x1+pad,y1:b.y0-pad+3},2),...pixels(g,{x0:b.x0-pad,y0:b.y1+pad-3,x1:b.x1+pad,y1:b.y1+pad},2),
+  ...pixels(g,{x0:b.x0-pad,y0:b.y0,x1:b.x0-pad+3,y1:b.y1},2),...pixels(g,{x0:b.x1+pad-3,y0:b.y0,x1:b.x1+pad,y1:b.y1},2)];
+ return px.length?[0,1,2].map(c=>med(px.map(p=>p[c]))):[255,255,255]}
+/* how the original looks: size, angle, ink colour, weight, width, alignment */
+function lookOf(g,b){
+ const ang=Math.max(-.45,Math.min(.45,med(b.lines.map(l=>l.ang||0)))),c=Math.cos(ang),s=Math.abs(Math.sin(ang)),den=c*c-s*s;
+ const L=b.lines.map(l=>{const W=l.bbox.x1-l.bbox.x0,H=l.bbox.y1-l.bbox.y0;let w=W,h=H;
+  if(den>.3){w=(W*c-H*s)/den;h=(H*c-W*s)/den;if(h<H*.3||w<=0){w=W;h=H}}
+  return {cx:(l.bbox.x0+l.bbox.x1)/2,cy:(l.bbox.y0+l.bbox.y1)/2,w,h,em:l.em||emOf({text:l.text,bbox:{x0:0,x1:w,y0:0,y1:h}}),n:[...l.text].length}});
+ const em=med(L.map(l=>l.em));
+ const bg=ringColor(g,b.bbox,Math.max(3,em*.12));
+ /* ink colour, and stroke thickness from the length of ink runs along rows (stems), relative to the font size */
+ const ink=[],runs=[];
+ for(const l of b.lines){
+  const x0=Math.max(0,Math.floor(l.bbox.x0)),y0=Math.max(0,Math.floor(l.bbox.y0)),x1=Math.min(g.canvas.width,Math.ceil(l.bbox.x1)),y1=Math.min(g.canvas.height,Math.ceil(l.bbox.y1));
+  if(x1-x0<2||y1-y0<2)continue;const W=x1-x0,d=g.getImageData(x0,y0,W,y1-y0).data,step=Math.max(1,Math.round((y1-y0)/24));
+  for(let y=0;y<y1-y0;y+=step){let run=0;for(let x=0;x<W;x++){const i=(y*W+x)*4,p=[d[i],d[i+1],d[i+2]];if(dist(p,bg)>110){run++;if(x%3===0)ink.push(p)}else if(run){runs.push(run);run=0}}if(run)runs.push(run)}
+ }
+ ink.sort((a,b)=>dist(b,bg)-dist(a,bg));const core=ink.slice(0,Math.max(1,Math.round(ink.length*.4)));
+ const fg=ink.length>8?[0,1,2].map(k=>med(core.map(p=>p[k]))):(lum(bg)>140?[20,20,20]:[255,255,255]);
+ const stroke=runs.length?med(runs)/Math.max(1,em):.13,weight=stroke<.075?300:stroke<.1?400:stroke<.13?500:stroke<.16?600:stroke<.2?700:800;
+ const adv=med(L.map(l=>l.w/Math.max(1,l.n)))/Math.max(1,em),condensed=adv<.5;
+ /* lines in the sign's own frame (unrotated around the block centre) */
+ const bx=(b.bbox.x0+b.bbox.x1)/2,by=(b.bbox.y0+b.bbox.y1)/2,ca=Math.cos(-ang),sa=Math.sin(-ang);
+ const R=L.map(l=>{const dx=l.cx-bx,dy=l.cy-by,u=dx*ca-dy*sa,v=dx*sa+dy*ca;return{u0:u-l.w/2,u1:u+l.w/2,v0:v-l.h/2,v1:v+l.h/2}});
+ const u0=Math.min(...R.map(r=>r.u0)),u1=Math.max(...R.map(r=>r.u1)),v0=Math.min(...R.map(r=>r.v0)),v1=Math.max(...R.map(r=>r.v1));
+ const left=R.length>1&&(Math.max(...R.map(r=>r.u0))-u0)<em*.4&&(u1-Math.min(...R.map(r=>r.u1)))>em*.8;
+ return {ang,em,bg,fg,weight,stroke,condensed,bx,by,u0,u1,v0,v1,n:R.length,align:left?'left':'center'};
 }
 function drawTranslated(src,blocks){
  const c=document.createElement('canvas');c.width=src.width;c.height=src.height;const g=c.getContext('2d');g.drawImage(src,0,0);
- for(const b of blocks){if(!b.tr)continue;const {x0,y0,x1,y1}=b.bbox,pad=Math.max(4,(y1-y0)*.06),x=x0-pad,y=y0-pad,w=x1-x0+pad*2,h=y1-y0+pad*2;
-  const bg=ringColor(g,x,y,w,h);g.fillStyle=`rgb(${bg.join(',')})`;rrect(g,x,y,w,h,Math.min(14,h/4));g.fill();
-  g.fillStyle=(bg[0]*.3+bg[1]*.59+bg[2]*.11)>140?'#141414':'#ffffff';fitText(g,b.tr,x+pad,y+pad*.6,w-pad*2,h-pad*1.2)}
+ const looks=blocks.map(b=>b.tr?lookOf(g,b):null);
+ /* small text first, so a heading is never covered by a label that had to grow */
+ blocks.map((b,i)=>i).sort((a,b)=>(looks[a]?looks[a].em:0)-(looks[b]?looks[b].em:0)).forEach(i=>{const b=blocks[i],k=looks[i];if(!k)return;
+  if(window.__dbg)console.log('LOOK',b.text,JSON.stringify({em:Math.round(k.em),stroke:+k.stroke.toFixed(3),w:k.weight,fg:k.fg,cond:k.condensed,ang:+k.ang.toFixed(3)}));
+  const fam=k.condensed?'"Avenir Next Condensed","Roboto Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif':'"Helvetica Neue",Helvetica,Arial,sans-serif';
+  const pad=Math.max(3,k.em*.14),BW=k.u1-k.u0,BH=k.v1-k.v0;
+  const pitch=k.n>1?BH/k.n:k.em*1.2;
+  /* keep the original number of lines and size if possible: shrink a little, then let the label grow sideways,
+     and only then add lines */
+  let fs=k.em,lines=[],lh=0;
+  const tryFit=(wMax,nMax,minK)=>{for(let f=k.em;f>=k.em*minK;f*=.96){g.font=`${k.weight} ${f}px ${fam}`;const L=wrapLines(g,b.tr,wMax);
+   if(L.length<=nMax&&Math.max(...L.map(l=>g.measureText(l).width))<=wMax*1.01){fs=f;lines=L;return true}}return false};
+  const room=Math.min(g.canvas.width*.92,Math.max(BW*1.45,k.em*14));
+  if(!tryFit(BW*1.04,k.n,.72)&&!tryFit(room,k.n,.62)&&!tryFit(room,k.n+1,.62)&&!tryFit(room,k.n+3,.5)){fs=k.em*.5;g.font=`${k.weight} ${fs}px ${fam}`;lines=wrapLines(g,b.tr,room)}
+  g.font=`${k.weight} ${fs}px ${fam}`;lh=Math.max(fs*1.08,pitch*fs/k.em);
+  const th=lines.length*lh,mw=Math.max(...lines.map(l=>g.measureText(l).width));
+  const uc=(k.u0+k.u1)/2,vc=(k.v0+k.v1)/2;
+  const rx0=(k.align==='left'?k.u0:Math.min(k.u0,uc-mw/2))-pad,rx1=Math.max(k.u1,k.align==='left'?k.u0+mw:uc+mw/2)+pad;
+  /* same number of lines: the label hugs the original text so it never spills onto a neighbour */
+  const py=Math.max(2,k.em*.07),grow=lines.length>k.n;
+  const ry0=grow?Math.min(k.v0,vc-th/2)-pad:k.v0-py,ry1=grow?Math.max(k.v1,vc+th/2)+pad:k.v1+py;
+  g.save();g.translate(k.bx,k.by);g.rotate(k.ang);
+  g.fillStyle=`rgb(${k.bg.join(',')})`;rrect(g,rx0,ry0,rx1-rx0,ry1-ry0,k.em*.12);g.fill();
+  g.fillStyle=`rgb(${k.fg.join(',')})`;g.textBaseline='middle';g.textAlign=k.align;
+  const x=k.align==='left'?k.u0:(k.u0+k.u1)/2,ytop=(k.v0+k.v1)/2-th/2;
+  lines.forEach((l,j)=>g.fillText(l,x,ytop+lh*(j+.5)+fs*.04));
+  g.restore();
+ });
  return c}
 const stamp=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}`};
 function prepFile(canvas,key){const s=shot;canvas.toBlob(b=>{if(b&&s)s.files[key]=new File([b],`tercuman-${s.stamp}${key==='tr'?'-ceviri':''}.jpg`,{type:'image/jpeg'})},'image/jpeg',.92)}
@@ -762,12 +883,21 @@ $('#cSnap').addEventListener('click',async e=>{
  C.v.pause();C.cov.innerHTML='';C.el.classList.add('shot');showView('orig');prepFile(frame,'orig');
  C.list.innerHTML=`<p class="snote">${DOTS} Yazılar okunuyor…</p>`;
  try{
-  const blocks=await ocrPhoto(frame);if(id!==tapId)return;
-  if(!blocks.length){C.list.innerHTML='<p class="snote">Fotoğrafta okunabilir bir yazı bulamadım. Yazıya biraz daha yaklaşıp düz tutarak tekrar dene.</p>';return}
-  C.list.innerHTML=`<p class="snote">${DOTS} ${blocks.length} yazı parçası çevriliyor…</p>`;
-  await pool(blocks,4,async b=>{b.tr=await webTr(b.text,prefs.far,'tr')});if(id!==tapId)return;
-  C.list.innerHTML=blocks.map(b=>`<div class="sitem"><div class="t">${esc(b.tr||'(çevrilemedi)')}</div><div class="o">${esc(b.text)}</div></div>`).join('');
-  shot.tr=drawTranslated(frame,blocks);prepFile(shot.tr,'tr');showView('tr');
+  /* a first result after two passes (a few seconds), then the full result replaces it */
+  const cache=new Map();let shown=0;
+  const show=async(blocks,final,seq)=>{
+   const need=blocks.filter(b=>!cache.has(b.text));
+   if(need.length){const trs=await trTexts(need.map(b=>b.text));need.forEach((b,i)=>cache.set(b.text,trs[i]))}
+   if(id!==tapId||seq<shown)return;shown=seq;blocks.forEach(b=>b.tr=cache.get(b.text));
+   C.list.innerHTML=blocks.map(b=>`<div class="sitem"><div class="t">${esc(b.tr||'(çevrilemedi)')}</div><div class="o">${esc(b.text)}</div></div>`).join('')
+    +(final?'':`<p class="snote">${DOTS} Daha fazla yazı arıyorum…</p>`);
+   shot.tr=drawTranslated(frame,blocks);showView(shot.view==='orig'&&shown>1?'orig':'tr');if(final)prepFile(shot.tr,'tr');
+  };
+  let early=null;
+  const blocks=await ocrPhoto(frame,bs=>{if(bs.length)early=show(bs,false,1).catch(()=>{})});if(id!==tapId)return;
+  if(early)await early;
+  if(!blocks.length){const n=C.list.querySelector('.snote');if(shown&&n)n.remove();if(!shown)C.list.innerHTML='<p class="snote">Fotoğrafta okunabilir bir yazı bulamadım. Yazıya biraz daha yaklaşıp düz tutarak tekrar dene.</p>';return}
+  await show(blocks,true,2);
  }catch(err){ocrBusy=false;cstat('ocr','');if(id===tapId)C.list.innerHTML='<p class="snote">Yazı tanıma yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.</p>'}
 });
 $('#vTr').onclick=()=>showView('tr');$('#vOr').onclick=()=>showView('orig');
