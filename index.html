@@ -50,6 +50,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
+#c-far{display:grid;grid-template-rows:repeat(2,auto);grid-auto-flow:column;grid-auto-columns:max-content;padding-bottom:2px}
 .chip{flex:none;min-height:40px;padding:8px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.4);font-size:15px;white-space:nowrap}
 .chip:active{background:rgba(255,255,255,.2)}
 .ctl{display:flex;gap:10px;align-items:center}
@@ -98,6 +99,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
  .side .bar{padding:10px 4px}
  .side #far,.side #tr{padding:18px 22px}
 }
+.spl{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--tr);color:#fff;text-align:center;padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));cursor:pointer;transition:opacity .35s}
+.spl.open{display:flex}.spl.out{opacity:0;pointer-events:none}
+.spl .sky{width:150px;height:100px;animation:rise .7s ease-out both}
+.spl b{font-size:clamp(38px,11vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;animation:rise .7s .1s ease-out both}
+.spl small{font-size:16px;opacity:.8;animation:rise .7s .25s ease-out both}
 .pan{position:fixed;inset:0;z-index:8;display:none;flex-direction:column;background:light-dark(#f6f6f4,#121417);color:light-dark(#1b1b1b,#eceff1);padding:max(12px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
 .pan.open{display:flex}
 .pan>*{width:100%;max-width:760px;margin-inline:auto}
@@ -123,6 +129,7 @@ button.ln{display:block;width:100%;text-align:start}
 #pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
 @keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
 @keyframes breathe{50%{box-shadow:0 0 0 20px rgba(255,255,255,.02),0 0 0 9px rgba(255,255,255,.08)}}
+@keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes hotp{0%{box-shadow:0 0 0 0 rgba(255,210,63,.6)}100%{box-shadow:0 0 0 26px rgba(255,210,63,0)}}
 @keyframes glow{50%{opacity:.55}}
@@ -146,10 +153,6 @@ button.ln{display:block;width:100%;text-align:start}
   <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
   <div class="chips" id="c-far"></div>
-  <div class="ctl">
-   <form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" id="sd-far"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-  </div>
-  <p class="hint" id="h-far"></p>
  </section>
 
  <nav class="bar" aria-label="Ayarlar">
@@ -175,6 +178,12 @@ button.ln{display:block;width:100%;text-align:start}
  </section>
 </div>
 
+<div class="spl" id="spl" role="dialog" aria-label="Karşılama">
+ <svg class="sky" id="sky" viewBox="0 0 120 80" aria-hidden="true"></svg>
+ <b id="wtx"></b>
+ <small>Başlamak için dokun</small>
+</div>
+
 <div class="pan" id="pan" role="dialog" aria-modal="true" aria-labelledby="panT">
  <div class="ph"><button id="pBack" hidden aria-label="Geçmişe dön">‹ Geçmiş</button><h2 id="panT">Konuşma geçmişi</h2><button class="x" id="pClose" aria-label="Kapat">×</button></div>
  <input class="srch" id="srch" type="search" placeholder="Geçmişte ara: isim, tarih, fiyat…" autocomplete="off">
@@ -198,15 +207,22 @@ const L={
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
  tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
-const PH=[ /* tr, hu, en, de */
- ['Merhaba!','Jó napot!','Hello!','Guten Tag!'],
+const GREET=[ /* morning 05-12, afternoon 12-18, evening 18-05 */
+ ['Günaydın!','Jó reggelt!','Good morning!','Guten Morgen!'],
+ ['Tünaydın!','Jó napot!','Good afternoon!','Guten Tag!'],
+ ['İyi akşamlar!','Jó estét!','Good evening!','Guten Abend!']];
+const dayPart=()=>{const h=new Date().getHours();return h>=5&&h<12?0:h>=12&&h<18?1:2};
+const BASE=[ /* tr, hu, en, de */
  ['Teşekkür ederim.','Köszönöm.','Thank you.','Danke schön.'],
  ['Evet.','Igen.','Yes.','Ja.'],
  ['Hayır.','Nem.','No.','Nein.'],
  ['Anlamadım, tekrar eder misiniz?','Nem értem, megismételné?',"Sorry, I didn't understand. Could you repeat that?",'Entschuldigung, das habe ich nicht verstanden. Können Sie das wiederholen?'],
  ['Daha yavaş konuşur musunuz?','Lassabban beszélne, kérem?','Could you speak more slowly, please?','Könnten Sie bitte langsamer sprechen?'],
  ['Bir dakika lütfen.','Egy pillanat, kérem!','One moment, please.','Einen Moment, bitte.'],
- ['Bu ne kadar?','Mennyibe kerül?','How much is this?','Wie viel kostet das?']];
+ ['Bu ne kadar?','Mennyibe kerül?','How much is this?','Wie viel kostet das?'],
+ ['Hoşça kalın!','Viszontlátásra!','Goodbye!','Auf Wiedersehen!']];
+let PH=[],partNow=-1;
+function phrases(){partNow=dayPart();PH=[GREET[partNow],...BASE]}
 const COL={tr:0,hu:1,en:2,de:3};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -246,9 +262,9 @@ function applyLang(){
  const T=L[prefs.far];
  document.documentElement.style.setProperty('--far',T.color);
  $('#far').lang=prefs.far;$('#nm-far').textContent=T.name;$('#fg-far use').setAttribute('href','#fl-'+prefs.far);
- $('#in-far').placeholder=T.ph;$('#in-far').setAttribute('aria-label',T.ph);$('#sd-far').setAttribute('aria-label',T.send);
- $('#h-far').textContent=T.hint;$('#h-tr').textContent=L.tr.hint;
+ $('#h-tr').textContent=L.tr.hint;
  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.far===prefs.far));
+ phrases();
  for(const s of ['far','tr']){const c=COL[lang(s)];$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[c])}</button>`).join('')}
 }
 function applyPrefs(){
@@ -317,7 +333,7 @@ function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr
 /* ---------- speech in ---------- */
 function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
 function bump(){arm();render()}
-function noMic(side){document.body.classList.add('nomic');const i=$('#in-'+side);i.focus();i.placeholder=L[lang(side)].kbd}
+function noMic(side){if(side!=='tr')return;document.body.classList.add('nomic');const i=$('#in-tr');i.focus();i.placeholder=L.tr.kbd}
 function startListen(side){
  stopSpeak();unlock();
  if(dict){
@@ -493,11 +509,34 @@ caps();setTimeout(caps,500);setTimeout(caps,2000);
 function placeOrb(){for(const s of ['far','tr']){const m=$('#m-'+s),g=$('#bg-'+s);g.style.top=m.offsetTop+'px';g.style.height=m.offsetHeight+'px';g.style.setProperty('--o',Math.max(120,Math.min(200,m.offsetHeight-6))+'px')}}
 try{const ro=new ResizeObserver(placeOrb);ro.observe($('#m-far'));ro.observe($('#m-tr'))}catch(e){}
 window.addEventListener('resize',placeOrb);
+/* ---------- welcome ---------- */
+const NAME='Tayfun';
+const WEL=['Günaydın','Tünaydın','İyi akşamlar'];
+const SKY=[ /* morning sun on the horizon, afternoon sun, evening moon */
+ '<g fill="#ffd23f"><circle cx="60" cy="62" r="22"/></g><g stroke="#ffd23f" stroke-width="4" stroke-linecap="round"><path d="M60 26v-12M33 38l-8-8M87 38l8-8M22 60H10M98 60h12"/></g><rect x="0" y="62" width="120" height="18" fill="#c4122f"/><path d="M6 64h108" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>',
+ '<circle cx="60" cy="40" r="20" fill="#ffd23f"/><g stroke="#ffd23f" stroke-width="4" stroke-linecap="round"><path d="M60 8v-6M60 72v6M28 40h-6M92 40h6M37 17l-4-4M83 17l4-4M37 63l-4 4M83 63l4 4"/></g>',
+ '<path d="M66 12a28 28 0 1 0 22 46A24 24 0 0 1 66 12Z" fill="#fff"/><g fill="#ffd23f"><circle cx="96" cy="20" r="2.5"/><circle cx="24" cy="18" r="2"/><circle cx="104" cy="52" r="1.6"/><circle cx="18" cy="56" r="1.6"/></g>'];
+const spl=$('#spl');let wtext='';
+function closeSplash(){spl.classList.add('out');setTimeout(()=>spl.classList.remove('open','out'),360)}
+function welcome(){
+ const k=dayPart();wtext=`${WEL[k]}, ${NAME}!`;
+ $('#wtx').textContent=wtext;$('#sky').innerHTML=SKY[k];spl.classList.remove('out');spl.classList.add('open');
+ /* try to greet right away; most phones only allow sound after a tap, then the tap does it */
+ if(!SS||!prefs.speak)return;
+ try{const v=voiceFor('tr'),u=new SpeechSynthesisUtterance(wtext);if(v){u.voice=v;u.lang=v.lang}else u.lang='tr-TR';
+  let ok=false;u.onstart=()=>{ok=true;unlocked=true};u.onend=()=>{if(spl.classList.contains('open'))closeSplash()};
+  SS.cancel();SS.speak(u);setTimeout(()=>{if(!ok)try{SS.cancel()}catch(e){}},900);
+ }catch(e){}
+}
+spl.addEventListener('click',e=>{e.stopPropagation();if(prefs.speak){let playing=false;try{playing=SS&&SS.speaking}catch(_){}if(!playing){unlocked=true;speak(wtext,'tr')}}closeSplash()});
+
 let hiddenAt=0;const AWAY=2*60e3;
-function freshStart(){if(live)finish();stopSpeak();archive();render()}
+function freshStart(){if(live)finish();stopSpeak();archive();applyLang();render();welcome()}
+setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 applyLang();applyPrefs();render();placeOrb();
+if(SS&&!voices.length)setTimeout(welcome,250);else welcome();
 }
 </script>
 </body>
