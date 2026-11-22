@@ -45,10 +45,6 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .say svg{width:16px;height:16px}
 .them.err{background:#ffe3e3;color:#7a1020;font-size:16px}
 .live{opacity:.75;font-style:italic}
-.cta{margin:auto;max-width:none;opacity:1;display:flex;flex-direction:column;align-items:center;gap:16px;user-select:none}
-.cta .ring{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 9px rgba(255,255,255,.07);animation:breathe 2.6s ease-in-out infinite}
-.cta .ring svg{width:30px;height:30px}
-.cta b{font-size:clamp(30px,8.5vw,40px);font-weight:800;letter-spacing:-.015em;line-height:1.05;text-wrap:balance}
 .dots{display:inline-flex;gap:5px;padding:6px 2px}
 .dots i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.4;animation:dot 1.2s infinite}
 .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
@@ -63,18 +59,17 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .in:focus-within{box-shadow:0 0 0 2px #fff}
 .send{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
 .send svg{width:20px;height:20px}
-.voice{flex:none;height:56px;min-width:128px;padding:0 18px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.95);color:var(--c);box-shadow:0 8px 24px rgba(0,0,0,.22),inset 0 -2px 0 rgba(0,0,0,.06);transition:min-width .25s,background .2s,transform .12s;font-weight:800;font-size:16px}
-#far .voice{--c:var(--far)}#tr .voice{--c:var(--tr)}
-.voice:active{transform:scale(.96)}
-.voice .mi{width:22px;height:22px}
-.wave{display:none;align-items:center;gap:3px;height:22px}
-.listening .voice .wave{display:inline-flex}.listening .voice .mi{display:none}
-.wave i{width:3px;height:100%;border-radius:2px;background:currentColor;transform:scaleY(.25);opacity:.55}
-.wave i:nth-child(2),.wave i:nth-child(4){transform:scaleY(.45)}.wave i:nth-child(3){transform:scaleY(.6)}
-.listening .ctl .in{display:none}
-.listening .voice{flex:1;background:var(--hot);color:#1b1b1b}
-.listening .wave i{opacity:1;animation:wv .9s ease-in-out infinite}
-.listening .wave i:nth-child(2){animation-delay:-.15s}.listening .wave i:nth-child(3){animation-delay:-.3s}.listening .wave i:nth-child(4){animation-delay:-.45s}.listening .wave i:nth-child(5){animation-delay:-.6s}
+.bgm{position:absolute;left:0;right:0;top:0;height:100%;max-width:none;display:grid;place-items:center;pointer-events:none;z-index:0}
+.half>:not(.bgm){position:relative;z-index:1}
+.orb{position:relative;width:var(--o,180px);height:var(--o,180px);display:grid;place-items:center;transition:opacity .45s,transform .45s}
+.orb .rt{position:absolute;inset:0;width:100%;height:100%;animation:spin 16s linear infinite;transition:opacity .35s}
+.orb .rt text{fill:#fff;font:800 18px Figtree,system-ui,sans-serif;letter-spacing:3px}
+.orb .ring{width:38%;height:38%;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 9px rgba(255,255,255,.07);animation:breathe 2.6s ease-in-out infinite;transition:background .25s,color .25s}
+.orb .ring svg{width:46%;height:46%}
+.started .orb .rt{opacity:0;animation-play-state:paused}
+.started .orb{opacity:.16;transform:scale(1.15)}
+.listening .orb{opacity:.5;transform:scale(1)}
+.listening .orb .ring{background:var(--hot);color:#1b1b1b;animation:hotp 1.3s ease-out infinite}
 .half::after{content:'';position:absolute;inset:5px;border-radius:26px;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:inset 0 0 0 3px var(--hot),inset 0 0 46px rgba(255,210,63,.35)}
 .listening::after{opacity:1;animation:glow 1.6s ease-in-out infinite}
 .half{cursor:pointer}.half input,.half .chips{cursor:auto}
@@ -128,6 +123,8 @@ button.ln{display:block;width:100%;text-align:start}
 #pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
 @keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
 @keyframes breathe{50%{box-shadow:0 0 0 20px rgba(255,255,255,.02),0 0 0 9px rgba(255,255,255,.08)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes hotp{0%{box-shadow:0 0 0 0 rgba(255,210,63,.6)}100%{box-shadow:0 0 0 26px rgba(255,210,63,0)}}
 @keyframes glow{50%{opacity:.55}}
 @keyframes dot{0%,100%{opacity:.25}50%{opacity:1}}
 @keyframes blink{50%{opacity:.35}}
@@ -144,12 +141,13 @@ button.ln{display:block;width:100%;text-align:start}
 </defs></svg>
 <div class="app">
  <section class="half" id="far" lang="hu">
-  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><small id="st-far"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
+  
+  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
   <div class="chips" id="c-far"></div>
   <div class="ctl">
    <form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" id="sd-far"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-   <button class="voice" data-side="far" id="vb-far"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="vl" id="vl-far"></span></button>
   </div>
   <p class="hint" id="h-far"></p>
  </section>
@@ -165,12 +163,13 @@ button.ln{display:block;width:100%;text-align:start}
  </nav>
 
  <section class="half" id="tr" lang="tr">
-  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><small id="st-tr"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
+  
+  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
    <form class="in" data-side="tr"><input id="in-tr" autocomplete="off" enterkeyhint="send" aria-label="Metin" placeholder="Buraya yaz…"><button class="send" aria-label="Gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-   <button class="voice" data-side="tr" id="vb-tr"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="vl" id="vl-tr"></span></button>
   </div>
   <p class="hint" id="h-tr"></p>
  </section>
@@ -188,16 +187,16 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',cta:'Koppints, beszélj',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',cta:'Tap & talk',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',cta:'Tippen, sprechen',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',cta:'Bas, konuş',stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const PH=[ /* tr, hu, en, de */
  ['Merhaba!','Jó napot!','Hello!','Guten Tag!'],
@@ -229,7 +228,6 @@ const textFor=(m,l)=>m[l]||m[Object.keys(m).find(k=>L[k]&&k!=='tr'&&m[k])]||'';
 function render(){
  for(const s of ['far','tr']){
   const l=lang(s),T=L[l];let h='';
-  if(!msgs.length&&!pending&&!live)h=`<div class="empty cta"><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><b>${esc(T.cta)}</b></div>`;
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
@@ -240,9 +238,8 @@ function render(){
   const el=$('#m-'+s);el.innerHTML=h;el.scrollTop=el.scrollHeight;
   const on=!!live&&live.side===s&&!live.stopping;
   const half=$('#'+s);half.classList.toggle('listening',on);half.classList.toggle('speaking',!!speakingLang&&sideOf(speakingLang)===s);
-  $('#st-'+s).textContent=on?T.listen:(pending||live&&live.stopping)?T.work:T.tap;
-  $('#vl-'+s).textContent=on?T.listen.replace('…','')+' · '+T.stop:live&&live.stopping&&live.side===s?T.work:T.pill;
-  $('#vb-'+s).setAttribute('aria-label',on?T.stop:T.pill);
+  half.classList.toggle('started',!!(msgs.length||pending||live));
+  $('#w1-'+s).textContent=T.w[0];$('#w2-'+s).textContent=T.w[1];
  }
 }
 function applyLang(){
@@ -493,11 +490,14 @@ function caps(){
 }
 caps();setTimeout(caps,500);setTimeout(caps,2000);
 
+function placeOrb(){for(const s of ['far','tr']){const m=$('#m-'+s),g=$('#bg-'+s);g.style.top=m.offsetTop+'px';g.style.height=m.offsetHeight+'px';g.style.setProperty('--o',Math.max(120,Math.min(200,m.offsetHeight-6))+'px')}}
+try{const ro=new ResizeObserver(placeOrb);ro.observe($('#m-far'));ro.observe($('#m-tr'))}catch(e){}
+window.addEventListener('resize',placeOrb);
 let hiddenAt=0;const AWAY=2*60e3;
 function freshStart(){if(live)finish();stopSpeak();archive();render()}
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
-applyLang();applyPrefs();render();
+applyLang();applyPrefs();render();placeOrb();
 }
 </script>
 </body>
