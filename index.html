@@ -28,7 +28,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #far{background:var(--far);padding-top:max(12px,env(safe-area-inset-top))}
 #tr{background:var(--tr);padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .face #far{transform:rotate(180deg);padding-top:12px;padding-bottom:max(12px,env(safe-area-inset-top))}
-.hd{display:flex;align-items:baseline;gap:10px}
+.hd{display:flex;align-items:baseline;gap:9px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
 .spk{width:22px;height:22px;opacity:0;transition:opacity .2s;align-self:center}
@@ -36,10 +36,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px 2px;overscroll-behavior:contain}
 .msgs>:first-child{margin-top:auto}
 .empty{margin:auto 0;text-align:center;font-size:17px;opacity:.85;max-width:30ch;align-self:center;text-wrap:balance}
-.b{max-width:88%;padding:10px 15px;border-radius:20px;font-size:18px;line-height:1.3;overflow-wrap:anywhere}
+.b{max-width:88%;padding:9px 14px;border-radius:18px;font-size:16px;line-height:1.35;overflow-wrap:anywhere}
 .me{align-self:flex-end;background:rgba(255,255,255,.16);border-bottom-right-radius:6px}
-.them{align-self:flex-start;background:#fff;color:#1b1b1b;font-weight:600;font-size:21px;border-bottom-left-radius:6px;text-align:start}
-.them.last{font-size:clamp(22px,6vw,30px)}
+.them{align-self:flex-start;background:#fff;color:#1b1b1b;font-weight:600;font-size:17px;border-bottom-left-radius:6px;text-align:start;display:flex;align-items:flex-start;gap:8px;padding-inline-end:6px}
+.them.last{font-size:19px}
+.them>span{flex:1;padding-top:1px}
+.say{flex:none;width:30px;height:30px;margin:-3px 0 -3px;border-radius:50%;display:grid;place-items:center;background:light-dark(#f0f0f0,#f0f0f0);color:#444}
+.say svg{width:16px;height:16px}
 .them.err{background:#ffe3e3;color:#7a1020;font-size:16px}
 .live{opacity:.75;font-style:italic}
 .dots{display:inline-flex;gap:5px;padding:6px 2px}
@@ -56,12 +59,27 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .in:focus-within{box-shadow:0 0 0 2px #fff}
 .send{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
 .send svg{width:20px;height:20px}
-.mic{flex:none;width:72px;height:72px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .15s,background .15s}
-#far .mic{color:var(--far)}#tr .mic{color:var(--tr)}
-.mic svg{width:34px;height:34px}.mic .st{display:none}
-.mic:active{transform:scale(.94)}
-.listening .mic{background:var(--hot);color:#1b1b1b!important;animation:pulse 1.4s infinite}
-.listening .mic .mi{display:none}.listening .mic .st{display:block}
+.voice{flex:none;height:56px;min-width:128px;padding:0 18px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.95);color:var(--c);box-shadow:0 8px 24px rgba(0,0,0,.22),inset 0 -2px 0 rgba(0,0,0,.06);transition:min-width .25s,background .2s,transform .12s;font-weight:800;font-size:16px}
+#far .voice{--c:var(--far)}#tr .voice{--c:var(--tr)}
+.voice:active{transform:scale(.96)}
+.voice .mi{width:22px;height:22px}
+.wave{display:none;align-items:center;gap:3px;height:22px}
+.listening .voice .wave{display:inline-flex}.listening .voice .mi{display:none}
+.wave i{width:3px;height:100%;border-radius:2px;background:currentColor;transform:scaleY(.25);opacity:.55}
+.wave i:nth-child(2),.wave i:nth-child(4){transform:scaleY(.45)}.wave i:nth-child(3){transform:scaleY(.6)}
+.listening .ctl .in{display:none}
+.listening .voice{flex:1;background:var(--hot);color:#1b1b1b}
+.listening .wave i{opacity:1;animation:wv .9s ease-in-out infinite}
+.listening .wave i:nth-child(2){animation-delay:-.15s}.listening .wave i:nth-child(3){animation-delay:-.3s}.listening .wave i:nth-child(4){animation-delay:-.45s}.listening .wave i:nth-child(5){animation-delay:-.6s}
+.half::after{content:'';position:absolute;inset:5px;border-radius:26px;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:inset 0 0 0 3px var(--hot),inset 0 0 46px rgba(255,210,63,.35)}
+.listening::after{opacity:1;animation:glow 1.6s ease-in-out infinite}
+.half{cursor:pointer}.half input,.half .chips{cursor:auto}
+.fl{width:28px;height:19px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.18);flex:none;align-self:center;display:block}
+.seg .fl{width:20px;height:14px}
+.seg button{display:inline-flex;align-items:center;gap:6px;padding:0 9px}
+.bar{gap:2px}
+@media(max-width:440px){.seg .cd{display:none}.seg button{min-width:44px;padding:0 10px}.bar>button{width:42px}}
+.conv .fl{width:18px;height:12px;display:inline-block;vertical-align:-1px;margin-inline-end:4px}
 .hint{font-size:13px;opacity:.85;margin-top:8px;text-align:center;display:none}
 .nomic .hint{display:block}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
@@ -104,21 +122,29 @@ button.ln{display:block;width:100%;text-align:start}
 .pact .arm{background:#c4122f;color:#fff}
 .pnote{font-size:13px;opacity:.65;text-align:center;margin:10px 0 0}
 #pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,210,63,.7)}100%{box-shadow:0 0 0 22px rgba(255,210,63,0)}}
+@keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+@keyframes glow{50%{opacity:.55}}
 @keyframes dot{0%,100%{opacity:.25}50%{opacity:1}}
 @keyframes blink{50%{opacity:.35}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body class="face">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <symbol id="fl-hu" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#436f4d"/><rect width="30" height="13.34" fill="#fff"/><rect width="30" height="6.67" fill="#cd2a3e"/></symbol>
+ <symbol id="fl-de" viewBox="0 0 30 20" preserveAspectRatio="none"><rect width="30" height="20" fill="#ffce00"/><rect width="30" height="13.34" fill="#dd0000"/><rect width="30" height="6.67" fill="#000"/></symbol>
+ <symbol id="fl-tr" viewBox="0 0 30 20"><rect width="30" height="20" fill="#e30a17"/><circle cx="10" cy="10" r="5" fill="#fff"/><circle cx="11.25" cy="10" r="4" fill="#e30a17"/><polygon fill="#fff" points="14.50,10.00 16.19,9.41 16.23,7.62 17.31,9.05 19.02,8.53 18.00,10.00 19.02,11.47 17.31,10.95 16.23,12.38 16.19,10.59"/></symbol>
+ <clipPath id="ukc"><path d="M30,15h30v15zv15h-30zh-30v-15zv-15h30z"/></clipPath>
+ <symbol id="fl-en" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice"><rect width="60" height="30" fill="#012169"/><path d="M0,0L60,30M60,0L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0L60,30M60,0L0,30" clip-path="url(#ukc)" stroke="#c8102e" stroke-width="4"/><path d="M30,0v30M0,15h60" stroke="#fff" stroke-width="10"/><path d="M30,0v30M0,15h60" stroke="#c8102e" stroke-width="6"/></symbol>
+</defs></svg>
 <div class="app">
  <section class="half" id="far" lang="hu">
-  <div class="hd"><b id="nm-far">Magyar</b><small id="st-far"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><small id="st-far"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
   <div class="chips" id="c-far"></div>
   <div class="ctl">
    <form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" id="sd-far"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-   <button class="mic" data-side="far" aria-label="Mic"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><svg class="st" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+   <button class="voice" data-side="far" id="vb-far"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="vl" id="vl-far"></span></button>
   </div>
   <p class="hint" id="h-far"></p>
  </section>
@@ -126,7 +152,7 @@ button.ln{display:block;width:100%;text-align:start}
  <nav class="bar" aria-label="Ayarlar">
   <button id="bMode" class="on" title="Yüz yüze / yan yana" aria-label="Yüz yüze modu"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3 3 7h3v10h2V7h3L7 3Zm10 18 4-4h-3V7h-2v10h-3l4 4Z"/></svg></button>
   <div class="seg" role="group" aria-label="Karşı dil">
-   <button data-far="hu" title="Macarca">HU</button><button data-far="en" title="İngilizce">EN</button><button data-far="de" title="Almanca">DE</button>
+   <button data-far="hu" title="Macarca"><svg class="fl"><use href="#fl-hu"/></svg><span class="cd">HU</span></button><button data-far="en" title="İngilizce"><svg class="fl"><use href="#fl-en"/></svg><span class="cd">EN</span></button><button data-far="de" title="Almanca"><svg class="fl"><use href="#fl-de"/></svg><span class="cd">DE</span></button>
   </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
   <button id="bClr" title="Yeni konuşma (iki kez dokun). Eskisi geçmişe kaydedilir." aria-label="Yeni konuşma"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4Zm7 3v2H9v2h2v2h2v-2h2V9h-2V7h-2Z"/></svg></button>
@@ -134,12 +160,12 @@ button.ln{display:block;width:100%;text-align:start}
  </nav>
 
  <section class="half" id="tr" lang="tr">
-  <div class="hd"><b>Türkçe</b><small id="st-tr"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><small id="st-tr"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
    <form class="in" data-side="tr"><input id="in-tr" autocomplete="off" enterkeyhint="send" aria-label="Metin" placeholder="Buraya yaz…"><button class="send" aria-label="Gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-   <button class="mic" data-side="tr" aria-label="Mikrofon"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><svg class="st" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+   <button class="voice" data-side="tr" id="vb-tr"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="vl" id="vl-tr"></span></button>
   </div>
   <p class="hint" id="h-tr"></p>
  </section>
@@ -157,16 +183,16 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson és beszéljen',listen:'Hallgatom…',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
-  empty:'Koppintson a mikrofonra, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
+ hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+  empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap and speak',listen:'Listening…',work:'Translating…',ph:'Type here…',send:'Send',
-  empty:'Tap the microphone and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
+ en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+  empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Tippen und sprechen',listen:'Ich höre zu…',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
-  empty:'Tippen Sie auf das Mikrofon und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
+ de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+  empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Dokun ve konuş',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const PH=[ /* tr, hu, en, de */
  ['Merhaba!','Jó napot!','Hello!','Guten Tag!'],
@@ -198,24 +224,26 @@ const textFor=(m,l)=>m[l]||m[Object.keys(m).find(k=>L[k]&&k!=='tr'&&m[k])]||'';
 function render(){
  for(const s of ['far','tr']){
   const l=lang(s),T=L[l];let h='';
-  if(!msgs.length&&!pending&&!live)h=`<p class="empty">${s==='tr'?`Mikrofona dokun ve Türkçe konuş. Karşındaki kişi çeviriyi ${L[prefs.far].trName} duyar.`:T.empty}</p>`;
+  if(!msgs.length&&!pending&&!live)h=`<p class="empty">${s==='tr'?`Kendi tarafında herhangi bir yere dokun ve Türkçe konuş. Karşındaki kişi çeviriyi ${L[prefs.far].trName} duyar.`:T.empty}</p>`;
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
    if(m.err)return `<div class="b them err">${T.err}</div>`;
-   return `<button class="b them${i===lastThem?' last':''}" data-i="${i}">${esc(textFor(m,l))}</button>`}).join('');
+   return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
   if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
   const el=$('#m-'+s);el.innerHTML=h;el.scrollTop=el.scrollHeight;
   const on=!!live&&live.side===s&&!live.stopping;
   const half=$('#'+s);half.classList.toggle('listening',on);half.classList.toggle('speaking',!!speakingLang&&sideOf(speakingLang)===s);
   $('#st-'+s).textContent=on?T.listen:(pending||live&&live.stopping)?T.work:T.tap;
+  $('#vl-'+s).textContent=on?T.listen.replace('…','')+' · '+T.stop:live&&live.stopping&&live.side===s?T.work:T.pill;
+  $('#vb-'+s).setAttribute('aria-label',on?T.stop:T.pill);
  }
 }
 function applyLang(){
  const T=L[prefs.far];
  document.documentElement.style.setProperty('--far',T.color);
- $('#far').lang=prefs.far;$('#nm-far').textContent=T.name;
+ $('#far').lang=prefs.far;$('#nm-far').textContent=T.name;$('#fg-far use').setAttribute('href','#fl-'+prefs.far);
  $('#in-far').placeholder=T.ph;$('#in-far').setAttribute('aria-label',T.ph);$('#sd-far').setAttribute('aria-label',T.send);
  $('#h-far').textContent=T.hint;$('#h-tr').textContent=L.tr.hint;
  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.far===prefs.far));
@@ -242,7 +270,7 @@ function archive(){
  let ok=false;while(!ok&&hist.length){try{localStorage.setItem('tercuman.hist',JSON.stringify(hist));ok=true}catch(e){if(hist.length<2)break;hist.pop()}}
  msgs=[];save('tercuman.msgs',msgs);
 }
-{const last=msgs[msgs.length-1];if(last&&last.t&&Date.now()-last.t>IDLE)archive();}
+archive(); /* every fresh open or reload starts a clean conversation; the old one is kept in history */
 
 /* ---------- speech out ---------- */
 const SS=window.speechSynthesis;let voices=[];const vCache={};
@@ -361,13 +389,17 @@ async function send(side,text,row){
 }
 
 /* ---------- events ---------- */
+let typing=false;
+document.addEventListener('pointerdown',e=>{const a=document.activeElement;typing=!!(a&&a.tagName==='INPUT'&&!e.target.closest('form.in'))},true);
 document.addEventListener('click',e=>{
- const mic=e.target.closest('.mic');
- if(mic){const s=mic.dataset.side;if(live)stopListen();else startListen(s);return}
  const chip=e.target.closest('.chip');
  if(chip){unlock();send(chip.dataset.side,'',PH[+chip.dataset.p]);return}
- const b=e.target.closest('.them[data-i]');
- if(b){unlock();const m=msgs[+b.dataset.i];const l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
+ const say=e.target.closest('.say');
+ if(say){unlock();const b=say.closest('.them[data-i]'),m=msgs[+b.dataset.i],l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
+ const half=e.target.closest('.half');
+ if(half&&!e.target.closest('form.in,.chips')){
+  if(typing){typing=false;document.activeElement.blur();return}
+  if(live)stopListen();else startListen(half.id);return}
  const sg=e.target.closest('.seg button');
  if(sg&&sg.dataset.far!==prefs.far){if(live)finish();stopSpeak();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
 });
@@ -409,7 +441,7 @@ function showList(){
  }
  P.list.innerHTML=cs.map((c,ci)=>{
   const fl=convFar(c),first=c.msgs.find(m=>trOf(m))||c.msgs[0];
-  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]]?L[fl[0]].color:'#888'}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${esc(fl.map(f=>L[f]?L[f].trName:f).join(', '))} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
+  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]]?L[fl[0]].color:'#888'}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${fl.map(f=>`<svg class="fl"><use href="#fl-${f}"/></svg>`+esc(L[f]?L[f].trName:f)).join(', ')} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
 }
 function showConv(ci){
  const c=allConvs()[ci];if(!c)return;openConv=c;
@@ -456,6 +488,10 @@ function caps(){
 }
 caps();setTimeout(caps,500);setTimeout(caps,2000);
 
+let hiddenAt=0;const AWAY=2*60e3;
+function freshStart(){if(live)finish();stopSpeak();archive();render()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
+window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 applyLang();applyPrefs();render();
 }
 </script>
