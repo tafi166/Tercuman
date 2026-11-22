@@ -101,6 +101,13 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 }
 .spl{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--tr);color:#fff;text-align:center;padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));cursor:pointer;transition:opacity .35s}
 .spl.open{display:flex}.spl.out{opacity:0;pointer-events:none}
+.logo{display:flex;align-items:center;font-weight:800;font-size:clamp(30px,9vw,42px);letter-spacing:.06em;line-height:1;margin-bottom:8px;animation:rise .7s ease-out both}
+.logo .le{height:.9em;width:1.18em;margin:0 .06em 0 0;overflow:visible}
+.logo .s1,.logo .s2,.logo .s3{animation:talk 1.2s ease-in-out infinite}
+.logo .s2{animation-delay:.15s}.logo .s3{animation-delay:.3s}
+.logo .tg{transform-origin:13px 16px;animation:tongue 1.2s ease-in-out infinite}
+@keyframes talk{0%,100%{opacity:.45}40%{opacity:1}}
+@keyframes tongue{0%,100%{transform:scaleX(.7)}40%{transform:scaleX(1)}}
 .spl .sky{width:150px;height:100px;animation:rise .7s ease-out both}
 .spl b{font-size:clamp(38px,11vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;animation:rise .7s .1s ease-out both}
 .spl small{font-size:16px;opacity:.8;animation:rise .7s .25s ease-out both}
@@ -188,6 +195,7 @@ button.ln{display:block;width:100%;text-align:start}
 </div>
 
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
+ <div class="logo" role="img" aria-label="Tercüman"><span>T</span><svg class="le" viewBox="0 0 42 32" aria-hidden="true"><path fill="#fff" d="M7 2H21A5 5 0 0 1 26 7V9L13 13.5V18.5L26 23V25A5 5 0 0 1 21 30H7A5 5 0 0 1 2 25V7A5 5 0 0 1 7 2Z"/><rect class="tg" x="12.5" y="14.6" width="8.5" height="2.8" rx="1.4" fill="#ff8fa3"/><circle cx="10" cy="7.6" r="2.1" fill="#1b1b1b"/><g fill="none" stroke="#ffd23f" stroke-width="3" stroke-linecap="round"><path class="s1" d="M29.5 12.5Q32 16 29.5 19.5"/><path class="s2" d="M34 9.5Q38.5 16 34 22.5"/><path class="s3" d="M38.5 6.5Q44 16 38.5 25.5"/></g></svg><span>RCÜMAN</span></div>
  <svg class="sky" id="sky" viewBox="0 0 120 80" aria-hidden="true"></svg>
  <b id="wtx"></b>
  <small class="go">Başlamak için dokun</small>
