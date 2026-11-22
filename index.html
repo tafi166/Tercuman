@@ -104,6 +104,15 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .spl .sky{width:150px;height:100px;animation:rise .7s ease-out both}
 .spl b{font-size:clamp(38px,11vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;animation:rise .7s .1s ease-out both}
 .spl small{font-size:16px;opacity:.8;animation:rise .7s .25s ease-out both}
+.spl .ask-t{margin:0;font-size:18px;opacity:.9}
+.nf{display:flex;gap:8px;width:min(380px,100%);margin-top:6px}
+.nf input{flex:1;font:inherit;font-size:18px;padding:14px 18px;border-radius:999px;border:0;outline:0;background:#fff;color:#1b1b1b}
+.nf input:focus{box-shadow:0 0 0 3px #ffd23f}
+.nf button{min-height:52px;padding:0 22px;border-radius:999px;background:#ffd23f;color:#1b1b1b;font-weight:800;font-size:17px}
+.chg{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));min-height:44px;padding:0 14px;font-size:14px;opacity:.7;text-decoration:underline;text-underline-offset:3px}
+.spl .ask-t,.spl .nf,.spl.ask .go,.spl.ask .chg{display:none}
+.spl.ask .ask-t{display:block}.spl.ask .nf{display:flex}
+.spl.ask{cursor:default}
 .pan{position:fixed;inset:0;z-index:8;display:none;flex-direction:column;background:light-dark(#f6f6f4,#121417);color:light-dark(#1b1b1b,#eceff1);padding:max(12px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
 .pan.open{display:flex}
 .pan>*{width:100%;max-width:760px;margin-inline:auto}
@@ -181,7 +190,10 @@ button.ln{display:block;width:100%;text-align:start}
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
  <svg class="sky" id="sky" viewBox="0 0 120 80" aria-hidden="true"></svg>
  <b id="wtx"></b>
- <small>Başlamak için dokun</small>
+ <small class="go">Başlamak için dokun</small>
+ <p class="ask-t">Seni adınla selamlayayım. Adın ne?</p>
+ <form class="nf" id="nf"><input id="nmIn" placeholder="Adın" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" maxlength="30" aria-label="Adın"><button>Başla</button></form>
+ <button class="chg" id="chg">İsmi değiştir</button>
 </div>
 
 <div class="pan" id="pan" role="dialog" aria-modal="true" aria-labelledby="panT">
@@ -510,7 +522,7 @@ function placeOrb(){for(const s of ['far','tr']){const m=$('#m-'+s),g=$('#bg-'+s
 try{const ro=new ResizeObserver(placeOrb);ro.observe($('#m-far'));ro.observe($('#m-tr'))}catch(e){}
 window.addEventListener('resize',placeOrb);
 /* ---------- welcome ---------- */
-const NAME='Tayfun';
+let NAME=load('tercuman.name','');
 const WEL=['Günaydın','Tünaydın','İyi akşamlar'];
 const SKY=[ /* morning sun on the horizon, afternoon sun, evening moon */
  '<g fill="#ffd23f"><circle cx="60" cy="62" r="22"/></g><g stroke="#ffd23f" stroke-width="4" stroke-linecap="round"><path d="M60 26v-12M33 38l-8-8M87 38l8-8M22 60H10M98 60h12"/></g><rect x="0" y="62" width="120" height="18" fill="#c4122f"/><path d="M6 64h108" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>',
@@ -518,9 +530,12 @@ const SKY=[ /* morning sun on the horizon, afternoon sun, evening moon */
  '<path d="M66 12a28 28 0 1 0 22 46A24 24 0 0 1 66 12Z" fill="#fff"/><g fill="#ffd23f"><circle cx="96" cy="20" r="2.5"/><circle cx="24" cy="18" r="2"/><circle cx="104" cy="52" r="1.6"/><circle cx="18" cy="56" r="1.6"/></g>'];
 const spl=$('#spl');let wtext='';
 function closeSplash(){spl.classList.add('out');setTimeout(()=>spl.classList.remove('open','out'),360)}
+const greetText=()=>NAME?`${WEL[dayPart()]}, ${NAME}!`:`${WEL[dayPart()]}!`;
+function askName(){spl.classList.add('ask');$('#wtx').textContent='Hoş geldin!';$('#nmIn').value=NAME}
 function welcome(){
- const k=dayPart();wtext=`${WEL[k]}, ${NAME}!`;
- $('#wtx').textContent=wtext;$('#sky').innerHTML=SKY[k];spl.classList.remove('out');spl.classList.add('open');
+ const k=dayPart();wtext=greetText();$('#sky').innerHTML=SKY[k];spl.classList.remove('out','ask');spl.classList.add('open');
+ if(!NAME){askName();return}
+ $('#wtx').textContent=wtext;
  /* try to greet right away; most phones only allow sound after a tap, then the tap does it */
  if(!SS||!prefs.speak)return;
  try{const v=voiceFor('tr'),u=new SpeechSynthesisUtterance(wtext);if(v){u.voice=v;u.lang=v.lang}else u.lang='tr-TR';
@@ -528,7 +543,15 @@ function welcome(){
   SS.cancel();SS.speak(u);setTimeout(()=>{if(!ok)try{SS.cancel()}catch(e){}},900);
  }catch(e){}
 }
-spl.addEventListener('click',e=>{e.stopPropagation();if(prefs.speak){let playing=false;try{playing=SS&&SS.speaking}catch(_){}if(!playing){unlocked=true;speak(wtext,'tr')}}closeSplash()});
+$('#nf').addEventListener('submit',e=>{
+ e.preventDefault();e.stopPropagation();let v=$('#nmIn').value.trim().replace(/\s+/g,' ');
+ if(v)v=v.split(' ').map(w=>w.charAt(0).toLocaleUpperCase('tr')+w.slice(1)).join(' ');
+ NAME=v;save('tercuman.name',NAME);$('#nmIn').blur();
+ wtext=greetText();$('#wtx').textContent=wtext;spl.classList.remove('ask');
+ unlocked=true;if(prefs.speak)speak(wtext,'tr');setTimeout(closeSplash,NAME?900:0);
+});
+$('#chg').addEventListener('click',e=>{e.stopPropagation();try{SS&&SS.cancel()}catch(_){}askName();setTimeout(()=>$('#nmIn').focus(),50)});
+spl.addEventListener('click',e=>{e.stopPropagation();if(spl.classList.contains('ask')||e.target.closest('.nf'))return;if(prefs.speak){let playing=false;try{playing=SS&&SS.speaking}catch(_){}if(!playing){unlocked=true;speak(wtext,'tr')}}closeSplash()});
 
 let hiddenAt=0;const AWAY=2*60e3;
 function freshStart(){if(live)finish();stopSpeak();archive();applyLang();render();welcome()}
