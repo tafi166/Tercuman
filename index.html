@@ -3,31 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<title>Magyar Türk Tercüman</title>
+<title>Tercüman</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tercüman">
-<meta name="theme-color" content="#2c6845">
+<meta name="theme-color" content="#c4122f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
 <style>
 /* VOICE: warm, instant, nothing to learn; two people at one table
    IDEA: a folded table tent card, each face turned to its reader
    PICTURE: the two halves themselves, live bubbles and one big mic each
-   COLOUR and TYPE: Hungarian green field, Turkish red field, white bubbles; Figtree
+   COLOUR and TYPE: partner's field (green HU, blue EN, graphite DE), Turkish red field, white bubbles; Figtree
    LAYOUT: stacked halves, top one rotated 180deg, slim control strip in the fold */
-:root{color-scheme:light dark;--hu:#2c6845;--tr:#c4122f;--bar:light-dark(#ffffff,#16181b);--barink:light-dark(#1c1c1c,#eceff1);--hot:#ffd23f}
+:root{color-scheme:light dark;--far:#2c6845;--tr:#c4122f;--bar:light-dark(#ffffff,#16181b);--barink:light-dark(#1c1c1c,#eceff1);--hot:#ffd23f}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%;margin:0}
 body{background:#111;color:#fff;font:16px/1.45 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .app{height:100vh;height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr)}
-.half{display:flex;flex-direction:column;padding:12px 14px;min-height:0;position:relative}
+.half{display:flex;flex-direction:column;padding:12px 14px;min-height:0;position:relative;transition:background .3s}
 .half>*{width:100%;max-width:760px;margin-inline:auto}
-.hu{background:var(--hu);padding-top:max(12px,env(safe-area-inset-top))}
-.tr{background:var(--tr);padding-bottom:max(12px,env(safe-area-inset-bottom))}
-.face .hu{transform:rotate(180deg);padding-top:12px;padding-bottom:max(12px,env(safe-area-inset-top))}
+#far{background:var(--far);padding-top:max(12px,env(safe-area-inset-top))}
+#tr{background:var(--tr);padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.face #far{transform:rotate(180deg);padding-top:12px;padding-bottom:max(12px,env(safe-area-inset-top))}
 .hd{display:flex;align-items:baseline;gap:10px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
@@ -57,27 +57,29 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .send{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18)}
 .send svg{width:20px;height:20px}
 .mic{flex:none;width:72px;height:72px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .15s,background .15s}
-.hu .mic{color:var(--hu)}.tr .mic{color:var(--tr)}
+#far .mic{color:var(--far)}#tr .mic{color:var(--tr)}
 .mic svg{width:34px;height:34px}.mic .st{display:none}
 .mic:active{transform:scale(.94)}
-.listening .mic{background:var(--hot);color:#1b1b1b;animation:pulse 1.4s infinite}
+.listening .mic{background:var(--hot);color:#1b1b1b!important;animation:pulse 1.4s infinite}
 .listening .mic .mi{display:none}.listening .mic .st{display:block}
 .hint{font-size:13px;opacity:.85;margin-top:8px;text-align:center;display:none}
 .nomic .hint{display:block}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.bar{background:var(--bar);color:var(--barink);display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 10px}
-.bar button{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
-.bar button:hover{background:light-dark(#f0f0f0,#24272b)}
+.bar{background:var(--bar);color:var(--barink);display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 10px;flex-wrap:wrap}
+.bar>button{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
+.bar>button:hover{background:light-dark(#f0f0f0,#24272b)}
 .bar svg{width:22px;height:22px}
 .bar .on{color:light-dark(#0b6b3a,#7fdca5)}
 .bar .arm{background:#c4122f!important;color:#fff}
-.bar span{font-size:13px;opacity:.7;padding:0 6px;white-space:nowrap}
+.seg{display:flex;background:light-dark(#eef0f2,#24272b);border-radius:12px;padding:3px;gap:2px}
+.seg button{min-width:48px;height:38px;border-radius:9px;font-size:14px;font-weight:800;letter-spacing:.02em}
+.seg button[aria-pressed=true]{background:var(--far);color:#fff}
 .off .sOn,.bar .sOff{display:none}.off .sOff{display:block}
 @media(min-width:820px){
  .side .app{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
- .side .bar{flex-direction:column;padding:10px 4px}
- .side .bar span{writing-mode:vertical-rl}
- .side .hu,.side .tr{padding:18px 22px}
+ .side .bar,.side .seg{flex-direction:column}
+ .side .bar{padding:10px 4px}
+ .side #far,.side #tr{padding:18px 22px}
 }
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,210,63,.7)}100%{box-shadow:0 0 0 22px rgba(255,210,63,0)}}
 @keyframes dot{0%,100%{opacity:.25}50%{opacity:1}}
@@ -87,42 +89,62 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 </head>
 <body class="face">
 <div class="app">
- <section class="half hu" id="hu" lang="hu">
-  <div class="hd"><b>Magyar</b><small id="st-hu">Koppintson és beszéljen</small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
-  <div class="msgs" id="m-hu" aria-live="polite"></div>
-  <div class="chips" id="c-hu"></div>
+ <section class="half" id="far" lang="hu">
+  <div class="hd"><b id="nm-far">Magyar</b><small id="st-far"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="msgs" id="m-far" aria-live="polite"></div>
+  <div class="chips" id="c-far"></div>
   <div class="ctl">
-   <form class="in" data-side="hu"><input id="in-hu" placeholder="Írjon ide…" autocomplete="off" enterkeyhint="send" aria-label="Szöveg"><button class="send" aria-label="Küldés"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
-   <button class="mic" data-side="hu" aria-label="Mikrofon"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><svg class="st" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+   <form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" id="sd-far"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
+   <button class="mic" data-side="far" aria-label="Mic"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><svg class="st" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
   </div>
-  <p class="hint">Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.</p>
+  <p class="hint" id="h-far"></p>
  </section>
 
  <nav class="bar" aria-label="Ayarlar">
-  <button id="bMode" class="on" title="Yüz yüze / Szemtől szemben" aria-label="Yüz yüze modu"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3 3 7h3v10h2V7h3L7 3Zm10 18 4-4h-3V7h-2v10h-3l4 4Z"/></svg></button>
-  <button id="bSpk" class="on" title="Sesli okuma / Felolvasás" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
-  <span id="eng">HU ⇄ TR</span>
-  <button id="bClr" title="Temizle / Törlés" aria-label="Konuşmayı temizle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Z"/></svg></button>
+  <button id="bMode" class="on" title="Yüz yüze / yan yana" aria-label="Yüz yüze modu"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3 3 7h3v10h2V7h3L7 3Zm10 18 4-4h-3V7h-2v10h-3l4 4Z"/></svg></button>
+  <div class="seg" role="group" aria-label="Karşı dil">
+   <button data-far="hu" title="Macarca">HU</button><button data-far="en" title="İngilizce">EN</button><button data-far="de" title="Almanca">DE</button>
+  </div>
+  <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
+  <button id="bClr" title="Temizle (iki kez dokun)" aria-label="Konuşmayı temizle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Z"/></svg></button>
  </nav>
 
- <section class="half tr" id="tr" lang="tr">
-  <div class="hd"><b>Türkçe</b><small id="st-tr">Dokun ve konuş</small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+ <section class="half" id="tr" lang="tr">
+  <div class="hd"><b>Türkçe</b><small id="st-tr"></small><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
-   <form class="in" data-side="tr"><input id="in-tr" placeholder="Buraya yaz…" autocomplete="off" enterkeyhint="send" aria-label="Metin"><button class="send" aria-label="Gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
+   <form class="in" data-side="tr"><input id="in-tr" autocomplete="off" enterkeyhint="send" aria-label="Metin" placeholder="Buraya yaz…"><button class="send" aria-label="Gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form>
    <button class="mic" data-side="tr" aria-label="Mikrofon"><svg class="mi" viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><svg class="st" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
   </div>
-  <p class="hint">Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.</p>
+  <p class="hint" id="h-tr"></p>
  </section>
 </div>
 
 <script>
 {
 const L={
- hu:{en:'Hungarian',other:'tr',bcp:'hu-HU',tap:'Koppintson és beszéljen',listen:'Hallgatom…',work:'Fordítás…',empty:'Koppintson a mikrofonra, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.'},
- tr:{en:'Turkish',other:'hu',bcp:'tr-TR',tap:'Dokun ve konuş',listen:'Dinliyorum…',work:'Çevriliyor…',empty:'Mikrofona dokun ve Türkçe konuş. Karşındaki kişi çeviriyi Macarca duyar.',err:'Çeviri yapılamadı. Tekrar dene.'}};
-const PH=[['Jó napot!','Merhaba!'],['Köszönöm.','Teşekkür ederim.'],['Igen.','Evet.'],['Nem.','Hayır.'],['Nem értem, megismételné?','Anlamadım, tekrar eder misiniz?'],['Lassabban beszélne, kérem?','Daha yavaş konuşur musunuz?'],['Egy pillanat, kérem!','Bir dakika lütfen.'],['Mennyibe kerül?','Bu ne kadar?']];
+ hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson és beszéljen',listen:'Hallgatom…',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+  empty:'Koppintson a mikrofonra, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
+  hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
+ en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap and speak',listen:'Listening…',work:'Translating…',ph:'Type here…',send:'Send',
+  empty:'Tap the microphone and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
+  hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
+ de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Tippen und sprechen',listen:'Ich höre zu…',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+  empty:'Tippen Sie auf das Mikrofon und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
+  hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
+ tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Dokun ve konuş',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+  hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
+const PH=[ /* tr, hu, en, de */
+ ['Merhaba!','Jó napot!','Hello!','Guten Tag!'],
+ ['Teşekkür ederim.','Köszönöm.','Thank you.','Danke schön.'],
+ ['Evet.','Igen.','Yes.','Ja.'],
+ ['Hayır.','Nem.','No.','Nein.'],
+ ['Anlamadım, tekrar eder misiniz?','Nem értem, megismételné?',"Sorry, I didn't understand. Could you repeat that?",'Entschuldigung, das habe ich nicht verstanden. Können Sie das wiederholen?'],
+ ['Daha yavaş konuşur musunuz?','Lassabban beszélne, kérem?','Could you speak more slowly, please?','Könnten Sie bitte langsamer sprechen?'],
+ ['Bir dakika lütfen.','Egy pillanat, kérem!','One moment, please.','Einen Moment, bitte.'],
+ ['Bu ne kadar?','Mennyibe kerül?','How much is this?','Wie viel kostet das?']];
+const COL={tr:0,hu:1,en:2,de:3};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
@@ -130,44 +152,56 @@ const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const code=e=>e&&(e.code||e.error||e.message)||String(e);
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
 
-let msgs=load('hutr.msgs',[]),prefs=Object.assign({face:true,speak:true},load('hutr.prefs',{}));
-let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=null,unlocked=false,silT=0,maxT=0;
+let msgs=load('tercuman.msgs',[]),prefs=Object.assign({face:true,speak:true,far:'hu'},load('tercuman.prefs',{}));
+if(!L[prefs.far]||prefs.far==='tr')prefs.far='hu';
+let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=null,unlocked=false,silT=0,maxT=0,stopT=0;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let FRAMED=true;try{FRAMED=window.top!==window}catch(e){}
 let nativeOK=!!SR&&!FRAMED;
+const lang=s=>s==='tr'?'tr':prefs.far;
+const sideOf=l=>l==='tr'?'tr':'far';
+const textFor=(m,l)=>m[l]||m[Object.keys(m).find(k=>L[k]&&k!=='tr'&&m[k])]||'';
 
 function render(){
- for(const s of ['hu','tr']){
-  let h='';
-  if(!msgs.length&&!pending&&!live)h=`<p class="empty">${L[s].empty}</p>`;
-  let lastThem=-1;msgs.forEach((m,i)=>{if(m.from!==s)lastThem=i});
+ for(const s of ['far','tr']){
+  const l=lang(s),T=L[l];let h='';
+  if(!msgs.length&&!pending&&!live)h=`<p class="empty">${s==='tr'?`Mikrofona dokun ve Türkçe konuş. Karşındaki kişi çeviriyi ${L[prefs.far].trName} duyar.`:T.empty}</p>`;
+  let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
-   if(m.from===s)return `<div class="b me">${esc(m[s])}</div>`;
-   if(m.err)return `<div class="b them err">${L[s].err}</div>`;
-   return `<button class="b them${i===lastThem?' last':''}" data-i="${i}">${esc(m[s])}</button>`}).join('');
+   if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
+   if(m.err)return `<div class="b them err">${T.err}</div>`;
+   return `<button class="b them${i===lastThem?' last':''}" data-i="${i}">${esc(textFor(m,l))}</button>`}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
-  if(pending)h+=pending.from===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
+  if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
   const el=$('#m-'+s);el.innerHTML=h;el.scrollTop=el.scrollHeight;
   const on=!!live&&live.side===s&&!live.stopping;
-  const half=$('#'+s);half.classList.toggle('listening',on);half.classList.toggle('speaking',speakingLang===s);
-  $('#st-'+s).textContent=on?L[s].listen:(pending||live&&live.stopping)?L[s].work:L[s].tap;
+  const half=$('#'+s);half.classList.toggle('listening',on);half.classList.toggle('speaking',!!speakingLang&&sideOf(speakingLang)===s);
+  $('#st-'+s).textContent=on?T.listen:(pending||live&&live.stopping)?T.work:T.tap;
  }
 }
-function chips(){for(const s of ['hu','tr'])$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[s==='hu'?0:1])}</button>`).join('')}
+function applyLang(){
+ const T=L[prefs.far];
+ document.documentElement.style.setProperty('--far',T.color);
+ $('#far').lang=prefs.far;$('#nm-far').textContent=T.name;
+ $('#in-far').placeholder=T.ph;$('#in-far').setAttribute('aria-label',T.ph);$('#sd-far').setAttribute('aria-label',T.send);
+ $('#h-far').textContent=T.hint;$('#h-tr').textContent=L.tr.hint;
+ document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.far===prefs.far));
+ for(const s of ['far','tr']){const c=COL[lang(s)];$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[c])}</button>`).join('')}
+}
 function applyPrefs(){
  document.body.className=prefs.face?'face':'side';
  $('#bMode').classList.toggle('on',prefs.face);
  $('#bSpk').classList.toggle('off',!prefs.speak);$('#bSpk').classList.toggle('on',prefs.speak);
  document.body.classList.toggle('nomic',!dict&&!nativeOK);
- save('hutr.prefs',prefs);
+ save('tercuman.prefs',prefs);
 }
-function push(m){msgs.push(m);if(msgs.length>60)msgs=msgs.slice(-60);save('hutr.msgs',msgs);render()}
+function push(m){msgs.push(m);if(msgs.length>60)msgs=msgs.slice(-60);save('tercuman.msgs',msgs);render()}
 
 /* ---------- speech out ---------- */
 const SS=window.speechSynthesis;let voices=[];
 function loadV(){try{voices=SS?SS.getVoices():[]}catch(e){}}
 if(SS){loadV();try{SS.onvoiceschanged=loadV}catch(e){}}
-const voiceFor=l=>voices.find(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(l));
+const voiceFor=l=>{const vs=voices.filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(l));return vs.find(v=>v.lang.replace('_','-')===L[l].bcp)||vs[0]};
 function stopSpeak(){try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
 function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
 function speak(text,l){
@@ -177,12 +211,12 @@ function speak(text,l){
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
-function speakMsg(m){if(prefs.speak&&!m.err){const t=L[m.from].other;speak(m[t],t)}}
+function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';speak(m[t],t)}}
 
 /* ---------- speech in ---------- */
 function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
 function bump(){arm();render()}
-function noMic(side){document.body.classList.add('nomic');const i=$('#in-'+side);i.focus();i.placeholder=side==='hu'?'Billentyűzet mikrofonja ↓':'Klavyedeki mikrofona bas ↓'}
+function noMic(side){document.body.classList.add('nomic');const i=$('#in-'+side);i.focus();i.placeholder=L[lang(side)].kbd}
 function startListen(side){
  stopSpeak();unlock();
  if(dict){
@@ -191,9 +225,9 @@ function startListen(side){
   Promise.resolve(p).catch(e=>{if(code(e)==='not_granted'){dict=null;applyPrefs()}live=null;render()});
   maxT=setTimeout(stopListen,45000);return;
  }
- if(SR&&nativeOK&&!FRAMED){
+ if(SR&&nativeOK){
   try{
-   rec=new SR();rec.lang=L[side].bcp;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+   rec=new SR();rec.lang=L[lang(side)].bcp;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
    live={side,text:'',partial:'',eng:'native'};
    rec.onresult=e=>{let f='',p='';for(const r of e.results){if(r.isFinal)f+=r[0].transcript;else p+=r[0].transcript}if(live){live.text=f.trim();live.partial=p.trim();bump()}};
    rec.onerror=e=>{if(/not-allowed|service-not-allowed|audio-capture/.test(e.error)){nativeOK=false;applyPrefs()}};
@@ -203,7 +237,6 @@ function startListen(side){
  }
  noMic(side);
 }
-let stopT=0;
 function stopListen(){
  clearTimeout(silT);clearTimeout(maxT);if(!live)return;
  if(live.stopping){finish();return}
@@ -226,42 +259,45 @@ async function webTr(q,s,t){
  try{const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=${s}|${t}`);const j=await r.json();return j.responseData.translatedText||''}catch(e){}
  return '';
 }
-async function translate(side,text){
- const tgt=L[side].other;
+async function translate(src,text){
+ const far=prefs.far,tgt=src==='tr'?far:'tr';
  if(samp){
-  const ctx=msgs.filter(m=>!m.err).slice(-4).map(m=>`${L[m.from].en} speaker: ${m[m.from]}`).join('\n');
-  const prompt=`You are a live interpreter in a face-to-face conversation between a Hungarian speaker and a Turkish speaker.
-The ${L[side].en} speaker just said the text below. It may come from speech recognition, so expect missing punctuation, misheard words, or Hungarian/Turkish words written phonetically in another language's spelling. Reconstruct the most likely intended sentence. If it is clearly in the other language, treat it as that language.
+  const ctx=msgs.filter(m=>!m.err&&(m.from==='tr'||m.from===far)).slice(-4).map(m=>`${L[m.from].en} speaker: ${m[m.from]}`).join('\n');
+  const prompt=`You are a live interpreter in a face-to-face conversation between a ${L[far].en} speaker and a Turkish speaker.
+The ${L[src].en} speaker just said the text below. It may come from speech recognition, so expect missing punctuation, misheard words, or words written phonetically in another language's spelling. Reconstruct the most likely intended sentence. If it is clearly in the other language of this conversation, treat it as that language.
 Translate it into natural, spoken ${L[tgt].en}. Keep tone, politeness level, names and numbers. Add nothing.
 ${ctx?'Recent conversation for context:\n'+ctx+'\n':''}
 Text: """${text}"""
-Answer with JSON only: {"from":"hu" or "tr","original":"cleaned original text","translation":"translated text"}`;
+Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original text","translation":"translated text"}`;
   try{
    const r=await samp(prompt,{modelTier:'quick',cache:false});const s=r.text||'';
    const j=JSON.parse(s.slice(s.indexOf('{'),s.lastIndexOf('}')+1));
-   if(j&&j.translation){const f=j.from==='hu'||j.from==='tr'?j.from:side;return{from:f,original:j.original||text,translation:j.translation}}
+   if(j&&j.translation){const f=j.from===far||j.from==='tr'?j.from:src;return{from:f,original:j.original||text,translation:j.translation}}
   }catch(e){if(code(e)==='not_granted')samp=null}
  }
- return{from:side,original:text,translation:await webTr(text,side,tgt)};
+ return{from:src,original:text,translation:await webTr(text,src,tgt)};
 }
-async function send(side,text,known){
- if(known){const m={from:side,hu:known[0],tr:known[1]};push(m);speakMsg(m);return}
+async function send(side,text,row){
+ const src=lang(side),far=prefs.far;
+ if(row){const m={from:src,tr:row[0]};m[far]=row[COL[far]];push(m);speakMsg(m);return}
  if(pending)return;
- pending={from:side,text};render();
- let r;try{r=await translate(side,text)}catch(e){r={from:side,original:text,translation:''}}
+ pending={side,text};render();
+ let r;try{r=await translate(src,text)}catch(e){r={from:src,original:text,translation:''}}
  pending=null;
- const m={from:r.from};m[r.from]=r.original;m[L[r.from].other]=r.translation;if(!r.translation)m.err=true;
+ const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation)m.err=true;
  push(m);speakMsg(m);
 }
 
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
  const mic=e.target.closest('.mic');
- if(mic){const s=mic.dataset.side;if(live&&live.side===s)stopListen();else if(live){stopListen()}else startListen(s);return}
+ if(mic){const s=mic.dataset.side;if(live)stopListen();else startListen(s);return}
  const chip=e.target.closest('.chip');
  if(chip){unlock();send(chip.dataset.side,'',PH[+chip.dataset.p]);return}
  const b=e.target.closest('.them[data-i]');
- if(b){unlock();const m=msgs[+b.dataset.i];const s=b.closest('.half').id;if(m)speak(m[s],s)}
+ if(b){unlock();const m=msgs[+b.dataset.i];const l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
+ const sg=e.target.closest('.seg button');
+ if(sg&&sg.dataset.far!==prefs.far){if(live)finish();stopSpeak();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
 });
 document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
  e.preventDefault();unlock();const s=f.dataset.side,i=$('#in-'+s),v=i.value.trim();if(!v)return;i.value='';i.blur();send(s,v);
@@ -269,11 +305,11 @@ document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
 $('#bMode').onclick=()=>{prefs.face=!prefs.face;applyPrefs()};
 $('#bSpk').onclick=()=>{prefs.speak=!prefs.speak;if(!prefs.speak)stopSpeak();applyPrefs();render()};
 let clrT=0;$('#bClr').onclick=function(){
- if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');msgs=[];save('hutr.msgs',msgs);stopSpeak();render()}
+ if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');msgs=[];save('tercuman.msgs',msgs);stopSpeak();render()}
  else{this.classList.add('arm');clrT=setTimeout(()=>this.classList.remove('arm'),2500)}
 };
 
-/* ---------- platform capabilities ---------- */
+/* ---------- Claude page capabilities (only inside claude.ai) ---------- */
 let capsDone=false;
 function caps(){
  const C=window.claude;if(capsDone||!(C&&C.use))return;capsDone=true;
@@ -287,7 +323,7 @@ function caps(){
 }
 caps();setTimeout(caps,500);setTimeout(caps,2000);
 
-chips();applyPrefs();render();
+applyLang();applyPrefs();render();
 }
 </script>
 </body>
