@@ -63,7 +63,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .half>:not(.bgm){position:relative;z-index:1}
 .orb{position:relative;width:var(--o,180px);height:var(--o,180px);display:grid;place-items:center;transition:opacity .45s,transform .45s}
 .orb .rt{position:absolute;inset:0;width:100%;height:100%;animation:spin 16s linear infinite;transition:opacity .35s}
-.orb .rt text{fill:#fff;font:800 18px Figtree,system-ui,sans-serif;letter-spacing:3px}
+.orb .rt text{fill:#fff;font:800 19px Figtree,system-ui,sans-serif;letter-spacing:2px}
 .orb .ring{width:38%;height:38%;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 9px rgba(255,255,255,.07);animation:breathe 2.6s ease-in-out infinite;transition:background .25s,color .25s}
 .orb .ring svg{width:46%;height:46%}
 .started .orb .rt{opacity:0;animation-play-state:paused}
@@ -141,7 +141,7 @@ button.ln{display:block;width:100%;text-align:start}
 </defs></svg>
 <div class="app">
  <section class="half" id="far" lang="hu">
-  <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
+  <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
   <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
@@ -163,7 +163,7 @@ button.ln{display:block;width:100%;text-align:start}
  </nav>
 
  <section class="half" id="tr" lang="tr">
-  <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
+  <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
   <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
