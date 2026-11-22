@@ -81,6 +81,29 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
  .side .bar{padding:10px 4px}
  .side #far,.side #tr{padding:18px 22px}
 }
+.pan{position:fixed;inset:0;z-index:8;display:none;flex-direction:column;background:light-dark(#f6f6f4,#121417);color:light-dark(#1b1b1b,#eceff1);padding:max(12px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
+.pan.open{display:flex}
+.pan>*{width:100%;max-width:760px;margin-inline:auto}
+.ph{display:flex;align-items:center;gap:8px;padding-bottom:10px}
+.ph h2{margin:0;font-size:22px;flex:1;line-height:1.15}
+.ph button,.pact button{min-height:44px;padding:0 14px;border-radius:12px;font-weight:700;background:light-dark(#e9eaec,#24272b)}
+.ph .x{width:44px;padding:0;font-size:22px}
+.srch{width:100%;font:inherit;font-size:16px;padding:12px 16px;border-radius:999px;border:1px solid light-dark(#d5d5d5,#33363b);background:light-dark(#fff,#1c1e21);color:inherit;margin-bottom:10px}
+.plist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:12px}
+.conv{display:block;width:100%;text-align:start;background:light-dark(#fff,#1c1e21);border-radius:16px;padding:12px 14px;border-inline-start:6px solid var(--c,#888)}
+.conv b{display:block;font-size:16px}.conv span{font-size:13px;opacity:.7}
+.conv p{margin:4px 0 0;font-size:15px;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.conv mark,.ln mark{background:#ffe27a;color:#1b1b1b;border-radius:3px}
+button.ln{display:block;width:100%;text-align:start}
+.ln{background:light-dark(#fff,#1c1e21);border-radius:14px;padding:10px 14px;border-inline-start:4px solid var(--c,#888)}
+.ln.me{border-color:#c4122f}
+.ln small{font-size:12px;opacity:.65;display:block}
+.ln .t{font-size:17px;font-weight:600;margin:2px 0}
+.ln .o{font-size:15px;opacity:.75}
+.pact{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:10px}
+.pact .arm{background:#c4122f;color:#fff}
+.pnote{font-size:13px;opacity:.65;text-align:center;margin:10px 0 0}
+#pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,210,63,.7)}100%{box-shadow:0 0 0 22px rgba(255,210,63,0)}}
 @keyframes dot{0%,100%{opacity:.25}50%{opacity:1}}
 @keyframes blink{50%{opacity:.35}}
@@ -106,7 +129,8 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
    <button data-far="hu" title="Macarca">HU</button><button data-far="en" title="İngilizce">EN</button><button data-far="de" title="Almanca">DE</button>
   </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
-  <button id="bClr" title="Temizle (iki kez dokun)" aria-label="Konuşmayı temizle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12H7L6 9Z"/></svg></button>
+  <button id="bClr" title="Yeni konuşma (iki kez dokun). Eskisi geçmişe kaydedilir." aria-label="Yeni konuşma"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4Zm7 3v2H9v2h2v2h2v-2h2V9h-2V7h-2Z"/></svg></button>
+  <button id="bHist" title="Konuşma geçmişi" aria-label="Konuşma geçmişi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L8.8 12H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3Zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12Z"/></svg></button>
  </nav>
 
  <section class="half" id="tr" lang="tr">
@@ -119,6 +143,15 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
   </div>
   <p class="hint" id="h-tr"></p>
  </section>
+</div>
+
+<div class="pan" id="pan" role="dialog" aria-modal="true" aria-labelledby="panT">
+ <div class="ph"><button id="pBack" hidden aria-label="Geçmişe dön">‹ Geçmiş</button><h2 id="panT">Konuşma geçmişi</h2><button class="x" id="pClose" aria-label="Kapat">×</button></div>
+ <input class="srch" id="srch" type="search" placeholder="Geçmişte ara: isim, tarih, fiyat…" autocomplete="off">
+ <div class="pact" id="pact" hidden><button id="pShare">Paylaş</button><button id="pCopy">Kopyala</button><button id="pDel">Sil</button></div>
+ <p id="pst" aria-live="polite"></p>
+ <div class="plist" id="plist"></div>
+ <p class="pnote">Geçmiş sadece bu cihazda, bu tarayıcıda saklanır. Önemli bir konuşmayı Paylaş ile Notlar'a ya da kendinize gönderin.</p>
 </div>
 
 <script>
@@ -195,7 +228,21 @@ function applyPrefs(){
  document.body.classList.toggle('nomic',!dict&&!nativeOK);
  save('tercuman.prefs',prefs);
 }
-function push(m){msgs.push(m);if(msgs.length>60)msgs=msgs.slice(-60);save('tercuman.msgs',msgs);render()}
+function push(m){
+ const last=msgs[msgs.length-1];if(last&&last.t&&Date.now()-last.t>IDLE)archive();
+ m.t=Date.now();m.far=prefs.far;msgs.push(m);if(msgs.length>600)msgs=msgs.slice(-600);save('tercuman.msgs',msgs);render()}
+
+/* ---------- history ---------- */
+const IDLE=3*3600e3;let hist=load('tercuman.hist',[]);
+function archive(){
+ if(!msgs.length)return;
+ const t0=msgs[0].t||Date.now();
+ hist.unshift({id:t0+'-'+Math.random().toString(36).slice(2,6),start:t0,end:msgs[msgs.length-1].t||t0,msgs});
+ if(hist.length>150)hist.length=150;
+ let ok=false;while(!ok&&hist.length){try{localStorage.setItem('tercuman.hist',JSON.stringify(hist));ok=true}catch(e){if(hist.length<2)break;hist.pop()}}
+ msgs=[];save('tercuman.msgs',msgs);
+}
+{const last=msgs[msgs.length-1];if(last&&last.t&&Date.now()-last.t>IDLE)archive();}
 
 /* ---------- speech out ---------- */
 const SS=window.speechSynthesis;let voices=[];const vCache={};
@@ -330,8 +377,69 @@ document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
 $('#bMode').onclick=()=>{prefs.face=!prefs.face;applyPrefs()};
 $('#bSpk').onclick=()=>{prefs.speak=!prefs.speak;if(!prefs.speak)stopSpeak();applyPrefs();render()};
 let clrT=0;$('#bClr').onclick=function(){
- if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');msgs=[];save('tercuman.msgs',msgs);stopSpeak();render()}
+ if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');if(live)finish();stopSpeak();archive();render()}
  else{this.classList.add('arm');clrT=setTimeout(()=>this.classList.remove('arm'),2500)}
+};
+
+/* ---------- history panel ---------- */
+const P={pan:$('#pan'),list:$('#plist'),srch:$('#srch'),act:$('#pact'),back:$('#pBack'),title:$('#panT'),st:$('#pst'),del:$('#pDel')};
+let openConv=null;
+const fmtD=t=>new Date(t).toLocaleString('tr-TR',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtT=t=>new Date(t).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+const lc=s=>String(s||'').toLocaleLowerCase('tr');
+const farOf=m=>m.far||['hu','en','de'].find(k=>m[k])||'hu';
+const trOf=m=>m.tr||'',otherOf=m=>m[farOf(m)]||'';
+const convFar=c=>[...new Set(c.msgs.map(farOf))];
+function allConvs(){const c=msgs.length?[{start:msgs[0].t||Date.now(),end:msgs[msgs.length-1].t||Date.now(),msgs,cur:true}]:[];return c.concat(hist)}
+function hl(text,q){const s=String(text||''),i=q?lc(s).indexOf(q):-1;if(i<0)return esc(s);return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length))}
+function line(m,q,ci,showDate){
+ const me=m.from==='tr',f=farOf(m),tag=ci!=null?'button':'div';
+ const who=me?'Sen':'Karşı taraf ('+(L[f]?L[f].trName:f)+')';
+ const when=m.t?(showDate?fmtD(m.t):fmtT(m.t))+' · ':'';
+ const main=m.err&&!me?'(çevrilemedi)':trOf(m),sub=otherOf(m);
+ return `<${tag} class="ln${me?' me':''}"${ci!=null?` data-c="${ci}"`:''} style="--c:${L[f]?L[f].color:'#888'}"><small>${esc(when+who)}</small><div class="t">${hl(main,q)}</div>${sub?`<div class="o">${hl(sub,q)}</div>`:''}</${tag}>`;
+}
+function showList(){
+ openConv=null;P.back.hidden=true;P.act.hidden=true;P.srch.hidden=false;P.title.textContent='Konuşma geçmişi';P.st.textContent='';
+ const q=lc(P.srch.value.trim()),cs=allConvs();
+ if(!cs.length){P.list.innerHTML='<p class="pnote">Henüz kayıtlı konuşma yok. Konuştukça burada birikecek.</p>';return}
+ if(q){
+  const res=[];cs.forEach((c,ci)=>c.msgs.forEach(m=>{if(lc(trOf(m)+'\n'+otherOf(m)).includes(q)||lc(fmtD(m.t||c.start)).includes(q))res.push([ci,m])}));
+  P.list.innerHTML=res.length?res.slice(0,200).map(([ci,m])=>line(m,q,ci,true)).join(''):'<p class="pnote">Sonuç bulunamadı.</p>';return;
+ }
+ P.list.innerHTML=cs.map((c,ci)=>{
+  const fl=convFar(c),first=c.msgs.find(m=>trOf(m))||c.msgs[0];
+  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]]?L[fl[0]].color:'#888'}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${esc(fl.map(f=>L[f]?L[f].trName:f).join(', '))} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
+}
+function showConv(ci){
+ const c=allConvs()[ci];if(!c)return;openConv=c;
+ P.back.hidden=false;P.act.hidden=false;P.srch.hidden=true;P.st.textContent='';P.del.textContent='Sil';P.del.classList.remove('arm');
+ P.title.textContent=c.cur?'Şu anki konuşma':fmtD(c.start);
+ P.list.innerHTML=c.msgs.map(m=>line(m,'',null,false)).join('');P.list.scrollTop=0;
+}
+function convText(c){
+ return `Tercüman · ${fmtD(c.start)} · Türkçe ve ${convFar(c).map(f=>L[f]?L[f].trName:f).join(', ')}\n\n`+
+  c.msgs.map(m=>`${m.t?fmtT(m.t)+' ':''}${m.from==='tr'?'Sen':'Karşı taraf'}: ${trOf(m)}\n      (${farOf(m).toUpperCase()}) ${otherOf(m)}`).join('\n\n');
+}
+function copyText(t){
+ const ok=()=>{P.st.textContent='Kopyalandı.'};
+ const old=()=>{try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();ok()}catch(e){P.st.textContent='Kopyalanamadı.'}};
+ try{navigator.clipboard.writeText(t).then(ok,old)}catch(e){old()}
+}
+$('#bHist').onclick=()=>{if(live)stopListen();P.srch.value='';showList();P.pan.classList.add('open')};
+$('#pClose').onclick=()=>P.pan.classList.remove('open');
+P.back.onclick=showList;
+P.srch.addEventListener('input',showList);
+P.list.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)showConv(+b.dataset.c)});
+$('#pCopy').onclick=()=>{if(openConv)copyText(convText(openConv))};
+$('#pShare').onclick=()=>{if(!openConv)return;const t=convText(openConv);
+ if(navigator.share)navigator.share({title:'Tercüman konuşması',text:t}).catch(e=>{if(e&&e.name!=='AbortError')copyText(t)});else copyText(t)};
+P.del.onclick=function(){
+ if(!openConv)return;
+ if(!this.classList.contains('arm')){this.classList.add('arm');this.textContent='Emin misin? Tekrar bas';return}
+ if(openConv.cur){msgs=[];save('tercuman.msgs',msgs);render()}else{hist=hist.filter(h=>h!==openConv);save('tercuman.hist',hist)}
+ P.srch.value='';
+ showList();
 };
 
 /* ---------- Claude page capabilities (only inside claude.ai) ---------- */
