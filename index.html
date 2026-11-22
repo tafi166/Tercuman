@@ -45,6 +45,10 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .say svg{width:16px;height:16px}
 .them.err{background:#ffe3e3;color:#7a1020;font-size:16px}
 .live{opacity:.75;font-style:italic}
+.cta{margin:auto;max-width:none;opacity:1;display:flex;flex-direction:column;align-items:center;gap:16px;user-select:none}
+.cta .ring{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 9px rgba(255,255,255,.07);animation:breathe 2.6s ease-in-out infinite}
+.cta .ring svg{width:30px;height:30px}
+.cta b{font-size:clamp(30px,8.5vw,40px);font-weight:800;letter-spacing:-.015em;line-height:1.05;text-wrap:balance}
 .dots{display:inline-flex;gap:5px;padding:6px 2px}
 .dots i{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.4;animation:dot 1.2s infinite}
 .dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
@@ -123,6 +127,7 @@ button.ln{display:block;width:100%;text-align:start}
 .pnote{font-size:13px;opacity:.65;text-align:center;margin:10px 0 0}
 #pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
 @keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
+@keyframes breathe{50%{box-shadow:0 0 0 20px rgba(255,255,255,.02),0 0 0 9px rgba(255,255,255,.08)}}
 @keyframes glow{50%{opacity:.55}}
 @keyframes dot{0%,100%{opacity:.25}50%{opacity:1}}
 @keyframes blink{50%{opacity:.35}}
@@ -183,16 +188,16 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',cta:'Koppints, beszélj',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',cta:'Tap & talk',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',cta:'Tippen, sprechen',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',cta:'Bas, konuş',stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const PH=[ /* tr, hu, en, de */
  ['Merhaba!','Jó napot!','Hello!','Guten Tag!'],
@@ -224,7 +229,7 @@ const textFor=(m,l)=>m[l]||m[Object.keys(m).find(k=>L[k]&&k!=='tr'&&m[k])]||'';
 function render(){
  for(const s of ['far','tr']){
   const l=lang(s),T=L[l];let h='';
-  if(!msgs.length&&!pending&&!live)h=`<p class="empty">${s==='tr'?`Kendi tarafında herhangi bir yere dokun ve Türkçe konuş. Karşındaki kişi çeviriyi ${L[prefs.far].trName} duyar.`:T.empty}</p>`;
+  if(!msgs.length&&!pending&&!live)h=`<div class="empty cta"><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><b>${esc(T.cta)}</b></div>`;
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
