@@ -60,6 +60,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .qrbig{position:absolute;inset:0;z-index:5;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
 .qrbig[hidden]{display:none}
 .qrcard{background:#fff;color:#1b1b1b;border-radius:20px;padding:12px;width:min(240px,74%);text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+#bShare[hidden],.joined #bShare{display:none}
 .qrl{display:block;width:100%;aspect-ratio:1}
 .qrcard p{margin:8px 2px 0;font-size:13.5px;line-height:1.35;font-weight:600}
 .peer{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;background:rgba(0,0,0,.28);padding:4px 9px;border-radius:999px;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -144,7 +145,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .net{position:absolute;right:12px;top:calc(100% + 14px);z-index:3;background:#1b1b1b;color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);pointer-events:none}
 .net[hidden]{display:none}
 .ver{position:absolute;right:14px;bottom:max(18px,env(safe-area-inset-bottom));font-size:12px;opacity:.55;min-height:44px;display:flex;align-items:center}
-@media(max-width:440px){.seg .cd{display:none}.seg button{min-width:44px;padding:0 10px}.bar>button{width:42px}}
+@media(max-width:440px){.seg .cd{display:none}.seg button{min-width:40px;padding:0 8px}.bar>button{width:40px}.bar{gap:1px;padding-inline:4px}}
 .conv .fl{width:18px;height:12px;display:inline-block;vertical-align:-1px;margin-inline-end:4px}
 .hint{font-size:13px;opacity:.85;margin-top:8px;text-align:center;display:none}
 .nomic .hint{display:block}
@@ -155,6 +156,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .bar svg{width:22px;height:22px}
 .bar .on{color:light-dark(#0b6b3a,#7fdca5)}
 .bar .arm{background:#c4122f!important;color:#fff}
+@media(max-width:440px){.bar .seg button{min-width:40px;padding:0 8px}.bar>button{width:40px}.bar{gap:1px;padding-inline:4px}}
 .seg{display:flex;background:light-dark(#eef0f2,#24272b);border-radius:12px;padding:3px;gap:2px}
 .seg button{min-width:48px;height:38px;border-radius:9px;font-size:14px;font-weight:800;letter-spacing:.02em}
 .seg button[aria-pressed=true]{background:var(--far);color:#fff}
@@ -318,6 +320,7 @@ button.ln{display:block;width:100%;text-align:start}
   </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
   <button id="bClr" title="Yeni konuşma (iki kez dokun). Eskisi geçmişe kaydedilir." aria-label="Yeni konuşma"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4Zm7 3v2H9v2h2v2h2v-2h2V9h-2V7h-2Z"/></svg></button>
+  <button id="bShare" hidden title="Yakındaki iPhone'a gönder: telefonları yan yana tut" aria-label="Sohbet linkini yakındaki iPhone'a gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 7.5 6.5l1.4 1.4L11 5.8V15h2V5.8l2.1 2.1 1.4-1.4L12 2ZM5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10h-3v2h1v8H7v-8h1v-2H5Z"/></svg></button>
   <button id="bEnd" class="endb" title="Sohbeti bitir (iki kez dokun). Karşı tarafın linki kapanır." aria-label="Sohbeti bitir">Bitir</button>
   <button id="bHist" title="Konuşma geçmişi" aria-label="Konuşma geçmişi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L8.8 12H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3Zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12Z"/></svg></button>
  </nav>
@@ -708,6 +711,7 @@ let clrT=0;$('#bClr').onclick=function(){
 
 /* ending the conversation: the guest's link is closed for good (a kept "end" note waits on the server for anyone
    who opens the old link later), the conversation goes to history and a fresh QR code is made for the next person */
+$('#bShare').onclick=shareLink;
 let endT=0;$('#bEnd').onclick=function(){
  if(this.classList.contains('arm')){clearTimeout(endT);this.classList.remove('arm');this.textContent='Bitir';endSession()}
  else{this.classList.add('arm');this.textContent='Emin misin?';endT=setTimeout(()=>{this.classList.remove('arm');this.textContent='Bitir'},3000)}
@@ -1250,9 +1254,16 @@ function updMsg(m){
  msgs[i]=Object.assign({},m,{tip:old.tip});saveMsgs();render();
  if(m.edited&&old[t]!==m[t])speakMsg(msgs[i]);
 }
+/* iPhone to iPhone: the share sheet offers AirDrop, and with iOS 17 or later the two phones can simply be held together.
+   The link opens the conversation in the other phone's browser, exactly like scanning the QR code. */
+function shareLink(){
+ if(!LINK.room||!navigator.share)return;const T=L[prefs.far];
+ navigator.share({title:'Tercüman',text:T.inv.replace('{n}',NAME||'Tercüman'),url:joinUrl()}).then(()=>{},()=>{}).catch(()=>{});
+}
 function joinUrl(){return location.origin+location.pathname+'#join='+LINK.room+'.'+LINK.keyRaw+'&l='+prefs.far+'&n='+encodeURIComponent(NAME||'')+'&b='+LINK.bi}
 async function drawQR(){
  if(ROLE!=='host'||!LINK.room)return;
+ $('#bShare').hidden=!navigator.share;
  try{await loadJS(QR_JS);const q=qrcode(0,'L');q.addData(joinUrl());q.make();const svg=q.createSvgTag({cellSize:4,margin:0,scalable:true});$('#qrS').innerHTML=svg;$('#qrL').innerHTML=svg}catch(e){}
  linkUI();
 }
@@ -1347,7 +1358,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.7.2';
+const APP_VERSION='1.7.3';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
