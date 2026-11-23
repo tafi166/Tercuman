@@ -173,6 +173,12 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .ctop{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 14px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
 .ctop button{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.45);font-size:28px;line-height:1}
 .clang{display:flex;align-items:center;gap:6px;font-weight:700;background:rgba(0,0,0,.45);border-radius:999px;padding:7px 12px;font-size:14px}
+.cdiag{position:absolute;left:10px;right:10px;top:calc(max(12px,env(safe-area-inset-top)) + 108px);z-index:4;background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:8px 10px;max-height:34vh;overflow:auto}
+.cdiag[hidden]{display:none}
+.cdiag .dh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.cdiag .dh b{flex:1;font-size:13px}
+.cdiag button{min-height:32px;padding:0 10px;border-radius:8px;background:rgba(255,255,255,.18);font-size:13px}
+.cdiag pre{margin:0;font:11.5px/1.45 ui-monospace,Menlo,monospace;white-space:pre-wrap;color:#e8ffe8}
+.cam.nocam .cfail{top:auto;bottom:max(96px,calc(env(safe-area-inset-bottom) + 90px));transform:translateX(-50%)}
 .cver{margin-inline-start:auto;font-size:12px;opacity:.6}
 .clang .fl{width:20px;height:14px}
 #cst{position:absolute;left:50%;top:calc(max(12px,env(safe-area-inset-top)) + 64px);transform:translateX(-50%);background:rgba(0,0,0,.65);padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
@@ -303,6 +309,7 @@ button.ln{display:block;width:100%;text-align:start}
  </div>
  <div class="ctop"><button id="cClose" aria-label="Kamerayı kapat">×</button><span class="clang" id="cLang"></span><span class="cver" id="cver"></span></div>
  <p id="cst" hidden></p>
+ <div class="cdiag" id="cdiag" hidden><div class="dh"><b>Teknik bilgi</b><button id="dCopy">Kopyala</button><button id="dHide" aria-label="Gizle">×</button></div><pre id="cdiagP"></pre></div>
  <div class="cbot"><p class="chint">Bir nesneye ya da yazıya dokun. Fotoğraf çekersen tüm yazıları çeviririm.</p>
   <div class="crow"><label class="cgal" aria-label="Galeriden seç ya da telefonun kamerasıyla çek"><input type="file" id="cFile" accept="image/*" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 12h14l-4.5-6-3.5 4.5-2.5-3L5 17Zm3.5-7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg></label><button class="snap" id="cSnap" aria-label="Fotoğraf çek"></button><span class="cgap"></span></div></div>
  <div class="cfail" id="cFail" hidden><p id="cFailT"></p><label class="cfb"><input type="file" id="cFile2" accept="image/*" capture="environment" hidden>Telefonun kamerasıyla çek</label><label class="cfb sec"><input type="file" id="cFile3" accept="image/*" hidden>Galeriden seç</label><button class="cretry" id="cRetry" hidden>Canlı kamerayı yeniden dene</button></div>
@@ -721,47 +728,77 @@ function getOCR(){
  return tessP}
 const CAM_ERR={NotAllowedError:'Kamera izni kapalı. Safari\'de "aA" > Web Sitesi Ayarları > Kamera > İzin Ver yap. Ana ekrandaki uygulamada izin her açılışta sorulabilir.',
  NotReadableError:'Kamera şu an başka bir uygulama tarafından kullanılıyor. Diğer uygulamayı kapatıp tekrar dene.',
- NotFoundError:'Bu cihazda kamera bulunamadı.',SecurityError:'Kameraya bu sayfadan erişilemiyor.',AbortError:'Kamera başlatılamadı, tekrar dene.'};
+ NotFoundError:'Bu cihazda kamera bulunamadı.',SecurityError:'Kameraya bu sayfadan erişilemiyor.',AbortError:'Kamera başlatılamadı, tekrar dene.',Timeout:'Canlı kamera yanıt vermiyor.'};
 function camFail(msg,waiting,retry){if(!waiting)cstat('cam','');C.el.classList.add('nocam');
  $('#cFailT').textContent=msg+(STANDALONE?' Ana ekrana eklenen uygulamalarda bu bilinen bir iPhone sorunu; Safari\'de canlı kamera genelde açılır.':'')+' Telefonun kendi kamerasıyla çekip yazıları yine çevirebilirsin.';
  $('#cRetry').hidden=!retry;$('#cFail').hidden=false}
 const STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
 try{localStorage.removeItem('tercuman.camLive')}catch(e){}
 let camLive=load('tercuman.camLive2','');
+/* ---- step-by-step camera log, shown on the camera screen so a failure can be read off a screenshot ---- */
+const DIAG=[];let diagT0=0;
+function dlog(t){DIAG.push(((performance.now()-diagT0)/1000).toFixed(1).padStart(4)+' sn  '+t);const el=$('#cdiagP');if(el)el.textContent=DIAG.join('\n');try{localStorage.setItem('tercuman.camdiag',DIAG.join('\n'))}catch(e){}}
+async function diagStatic(){
+ const ua=navigator.userAgent,ios=(ua.match(/OS (\d+[_\d]*)/)||[])[1],saf=(ua.match(/Version\/([\d.]+)/)||[])[1];
+ dlog('Sürüm '+APP_VERSION+' · '+(STANDALONE?'ana ekran uygulaması':'tarayıcı')+' · iOS '+(ios?ios.replace(/_/g,'.'):'?')+' · Safari '+(saf||'?'));
+ try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];dlog('Service worker: '+(navigator.serviceWorker&&navigator.serviceWorker.controller?'SAYFAYI KONTROL EDİYOR':'kontrol etmiyor')+' · kayıt: '+rs.length)}catch(e){dlog('Service worker: ?')}
+ try{const q=await navigator.permissions.query({name:'camera'});dlog('Kamera izni durumu: '+q.state)}catch(e){dlog('Kamera izni durumu: sorgulanamıyor')}
+ try{const ds=await navigator.mediaDevices.enumerateDevices();dlog('Kamera sayısı: '+ds.filter(d=>d.kind==='videoinput').length)}catch(e){dlog('Kameralar listelenemedi: '+(e&&e.name))}
+}
+function showDiag(on){$('#cdiag').hidden=!on}
+/* one camera request with its own time limit; an answer that comes after the limit is still used */
+function gum(v,label,ms,myTap){
+ return new Promise((res,rej)=>{let done=false;const t0=performance.now();
+  const lim=setTimeout(()=>{if(done)return;done=true;dlog(label+': '+(ms/1000)+' sn içinde yanıt yok');rej({name:'Timeout'})},ms);
+  let p;try{p=navigator.mediaDevices.getUserMedia({audio:false,video:v})}catch(e){clearTimeout(lim);done=true;dlog(label+': hemen hata '+(e&&e.name));rej(e);return}
+  p.then(st=>{const dt=((performance.now()-t0)/1000).toFixed(1);
+    if(!done){done=true;clearTimeout(lim);dlog(label+': kamera geldi ('+dt+' sn)');res(st)}
+    else{dlog(label+': kamera geç geldi ('+dt+' sn)');if(myTap===tapId&&!stream&&C.el.classList.contains('open')&&!C.el.classList.contains('shot'))attach(st,myTap);else st.getTracks().forEach(x=>x.stop())}},
+   e=>{dlog(label+': hata '+(e&&e.name)+(e&&e.message?' · '+e.message:''));if(!done){done=true;clearTimeout(lim);rej(e)}});
+ });
+}
+async function attach(st,myTap){
+ stream=st;$('#cFail').hidden=true;C.el.classList.remove('nocam');camLive='1';save('tercuman.camLive2','1');
+ const tr=st.getVideoTracks()[0];
+ if(tr){const set=tr.getSettings?tr.getSettings():{};dlog('Görüntü kanalı: '+tr.readyState+(tr.muted?' · sessiz':'')+(set.width?' · '+set.width+'x'+set.height:''));
+  tr.addEventListener('ended',()=>dlog('Görüntü kanalı KAPANDI'));tr.addEventListener('mute',()=>dlog('Görüntü kanalı durdu (mute)'));tr.addEventListener('unmute',()=>dlog('Görüntü kanalı devam ediyor'))}
+ C.v.setAttribute('playsinline','');C.v.setAttribute('webkit-playsinline','');C.v.muted=true;
+ C.v.srcObject=st;cstat('cam','Görüntü bekleniyor…');
+ C.v.play().then(()=>dlog('Video oynatılıyor'),e=>dlog('Video oynatma hatası: '+(e&&e.name)));
+ const t0=Date.now();
+ while(!C.v.videoWidth&&Date.now()-t0<6000){await new Promise(r=>setTimeout(r,250));if(myTap!==tapId)return;if(C.v.paused)C.v.play().catch(()=>{})}
+ if(!C.v.videoWidth){dlog('6 sn içinde görüntü gelmedi · video durumu '+C.v.readyState+(C.v.paused?' · duraklatılmış':''));camFail('Kamera açıldı ama görüntü gelmedi.');return}
+ dlog('Görüntü geldi: '+C.v.videoWidth+'x'+C.v.videoHeight);
+ cstat('cam','');setTimeout(()=>{if(myTap===tapId&&stream)showDiag(false)},2500);
+ getCoco().catch(()=>{});getOCR().catch(()=>{});
+}
 async function openCam(force){
  if(live)stopListen();stopSpeak();tapId++;
  C.el.classList.add('open');C.el.classList.remove('shot','nocam');C.cov.innerHTML='';$('#cFail').hidden=true;
  $('#cLang').innerHTML=`${flagSvg(prefs.far)} ${L[prefs.far].trName} → ${flagSvg('tr')} Türkçe`;
- if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){camFail('Bu tarayıcıda canlı kamera açılamıyor.');return}
- /* speech output leaves iOS in a play-only audio mode, which can block capture */
- audioMode('auto');
+ DIAG.length=0;diagT0=performance.now();showDiag(true);
  const myTap=tapId;
- /* iPhone home-screen apps sometimes never answer the camera request: after a few seconds the other way
-    (the phone's own camera or the gallery) is offered, and the live picture still takes over if it arrives later */
- /* if live camera did not work in this home-screen app before, do not start a request that may hang
-    (a hanging request can also keep the phone's own camera busy); offer the working way and a retry */
- if(STANDALONE&&camLive==='0'&&!force){camFail('Bu uygulamada canlı kamera son seferde açılmadı.',false,true);return}
+ if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){diagStatic();dlog('Bu tarayıcıda getUserMedia yok');camFail('Bu tarayıcıda canlı kamera açılamıyor.');return}
+ if(STANDALONE&&camLive==='0'&&!force){diagStatic();dlog('Son seferde canlı kamera açılmamıştı; istek gönderilmedi');camFail('Bu uygulamada canlı kamera son seferde açılmadı.',false,true);return}
+ audioMode('auto');
  cstat('cam','Kamera izni bekleniyor…');
- const slow=setTimeout(()=>{if(myTap===tapId&&!stream){camLive='0';save('tercuman.camLive2','0');camFail('Canlı kamera yanıt vermiyor.',true)}},4000);
- const tries=[{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},{facingMode:'environment'},true];
- let err=null,got=null;
- for(const v of tries){
-  try{got=await navigator.mediaDevices.getUserMedia({audio:false,video:v});break}
-  catch(e){err=e;if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))break}
+ /* the request is sent first, straight from the tap; the device facts are collected while it waits */
+ const first=gum({facingMode:'environment'},'1. deneme (arka kamera)',4000,myTap);
+ diagStatic();
+ const slow=setTimeout(()=>{if(myTap===tapId&&!stream)camFail('Canlı kamera yanıt vermiyor.',true)},4200);
+ let got=null,err=null;
+ try{got=await first}catch(e){err=e}
+ if(!got&&!(err&&(err.name==='NotAllowedError'||err.name==='SecurityError'))){
+  for(const [v,label] of [[true,'2. deneme (herhangi bir kamera)'],[{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},'3. deneme (720p)']]){
+   if(myTap!==tapId||stream)break;
+   try{got=await gum(v,label,4000,myTap);break}catch(e){err=e;if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))break}
+  }
  }
  clearTimeout(slow);
- if(!got){if(myTap===tapId)camFail(CAM_ERR[err&&err.name]||('Kamera açılamadı'+(err&&err.name?' ('+err.name+')':'')+'.'));return}
+ if(stream)return;
+ if(!got){if(myTap===tapId){if(err&&err.name==='Timeout'){camLive='0';save('tercuman.camLive2','0')}camFail(CAM_ERR[err&&err.name]||('Canlı kamera açılamadı'+(err&&err.name?' ('+err.name+')':'')+'.'))}return}
  if(myTap!==tapId||!C.el.classList.contains('open')||C.el.classList.contains('shot')){got.getTracks().forEach(t=>t.stop());return}
- stream=got;$('#cFail').hidden=true;C.el.classList.remove('nocam');camLive='1';save('tercuman.camLive2','1');
- C.v.setAttribute('playsinline','');C.v.setAttribute('webkit-playsinline','');C.v.muted=true;
- C.v.srcObject=stream;
- /* play() can hang on some iPhones, so it is not awaited: wait for the first picture instead */
- cstat('cam','Görüntü bekleniyor…');
- C.v.play().catch(()=>{});
- const t0=Date.now();
- while(!C.v.videoWidth&&Date.now()-t0<5000){await new Promise(r=>setTimeout(r,200));if(myTap!==tapId)return;if(C.v.paused)C.v.play().catch(()=>{})}
- if(!C.v.videoWidth){camFail('Kamera izni verildi ama görüntü gelmedi.');return}
- cstat('cam','');getCoco().catch(()=>{});getOCR().catch(()=>{});
+ attach(got,myTap);
 }
 function closeCam(){tapId++;$('#cFail').hidden=true;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;C.v.srcObject=null;C.el.classList.remove('open','shot');C.cov.innerHTML='';for(const k in cst)cst[k]='';cstat('msg','');shot=null}
 function grab(){const v=C.v,w=v.videoWidth,h=v.videoHeight;if(!w||!h)return null;const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);return c}
@@ -1036,6 +1073,9 @@ $('#sSave').onclick=()=>{
 $('#bCam').addEventListener('click',e=>{e.stopPropagation();openCam()});
 $('#cClose').addEventListener('click',e=>{e.stopPropagation();closeCam()});
 $('#cRetry').addEventListener('click',e=>{e.stopPropagation();openCam(true)});
+$('#dHide').addEventListener('click',e=>{e.stopPropagation();showDiag(false)});
+$('#dCopy').addEventListener('click',e=>{e.stopPropagation();const t=DIAG.join('\n');const ok=()=>{$('#dCopy').textContent='Kopyalandı'};try{navigator.clipboard.writeText(t).then(ok,()=>{})}catch(_){}});
+$('#cdiag').addEventListener('click',e=>e.stopPropagation());
 
 /* ---------- welcome ---------- */
 let NAME=load('tercuman.name','');
@@ -1092,7 +1132,7 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.6.4';
+const APP_VERSION='1.6.5';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
