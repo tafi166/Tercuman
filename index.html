@@ -579,7 +579,7 @@ function startListen(side){
 /* one recognition session; every handler checks that it still belongs to the current session, so a late
    "ended" signal from an earlier one can no longer stop a new one. A session that does not start is retried once. */
 function startRec(side,attempt){
- audioMode('play-and-record');
+ cancelRelease();audioMode('play-and-record');
  let r;try{r=new SR()}catch(e){live=null;render();toast(side,'micfail');return}
  r.lang=L[lang(side)].bcp;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
  let began=false,heard=false,err='';
@@ -598,6 +598,26 @@ function startRec(side,attempt){
  setTimeout(()=>{if(rec===r&&!began&&live&&!live.stopping){rec=null;try{r.abort()}catch(e){}
   if(attempt<1)startRec(side,attempt+1);else{clearTimeout(maxT);live=null;render();toast(side,'micfail')}}},3000);
 }
+/* iPhone Safari bug: when a recognition session ends, the microphone can stay open (orange dot) and keep listening.
+   The known cure is a short session that is started and then stopped by hand; after that the audio is reset. */
+const IOSDEV=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let releaser=null,relT=0;
+function audioReset(){audioMode('playback');if(!speakingLang)audioMode('auto')}
+function releaseMic(){
+ clearTimeout(relT);
+ relT=setTimeout(()=>{
+  if(live||rec||releaser||!SR)return;
+  let k;try{k=new SR()}catch(e){audioReset();return}
+  releaser=k;let done=false;
+  const end=()=>{if(done)return;done=true;if(releaser===k)releaser=null;try{k.abort()}catch(e){}audioReset()};
+  k.lang='tr-TR';k.continuous=false;k.interimResults=false;
+  k.onstart=k.onaudiostart=()=>{try{k.stop()}catch(e){}setTimeout(end,400)};
+  k.onresult=k.onerror=()=>{};k.onend=end;
+  try{k.start()}catch(e){end();return}
+  setTimeout(end,2500);
+ },250);
+}
+function cancelRelease(){clearTimeout(relT);if(releaser){const k=releaser;releaser=null;k.onend=k.onstart=k.onaudiostart=null;try{k.abort()}catch(e){}}}
 let toastT={};
 function toast(side,key){const el=$('#toast-'+side);if(!el)return;const T=L[lang(side)];el.textContent=T[key]||key;el.hidden=false;clearTimeout(toastT[side]);toastT[side]=setTimeout(()=>{el.hidden=true},3500)}
 function stopListen(){
@@ -613,9 +633,9 @@ function finish(){
  clearTimeout(silT);clearTimeout(maxT);clearTimeout(stopT);if(!live)return;
  const side=live.side,t=(live.text+' '+live.partial).trim();live=null;
  if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}
- audioMode('auto');
+ if(IOSDEV&&nativeOK&&SR)releaseMic();else audioMode('auto');
  if(t)send(side,t);else render();
- setTimeout(flushSpeech,400);
+ setTimeout(flushSpeech,IOSDEV?1100:400);
 }
 
 /* ---------- translation ---------- */
@@ -1358,7 +1378,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.7.3';
+const APP_VERSION='1.7.4';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
