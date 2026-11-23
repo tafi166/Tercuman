@@ -8,6 +8,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tercüman">
 <meta name="theme-color" content="#c4122f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
 <style>
@@ -84,12 +87,15 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .seg .fl{width:20px;height:14px}
 .seg button{display:inline-flex;align-items:center;gap:6px;padding:0 9px}
 .bar{gap:2px}
+.net{position:absolute;right:12px;top:calc(100% + 14px);z-index:3;background:#1b1b1b;color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);pointer-events:none}
+.net[hidden]{display:none}
+.ver{position:absolute;right:14px;bottom:max(18px,env(safe-area-inset-bottom));font-size:12px;opacity:.55;min-height:44px;display:flex;align-items:center}
 @media(max-width:440px){.seg .cd{display:none}.seg button{min-width:44px;padding:0 10px}.bar>button{width:42px}}
 .conv .fl{width:18px;height:12px;display:inline-block;vertical-align:-1px;margin-inline-end:4px}
 .hint{font-size:13px;opacity:.85;margin-top:8px;text-align:center;display:none}
 .nomic .hint{display:block}
 button:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.bar{background:var(--bar);color:var(--barink);display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 10px;flex-wrap:wrap}
+.bar{position:relative;background:var(--bar);color:var(--barink);display:flex;justify-content:center;align-items:center;gap:6px;padding:4px 10px;flex-wrap:wrap}
 .bar>button{width:44px;height:44px;border-radius:12px;display:grid;place-items:center}
 .bar>button:hover{background:light-dark(#f0f0f0,#24272b)}
 .bar svg{width:22px;height:22px}
@@ -227,6 +233,7 @@ button.ln{display:block;width:100%;text-align:start}
  </section>
 
  <nav class="bar" aria-label="Ayarlar">
+  <span class="net" id="net" role="status" hidden>İnternet yok</span>
   <button id="bMode" class="on" title="Yüz yüze / yan yana" aria-label="Yüz yüze modu"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3 3 7h3v10h2V7h3L7 3Zm10 18 4-4h-3V7h-2v10h-3l4 4Z"/></svg></button>
   <div class="seg" role="group" aria-label="Karşı dil">
    <button data-far="hu" title="Macarca"><svg class="fl"><use href="#fl-hu"/></svg><span class="cd">HU</span></button><button data-far="en" title="İngilizce"><svg class="fl"><use href="#fl-en"/></svg><span class="cd">EN</span></button><button data-far="de" title="Almanca"><svg class="fl"><use href="#fl-de"/></svg><span class="cd">DE</span></button>
@@ -258,6 +265,7 @@ button.ln{display:block;width:100%;text-align:start}
  <p class="ask-t">Seni adınla selamlayayım. Adın ne?</p>
  <form class="nf" id="nf"><input id="nmIn" placeholder="Adın" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" maxlength="30" aria-label="Adın"><button>Başla</button></form>
  <button class="chg" id="chg">İsmi değiştir</button>
+ <span class="ver" id="ver"></span>
 </div>
 
 <div class="cam" id="cam" role="dialog" aria-modal="true" aria-label="Kamera">
@@ -281,22 +289,22 @@ button.ln{display:block;width:100%;text-align:start}
  <div class="pact" id="pact" hidden><button id="pShare">Paylaş</button><button id="pCopy">Kopyala</button><button id="pDel">Sil</button></div>
  <p id="pst" aria-live="polite"></p>
  <div class="plist" id="plist"></div>
- <p class="pnote">Geçmiş sadece bu cihazda, bu tarayıcıda saklanır. Önemli bir konuşmayı Paylaş ile Notlar'a ya da kendinize gönderin.</p>
+ <p class="pnote">Geçmiş sadece bu cihazda, bu tarayıcıda saklanır. Önemli bir konuşmayı Paylaş ile Notlar'a ya da kendinize gönderin. <span id="ver2"></span></p>
 </div>
 
 <script>
 {
 const L={
- hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const GREET=[ /* morning 05-12, afternoon 12-18, evening 18-05 */
  ['Günaydın!','Jó reggelt!','Good morning!','Guten Morgen!'],
@@ -338,7 +346,7 @@ function render(){
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
-   if(m.err)return `<div class="b them err">${T.err}</div>`;
+   if(m.err)return `<div class="b them err">${m.off?T.off:T.err}</div>`;
    return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`+(m.tip&&s==='far'&&L[l].tip?`<div class="tipn">${esc(L[l].tip)}</div>`:'')}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
   if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
@@ -495,7 +503,7 @@ async function send(side,text,row){
  pending={side,text};render();
  let r;try{r=await translate(src,text)}catch(e){r={from:src,original:text,translation:''}}
  pending=null;
- const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation)m.err=true;
+ const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation){m.err=true;if(!navigator.onLine)m.off=true}
  push(m);speakMsg(m);
 }
 
@@ -971,6 +979,12 @@ function freshStart(){if(C.el.classList.contains('open'))closeCam();if(live)fini
 setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
+/* ---------- app version, offline start, connection state ---------- */
+const APP_VERSION='1.5.0'; /* keep equal to VERSION in sw.js */
+$('#ver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
+function netState(){$('#net').hidden=navigator.onLine!==false}
+window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!FRAMED){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 applyLang();applyPrefs();render();placeOrb();
 if(SS&&!voices.length)setTimeout(welcome,250);else welcome();
 }
