@@ -679,9 +679,9 @@ let AC=null,acIn=null,acSrc=null,waOK=load('tercuman.wa',null)===true?true:null;
 function acMake(){
  if(AC)return AC;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
  try{AC=new C();
-  const lift=AC.createDynamicsCompressor();lift.threshold.value=-30;lift.knee.value=10;lift.ratio.value=4;lift.attack.value=.004;lift.release.value=.25;
-  const boost=AC.createGain();boost.gain.value=1.7;
-  const lim=AC.createDynamicsCompressor();lim.threshold.value=-2;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.08;
+  const lift=AC.createDynamicsCompressor();lift.threshold.value=-36;lift.knee.value=8;lift.ratio.value=5;lift.attack.value=.003;lift.release.value=.2;
+  const boost=AC.createGain();boost.gain.value=2.6;
+  const lim=AC.createDynamicsCompressor();lim.threshold.value=-1;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.06;
   lift.connect(boost);boost.connect(lim);lim.connect(AC.destination);acIn=lift;
  }catch(e){AC=null}
  return AC}
@@ -1652,7 +1652,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.8.5';
+const APP_VERSION='1.8.6';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;if(voiceUsed)voiceNote(voiceUsed);
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
