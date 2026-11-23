@@ -85,6 +85,27 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .guest #far>.hd{z-index:3}
 .gleave.arm{background:#1b1b1b}
 .gleave[hidden]{display:none}
+.lpick{display:flex;align-items:center;gap:9px;background:none;color:inherit;padding:4px 6px 4px 0;border-radius:12px;font:inherit;width:auto!important;min-width:0}
+.lpick b{font-size:24px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.lpick b.m{font-size:19px}.lpick b.s{font-size:16px}
+.started .lpick{gap:7px}.started .lpick b{font-size:20px;max-width:calc(50vw - 108px)}.started .lpick b.m{font-size:17px}.started .lpick b.s{font-size:14px}
+.started .lpick .caret{width:16px;height:16px}
+.lpick .caret{width:22px;height:22px;opacity:.85;flex:none}
+.lpick[aria-expanded=true] .caret{transform:rotate(180deg)}
+.flw{display:contents}
+img.fl{object-fit:cover;background:rgba(255,255,255,.25)}
+#far>.ldd,#tr>.ldd{position:absolute;left:12px;right:12px;width:auto;top:66px;bottom:12px;z-index:7;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:light-dark(#fff,#1d2024);color:light-dark(#1b1b1b,#eceff1);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.35);padding:6px}
+.ldd[hidden]{display:none!important}
+.ldd .lo{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:12px;background:none;color:inherit;text-align:start;font:inherit}
+.ldd .lo .fl{width:30px;height:21px}
+.ldd .lo span{display:flex;flex-direction:column;flex:1;min-width:0}
+.ldd .lo b{font-size:17px;font-weight:700}
+.ldd .lo small{font-size:13px;opacity:.6}
+.ldd .lo i{font-style:normal;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:light-dark(#eef0f2,#2c3036)}
+.ldd .lo.cur{background:light-dark(#eef0f2,#2c3036)}
+.ldd .ldef{display:block;width:100%;margin:2px 0 6px;padding:12px;border-radius:12px;background:#ffd23f;color:#1b1b1b;font-weight:800;font-size:15px;text-align:center}
+.dfl{flex-basis:100%;display:flex;align-items:center;gap:10px;justify-content:center;font-weight:700;font-size:15px;margin-top:4px}
+.dfl select{font:inherit;font-size:16px;font-weight:700;padding:10px 14px;border-radius:999px;border:0;background:#fff;color:#1b1b1b;max-width:62vw}
 .gjoin{position:fixed;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:var(--far);color:#fff}
 .gjoin[hidden]{display:none}
 .gjoin .fl{width:64px;height:43px;border-radius:6px}
@@ -184,7 +205,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .spl b{font-size:clamp(38px,11vw,60px);font-weight:800;line-height:1.05;letter-spacing:-.02em;text-wrap:balance;animation:rise .7s .1s ease-out both}
 .spl small{font-size:16px;opacity:.8;animation:rise .7s .25s ease-out both}
 .spl .ask-t{margin:0;font-size:18px;opacity:.9}
-.nf{display:flex;gap:8px;width:min(380px,100%);margin-top:6px}
+.nf{display:flex;flex-wrap:wrap;gap:8px;width:min(380px,100%);margin-top:6px}
 .nf input{flex:1;font:inherit;font-size:18px;padding:14px 18px;border-radius:999px;border:0;outline:0;background:#fff;color:#1b1b1b}
 .nf input:focus{box-shadow:0 0 0 3px #ffd23f}
 .nf button{min-height:52px;padding:0 22px;border-radius:999px;background:#ffd23f;color:#1b1b1b;font-weight:800;font-size:17px}
@@ -304,7 +325,8 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="far" lang="hu">
   <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="peer" id="peerFar" hidden></span><button class="gleave" id="gLeave" hidden></button><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><button class="lpick" id="lp-far" data-side="far" aria-haspopup="listbox" aria-expanded="false"><span class="flw" id="fg-far"></span><b id="nm-far"></b><svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg></button><span class="peer" id="peerFar" hidden></span><button class="gleave" id="gLeave" hidden></button><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="ldd" id="dd-far" role="listbox" hidden></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
   <div class="htoast" id="toast-far" role="status" hidden></div>
   <div class="ctl gctl"><form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form></div>
@@ -315,9 +337,6 @@ button.ln{display:block;width:100%;text-align:start}
  <nav class="bar" aria-label="Ayarlar">
   <span class="net" id="net" role="status" hidden>İnternet yok</span>
   <button id="bMode" class="on" title="Yüz yüze / yan yana" aria-label="Yüz yüze modu"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3 3 7h3v10h2V7h3L7 3Zm10 18 4-4h-3V7h-2v10h-3l4 4Z"/></svg></button>
-  <div class="seg" role="group" aria-label="Karşı dil">
-   <button data-far="hu" title="Macarca"><svg class="fl"><use href="#fl-hu"/></svg><span class="cd">HU</span></button><button data-far="en" title="İngilizce"><svg class="fl"><use href="#fl-en"/></svg><span class="cd">EN</span></button><button data-far="de" title="Almanca"><svg class="fl"><use href="#fl-de"/></svg><span class="cd">DE</span></button>
-  </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
   <button id="bClr" title="Yeni konuşma (iki kez dokun). Eskisi geçmişe kaydedilir." aria-label="Yeni konuşma"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4Zm7 3v2H9v2h2v2h2v-2h2V9h-2V7h-2Z"/></svg></button>
   <button id="bShare" hidden title="Yakındaki iPhone'a gönder: telefonları yan yana tut" aria-label="Sohbet linkini yakındaki iPhone'a gönder"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 7.5 6.5l1.4 1.4L11 5.8V15h2V5.8l2.1 2.1 1.4-1.4L12 2ZM5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10h-3v2h1v8H7v-8h1v-2H5Z"/></svg></button>
@@ -328,7 +347,8 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="tr" lang="tr">
   <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><span class="peer" id="peerTr" hidden>Karşı taraf bağlı</span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><button class="lpick" id="lp-tr" data-side="tr" aria-haspopup="listbox" aria-expanded="false"><span class="flw" id="fg-tr"></span><b id="nm-tr"></b><svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z" fill="currentColor"/></svg></button><span class="peer" id="peerTr" hidden></span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="ldd" id="dd-tr" role="listbox" hidden></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="htoast" id="toast-tr" role="status" hidden></div>
   <div class="chips" id="c-tr"></div>
@@ -340,8 +360,8 @@ button.ln{display:block;width:100%;text-align:start}
  </section>
 </div>
 
-<div class="gjoin" id="gend" hidden><svg class="fl" id="geF"><use href="#fl-hu"/></svg><b id="geT"></b><button id="geB" hidden></button></div>
-<div class="gjoin" id="gjoin" hidden><svg class="fl" id="gjF"><use href="#fl-hu"/></svg><b id="gjT"></b><p id="gjN"></p><button id="gjB"></button></div>
+<div class="gjoin" id="gend" hidden><span class="flw" id="geF"></span><b id="geT"></b><button id="geB" hidden></button></div>
+<div class="gjoin" id="gjoin" hidden><span class="flw" id="gjF"></span><b id="gjT"></b><p id="gjN"></p><button id="gjB"></button></div>
 
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
  <div class="logo" role="img" aria-label="Tercüman"><span>T</span><svg class="le" viewBox="0 0 50 32" aria-hidden="true"><path fill="#fff" d="M7 2H27A5 5 0 0 1 32 7V9L16 13.5V18.5L32 23V25A5 5 0 0 1 27 30H7A5 5 0 0 1 2 25V7A5 5 0 0 1 7 2Z"/><rect class="tg" x="15.5" y="14.5" width="10" height="3" rx="1.5" fill="#ff8fa3"/><circle cx="11" cy="8.2" r="2.4" fill="#1b1b1b"/><g fill="none" stroke="#ffd23f" stroke-width="3.2" stroke-linecap="round"><path class="s1" d="M35.5 12.5Q38 16 35.5 19.5"/><path class="s2" d="M40 9.5Q44.5 16 40 22.5"/><path class="s3" d="M44.5 6.5Q50 16 44.5 25.5"/></g></svg><span>RCÜMAN</span></div>
@@ -349,7 +369,7 @@ button.ln{display:block;width:100%;text-align:start}
  <b id="wtx"></b>
  <small class="go">Devam etmek için dokun</small>
  <p class="ask-t">Seni adınla selamlayayım. Adın ne?</p>
- <form class="nf" id="nf"><input id="nmIn" placeholder="Adın" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" maxlength="30" aria-label="Adın"><button>Başla</button></form>
+ <form class="nf" id="nf"><input id="nmIn" placeholder="Adın" autocomplete="given-name" autocapitalize="words" enterkeyhint="done" maxlength="30" aria-label="Adın"><button id="nfGo">Başla</button><label class="dfl"><span id="dfT">Dilin</span><select id="dfL"></select></label></form>
  <button class="chg" id="chg">İsmi değiştir</button>
  <span class="ver" id="ver"></span>
 </div>
@@ -383,44 +403,98 @@ button.ln{display:block;width:100%;text-align:start}
 
 <script>
 {
-const L={
- hu:{name:'Magyar',leftMe:'Kilépett a beszélgetésből.',micfail:'A mikrofon nem indult el, koppintson újra.',quiet:'Nem hallottam semmit, koppintson újra.',perm:'A mikrofon nincs engedélyezve. Írjon inkább lent.',ended:'A beszélgetés véget ért. Köszönjük!',leave:'Kilépés',leaveSure:'Biztosan kilép? Koppintson újra.',qr:'Olvassa be, és beszéljen a saját telefonjáról',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
-  empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
-  hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',leftMe:'You left the conversation.',micfail:"The microphone didn't start, tap again.",quiet:"I didn't hear anything, tap again.",perm:'The microphone is not allowed. Please type below instead.',ended:'The conversation has ended. Thank you!',leave:'Leave',leaveSure:'Leave the conversation? Tap again.',qr:'Scan to talk from your own phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
-  empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
-  hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',leftMe:'Sie haben das Gespräch verlassen.',micfail:'Das Mikrofon ist nicht gestartet, bitte erneut tippen.',quiet:'Ich habe nichts gehört, bitte erneut tippen.',perm:'Das Mikrofon ist nicht erlaubt. Bitte unten schreiben.',ended:'Das Gespräch wurde beendet. Vielen Dank!',leave:'Verlassen',leaveSure:'Wirklich verlassen? Bitte erneut tippen.',qr:'Scannen und vom eigenen Handy sprechen',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
-  empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
-  hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',wait:'Bağlantı bekleniyor…',micfail:'Mikrofon başlamadı, tekrar dokun.',quiet:'Ses duyulmadı, tekrar dokun.',perm:'Mikrofon izni yok. Aşağıya yazabilirsin.',endB:'Bitir',endSure:'Emin misin?',endDone:'Sohbet bitti. Eski QR kod artık çalışmaz.',left:'Karşı taraf sohbetten ayrıldı.',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
-  hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
-const GREET=[ /* morning 05-12, afternoon 12-18, evening 18-05 */
- ['Günaydın!','Jó reggelt!','Good morning!','Guten Morgen!'],
- ['Tünaydın!','Jó napot!','Good afternoon!','Guten Tag!'],
- ['İyi akşamlar!','Jó estét!','Good evening!','Guten Abend!']];
-const dayPart=()=>{const h=new Date().getHours();return h>=5&&h<12?0:h>=12&&h<18?1:2};
-const BASE=[ /* tr, hu, en, de */
- ['Teşekkür ederim.','Köszönöm.','Thank you.','Danke schön.'],
- ['Evet.','Igen.','Yes.','Ja.'],
- ['Hayır.','Nem.','No.','Nein.'],
- ['Anlamadım, tekrar eder misiniz?','Nem értem, megismételné?',"Sorry, I didn't understand. Could you repeat that?",'Entschuldigung, das habe ich nicht verstanden. Können Sie das wiederholen?'],
- ['Daha yavaş konuşur musunuz?','Lassabban beszélne, kérem?','Could you speak more slowly, please?','Könnten Sie bitte langsamer sprechen?'],
- ['Bir dakika lütfen.','Egy pillanat, kérem!','One moment, please.','Einen Moment, bitte.'],
- ['Bu ne kadar?','Mennyibe kerül?','How much is this?','Wie viel kostet das?'],
- ['Hoşça kalın!','Viszontlátásra!','Goodbye!','Auf Wiedersehen!']];
-let PH=[],partNow=-1;
-function phrases(){partNow=dayPart();PH=[GREET[partNow],...BASE]}
-const COL={tr:0,hu:1,en:2,de:3};
+/* ---------- languages ----------
+   code, speech code, flag, colour of that language's half, text-recognition (OCR) code, code for the translator */
+const LANGS=[['tr','tr-TR','tr','#c4122f','tur'],['en','en-US','gb','#1f4f91','eng'],['de','de-DE','de','#2a2e35','deu'],['hu','hu-HU','hu','#2c6845','hun'],
+ ['fr','fr-FR','fr','#1d3f8f','fra'],['es','es-ES','es','#a3121e','spa'],['it','it-IT','it','#1d6b3b','ita'],['pt','pt-PT','pt','#1c5d2d','por'],['pt-BR','pt-BR','br','#13733a','por','pt'],
+ ['nl','nl-NL','nl','#c1440e','nld'],['pl','pl-PL','pl','#b0122b','pol'],['ru','ru-RU','ru','#2a3f8f','rus'],['uk','uk-UA','ua','#1f5aa6','ukr'],['ro','ro-RO','ro','#1a3f8c','ron'],
+ ['bg','bg-BG','bg','#1f6b47','bul'],['el','el-GR','gr','#1f5fa8','ell'],['cs','cs-CZ','cz','#1e4b8f','ces'],['sk','sk-SK','sk','#1e4290','slk'],['sr','sr-RS','rs','#8e2235','srp'],
+ ['hr','hr-HR','hr','#1b3f8a','hrv'],['bs','bs-BA','ba','#1f3f8f','bos'],['sq','sq-AL','al','#b3121f','sqi'],['sv','sv-SE','se','#1b5a92','swe'],['nb','nb-NO','no','#a51d2d','nor','no'],
+ ['da','da-DK','dk','#a7162a','dan'],['fi','fi-FI','fi','#173f80','fin'],['ar','ar-SA','sa','#0f6b3a','ara'],['fa','fa-IR','ir','#1f6b3a','fas'],['he','he-IL','il','#1d4f9c','heb','iw'],
+ ['az','az-AZ','az','#1576a8','aze'],['ka','ka-GE','ge','#b51f2a','kat'],['hi','hi-IN','in','#c85a12','hin'],['ur','ur-PK','pk','#115c36','urd'],['bn','bn-BD','bd','#0d6a4b','ben'],
+ ['zh','zh-CN','cn','#b3161f','chi_sim','zh-CN'],['ja','ja-JP','jp','#b0122e','jpn'],['ko','ko-KR','kr','#1d3f7a','kor'],['vi','vi-VN','vn','#b3161f','vie'],['th','th-TH','th','#2a3270','tha'],
+ ['id','id-ID','id','#b3121f','ind'],['ms','ms-MY','my','#1b3a7a','msa'],['tl','fil-PH','ph','#1f3f99','tgl'],['sw','sw-KE','ke','#1f6b3a','swa']];
+const LI={};LANGS.forEach(([c,bcp,cc,color,ocr,gtx])=>LI[c]={c,bcp,cc,color,ocr,gtx:gtx||c});
+const G=l=>LI[l]?LI[l].gtx:l;
+const flagHTML=l=>LI[l]?`<img class="fl" src="flags/${LI[l].cc}.svg" alt="" draggable="false">`:'';
+const cap=s=>s?s.charAt(0).toLocaleUpperCase()+s.slice(1):s;
+const dnC={};
+function lname(l,ui){ /* name of language l, written in language ui */
+ let d=dnC[ui];if(d===undefined){try{d=new Intl.DisplayNames([LI[ui]?LI[ui].bcp:ui],{type:'language'})}catch(e){d=null}dnC[ui]=d}
+ let n='';try{n=d?d.of(l==='tl'?'fil':l):''}catch(e){}return cap(n||l)}
+/* every text of the app in English; languages without a hand-written set get these machine translated once and kept on the phone */
+const EN={leftMe:'You left the conversation.',micfail:"The microphone didn't start, tap again.",quiet:"I didn't hear anything, tap again.",perm:'The microphone is not allowed. Please type below instead.',ended:'The conversation has ended. Thank you!',leave:'Leave',leaveSure:'Leave the conversation? Tap again.',qr:'Scan to talk from your own phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated for {n}, and you hear what {n} says in your language.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',tap:'Tap anywhere to speak',pill:'Speak',wTap:'Tap',wTalk:'Talk',tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ empty:'Tap anywhere on this side and speak. Your partner will hear the translation in their language.',err:"Couldn't translate. Please try again.",hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓',
+ wait:'Waiting for the connection…',endB:'End',endSure:'Sure?',endDone:'The conversation has ended. The old QR code no longer works.',left:'The other person left the conversation.',backMe:'Sent:',warnMe:' The meaning may have changed. Tap your message to fix it.',peerOn:'The other person is connected',cancel:'Cancel',fixTr:'Fix and translate',
+ welcome:'Welcome!',welcomeN:'Welcome, {n}!',go:'Tap to continue',askT:'Let me greet you by name. What is your name?',nameP:'Your name',start:'Start',chg:'Change name and language',defL:'Your language',makeDef:'Make this my default language',isDef:'Default',defSet:'Default language saved.',langNoMic:'Voice input is not available for this language. Please type.',
+ wel0:'Good morning',wel1:'Good afternoon',wel2:'Good evening'};
+const HAND={
+ hu:{leftMe:'Kilépett a beszélgetésből.',micfail:'A mikrofon nem indult el, koppintson újra.',quiet:'Nem hallottam semmit, koppintson újra.',perm:'A mikrofon nincs engedélyezve. Írjon inkább lent.',ended:'A beszélgetés véget ért. Köszönjük!',leave:'Kilépés',leaveSure:'Biztosan kilép? Koppintson újra.',qr:'Olvassa be, és beszéljen a saját telefonjáról',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, lefordítjuk {n} számára, és amit {n} mond, azt az Ön nyelvén hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+  empty:'Koppintson bárhova ezen a felén, és beszéljen. A partnere a saját nyelvén hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓',
+  wait:'Kapcsolódásra vár…',endB:'Befejezés',endSure:'Biztos?',endDone:'A beszélgetés véget ért. A régi QR-kód már nem működik.',left:'A másik fél kilépett a beszélgetésből.',backMe:'Átküldve:',warnMe:' Lehet, hogy a jelentés megváltozott, koppints az üzenetedre a javításhoz.',peerOn:'A másik fél csatlakozott',cancel:'Mégse',fixTr:'Javítás és fordítás',
+  welcome:'Üdvözöllek!',welcomeN:'Üdvözöllek, {n}!',go:'Koppints a folytatáshoz',askT:'Hadd köszöntselek a neveden. Hogy hívnak?',nameP:'A neved',start:'Kezdés',chg:'Név és nyelv módosítása',defL:'A nyelved',makeDef:'Legyen ez az alapértelmezett nyelvem',isDef:'Alapértelmezett',defSet:'Az alapértelmezett nyelv elmentve.',langNoMic:'Ezen a nyelven nincs hangfelismerés, kérlek, írj.',wel0:'Jó reggelt',wel1:'Jó napot',wel2:'Jó estét'},
+ en:{w:['TAP','TALK']},
+ de:{leftMe:'Sie haben das Gespräch verlassen.',micfail:'Das Mikrofon ist nicht gestartet, bitte erneut tippen.',quiet:'Ich habe nichts gehört, bitte erneut tippen.',perm:'Das Mikrofon ist nicht erlaubt. Bitte unten schreiben.',ended:'Das Gespräch wurde beendet. Vielen Dank!',leave:'Verlassen',leaveSure:'Wirklich verlassen? Bitte erneut tippen.',qr:'Scannen und vom eigenen Handy sprechen',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird für {n} übersetzt, und was {n} sagt, hören Sie in Ihrer Sprache.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+  empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie. Ihr Gegenüber hört die Übersetzung in seiner Sprache.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓',
+  wait:'Warte auf Verbindung…',endB:'Beenden',endSure:'Sicher?',endDone:'Gespräch beendet. Der alte QR-Code funktioniert nicht mehr.',left:'Die andere Person hat das Gespräch verlassen.',backMe:'Gesendet:',warnMe:' Die Bedeutung hat sich vielleicht verändert. Tippe auf deine Nachricht, um sie zu korrigieren.',peerOn:'Die andere Person ist verbunden',cancel:'Abbrechen',fixTr:'Korrigieren und übersetzen',
+  welcome:'Willkommen!',welcomeN:'Willkommen, {n}!',go:'Zum Fortfahren tippen',askT:'Ich möchte dich mit deinem Namen begrüßen. Wie heißt du?',nameP:'Dein Name',start:'Los',chg:'Name und Sprache ändern',defL:'Deine Sprache',makeDef:'Als meine Standardsprache festlegen',isDef:'Standard',defSet:'Standardsprache gespeichert.',langNoMic:'Für diese Sprache gibt es keine Spracheingabe. Bitte schreib.',wel0:'Guten Morgen',wel1:'Guten Tag',wel2:'Guten Abend'},
+ tr:{leftMe:'Sohbetten ayrıldınız.',micfail:'Mikrofon başlamadı, tekrar dokun.',quiet:'Ses duyulmadı, tekrar dokun.',perm:'Mikrofon izni yok. Aşağıya yazabilirsin.',ended:'Sohbet sona erdi. Teşekkürler!',leave:'Ayrıl',leaveSure:'Ayrılmak istiyor musunuz? Tekrar dokunun.',qr:'Kendi telefonunuzdan konuşmak için okutun',qrT:'Telefonunuzun kamerasıyla okutun, sohbete kendi telefonunuzdan devam edin.',on:'Telefonunuz bağlandı',inv:'{n} sizi sohbete davet etti',join:'Katıl',jn:'Söyledikleriniz {n} için çevrilir, {n} ne söylerse kendi dilinizde duyarsınız.',conn:'Bağlı',lost:'Bağlantı yok',back:'Geri çeviri:',warn:' Anlam değişmiş olabilir.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],tip:'Cevap vermek için kendi tarafınızdaki mikrofona dokunup konuşun.',listen:'Dinliyorum…',stop:'Bitir',work:'Çevriliyor…',ph:'Buraya yaz…',send:'Gönder',
+  empty:'Bu tarafta herhangi bir yere dokunup konuşun. Karşınızdaki kişi çeviriyi kendi dilinde duyar.',err:'Çeviri yapılamadı. Tekrar dene.',hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓',
+  wait:'Bağlantı bekleniyor…',endB:'Bitir',endSure:'Emin misin?',endDone:'Sohbet bitti. Eski QR kod artık çalışmaz.',left:'Karşı taraf sohbetten ayrıldı.',backMe:'Karşıya giden:',warnMe:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',peerOn:'Karşı taraf bağlı',cancel:'Vazgeç',fixTr:'Düzelt ve çevir',
+  welcome:'Hoş geldin!',welcomeN:'Hoş geldin, {n}!',go:'Devam etmek için dokun',askT:'Seni adınla selamlayayım. Adın ne?',nameP:'Adın',start:'Başla',chg:'İsmi ve dili değiştir',defL:'Dilin',makeDef:'Varsayılan dilim yap',isDef:'Varsayılan',defSet:'Varsayılan dil kaydedildi.',langNoMic:'Bu dilde sesle konuşma desteklenmiyor, yazarak kullan.',wel0:'Günaydın',wel1:'Tünaydın',wel2:'İyi akşamlar'}};
+/* ready-made phrases: greeting of the time of day (g0-g2) and everyday sentences (p0-p7), hand written for four languages */
+const PHR={tr:['Günaydın!','Tünaydın!','İyi akşamlar!','Teşekkür ederim.','Evet.','Hayır.','Anlamadım, tekrar eder misiniz?','Daha yavaş konuşur musunuz?','Bir dakika lütfen.','Bu ne kadar?','Hoşça kalın!'],
+ hu:['Jó reggelt!','Jó napot!','Jó estét!','Köszönöm.','Igen.','Nem.','Nem értem, megismételné?','Lassabban beszélne, kérem?','Egy pillanat, kérem!','Mennyibe kerül?','Viszontlátásra!'],
+ en:['Good morning!','Good afternoon!','Good evening!','Thank you.','Yes.','No.',"Sorry, I didn't understand. Could you repeat that?",'Could you speak more slowly, please?','One moment, please.','How much is this?','Goodbye!'],
+ de:['Guten Morgen!','Guten Tag!','Guten Abend!','Danke schön.','Ja.','Nein.','Entschuldigung, das habe ich nicht verstanden. Können Sie das wiederholen?','Könnten Sie bitte langsamer sprechen?','Einen Moment, bitte.','Wie viel kostet das?','Auf Wiedersehen!']};
+const PK=['g0','g1','g2','p0','p1','p2','p3','p4','p5','p6','p7'];
+for(const l in PHR)PK.forEach((k,i)=>{if(l==='en')EN[k]=PHR.en[i];else HAND[l][k]=PHR[l][i]});
+
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const code=e=>e&&(e.code||e.error||e.message)||String(e);
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
+const dayPart=()=>{const h=new Date().getHours();return h>=5&&h<12?0:h>=12&&h<18?1:2};
+let uiAuto=load('tercuman.ui3',{}),uiVer=0;const uiC={},uiBusy={};
+const hasUI=l=>!!(HAND[l]&&HAND[l].wel0||l==='en'||uiAuto[l]);
+let ME='tr'; /* the language of my half; set from the default language below */
+function UI(l){
+ if(!LI[l])l='en';const k=ME+'|'+uiVer;if(uiC[l]&&uiC[l].k===k)return uiC[l].o;
+ const o=Object.assign({},EN,uiAuto[l]||{},HAND[l]||{});
+ if(!o.w||!HAND[l]||!HAND[l].w)o.w=[o.wTap,o.wTalk].map(x=>String(x).toLocaleUpperCase(LI[l].bcp));
+ o.name=lname(l,l);o.en=lname(l,'en');o.trName=lname(l,ME);o.bcp=LI[l].bcp;o.color=LI[l].color;
+ if(!hasUI(l))needUI(l);
+ uiC[l]={k,o};return o}
+const L=new Proxy({},{get:(_,l)=>UI(String(l))});
+/* translate the English texts once for a language and keep them; placeholders such as {n} must survive */
+const uiFail={};
+function needUI(l){
+ if(uiBusy[l])return uiBusy[l];if(uiFail[l]&&Date.now()-uiFail[l]<60e3)return Promise.resolve(false);
+ return uiBusy[l]=(async()=>{
+  const keys=Object.keys(EN),out={};let chunk=[],len=0;const groups=[];
+  for(const k of keys){const t=EN[k].trim();if(len+t.length>1400&&chunk.length){groups.push(chunk);chunk=[];len=0}chunk.push(k);len+=t.length+1}
+  if(chunk.length)groups.push(chunk);
+  const fix=(k,t)=>{t=(t||'').trim().replace(/\{\s*n\s*\}/gi,'{n}');if(!t||(EN[k].includes('{n}')&&!t.includes('{n}')))return null;return EN[k].startsWith(' ')?' '+t:t};
+  await pool(groups,3,async g=>{
+   const r=await webTr(g.map(k=>EN[k].trim()).join('\n'),'en',l);const parts=r?r.split('\n'):[];
+   if(parts.length===g.length)g.forEach((k,i)=>{const v=fix(k,parts[i]);if(v)out[k]=v});
+   else await pool(g,4,async k=>{const v=fix(k,await webTr(EN[k].trim(),'en',l));if(v)out[k]=v});
+  });
+  if(Object.keys(out).length<keys.length*.6){uiBusy[l]=null;uiFail[l]=Date.now();return false}
+  uiAuto[l]=out;save('tercuman.ui3',uiAuto);uiVer++;
+  try{applyLang();render();splashTexts();guestTexts()}catch(e){}
+  return true;
+ })();
+}
+let PH=[],partNow=-1;
+function phrases(){partNow=dayPart();PH=['g'+partNow,'p0','p1','p2','p3','p4','p5','p6','p7']}
 
 let msgs=load('tercuman.msgs',[]),prefs=Object.assign({face:true,speak:true,far:'hu'},load('tercuman.prefs',{}));
-if(!L[prefs.far]||prefs.far==='tr')prefs.far='hu';
+let DEF=load('tercuman.def','tr');if(!LI[DEF])DEF='tr';
+ME=DEF; /* every start opens my half in my default language */
+const fixFar=()=>{if(!LI[prefs.far]||prefs.far===ME)prefs.far=ME==='hu'?'en':'hu'};fixFar();
 /* ---------- shared conversation: the other person can join from their own phone by scanning a QR code ----------
    Messages travel through a free public MQTT server, end-to-end encrypted with AES-GCM. The key exists only in the
    QR link after the # sign, which browsers never send to any server, so the server sees only unreadable data. */
@@ -428,9 +502,9 @@ const rid=n=>{const a=crypto.getRandomValues(new Uint8Array(n));return Array.fro
 const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const ub64u=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 const JOIN=(()=>{const h=location.hash.slice(1);if(!h.startsWith('join='))return null;const q=new URLSearchParams(h),[room,key]=(q.get('join')||'').split('.');
- if(!room||!key)return null;const l=q.get('l');return{room,key,l:['hu','en','de'].includes(l)?l:'en',n:(q.get('n')||'').slice(0,30),b:+q.get('b')||0}})();
+ if(!room||!key)return null;const l=q.get('l'),m=q.get('m');return{room,key,l:LI[l]?l:'en',m:LI[m]?m:'tr',n:(q.get('n')||'').slice(0,30),b:+q.get('b')||0}})();
 const ROLE=JOIN?'guest':'host';
-if(JOIN){prefs.far=JOIN.l;msgs=[]}
+if(JOIN){ME=JOIN.m;prefs.far=JOIN.l;if(prefs.far===ME)prefs.far=ME==='en'?'de':'en';msgs=[]}
 const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_JS='https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js',QR_JS='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
 const LINK={room:'',keyRaw:'',key:null,cl:null,bi:0,up:false,seen:0,timer:0,q:[],joined:false,ended:false};
@@ -438,9 +512,9 @@ let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=n
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let FRAMED=true;try{FRAMED=window.top!==window}catch(e){}
 let nativeOK=!!SR&&!FRAMED;
-const lang=s=>s==='tr'?'tr':prefs.far;
-const sideOf=l=>l==='tr'?'tr':'far';
-const textFor=(m,l)=>m[l]||m[Object.keys(m).find(k=>L[k]&&k!=='tr'&&m[k])]||'';
+const lang=s=>s==='tr'?ME:prefs.far;
+const sideOf=l=>l===ME?'tr':'far';
+const textFor=(m,l)=>m[l]||(l!==ME&&m.far&&m[m.far])||'';
 
 function render(){
  for(const s of ['far','tr']){
@@ -448,11 +522,11 @@ function render(){
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s){
-    if(s==='tr'&&editing===i)return `<form class="edit" data-ed="${i}"><textarea id="edT" rows="2" aria-label="Mesajı düzelt">${esc(editDraft)}</textarea><div class="erow"><button type="button" class="ecancel">Vazgeç</button><button class="esave">Düzelt ve çevir</button></div></form>`;
+    if(s==='tr'&&editing===i)return `<form class="edit" data-ed="${i}"><textarea id="edT" rows="2" aria-label="${esc(T.fixTr)}">${esc(editDraft)}</textarea><div class="erow"><button type="button" class="ecancel">${esc(T.cancel)}</button><button class="esave">${esc(T.fixTr)}</button></div></form>`;
     let o=`<div class="b me${s==='tr'?' ed':''}"${s==='tr'?` data-me="${i}"`:''}>${esc(m[m.from])}${s==='tr'&&!m.row?'<svg class="pen" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/></svg>':''}</div>`;
     if(m.busy)return o;
     if(m.back&&!m.err){const warn=sim(m[m.from],m.back)<.55;
-     o+=`<div class="back${warn?' warn':''}"${s==='tr'?` data-me="${i}"`:''}>${esc(T.back)} ${esc(m.back)}${warn?`<b>${esc(T.warn)}</b>`:''}</div>`}
+     const mine=s==='tr'&&ROLE!=='guest';o+=`<div class="back${warn?' warn':''}"${s==='tr'?` data-me="${i}"`:''}>${esc(mine?T.backMe:T.back)} ${esc(m.back)}${warn?`<b>${esc(mine?T.warnMe:T.warn)}</b>`:''}</div>`}
     return o}
    if(m.busy)return `<div class="b them">${DOTS}</div>`;
    if(m.err)return `<div class="b them err">${m.off?T.off:T.err}</div>`;
@@ -468,14 +542,17 @@ function render(){
  }
 }
 function applyLang(){
- const T=L[prefs.far];
- document.documentElement.style.setProperty('--far',T.color);
- $('#far').lang=prefs.far;$('#nm-far').textContent=T.name;$('#fg-far use').setAttribute('href','#fl-'+prefs.far);
- $('#h-tr').textContent=L.tr.hint;
- document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.far===prefs.far));
+ const T=L[prefs.far],M=L[ME],R=document.documentElement.style;
+ R.setProperty('--far',T.color);R.setProperty('--tr',M.color);
+ /* header names: region in brackets is dropped (the flag shows it), long names get a smaller size so the microphone in the middle stays clear */
+ const hn=(id,n)=>{n=n.replace(/\s*\(.*\)\s*$/,'');const b=$(id);b.textContent=n;b.className=n.length>12?'s':n.length>8?'m':''};
+ $('#far').lang=prefs.far;hn('#nm-far',T.name);$('#fg-far').innerHTML=flagHTML(prefs.far);
+ $('#tr').lang=ME;hn('#nm-tr',M.name);$('#fg-tr').innerHTML=flagHTML(ME);
+ $('#h-tr').textContent=M.hint;$('#in-tr').placeholder=M.ph;
  phrases();
  $('#in-far').placeholder=T.ph;$('#qrC').textContent=T.qr;$('#qrT').textContent=T.qrT;drawQR();linkUI();
- for(const s of ['tr']){const c=COL[lang(s)];$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[c])}</button>`).join('')}
+ $('#c-tr').innerHTML=PH.map(k=>`<button class="chip" data-side="tr" data-k="${k}">${esc(M[k])}</button>`).join('');
+ const e=$('#bEnd');if(!e.classList.contains('arm'))e.textContent=M.endB;
 }
 function applyPrefs(){
  document.body.className=prefs.face?'face':'side';if(ROLE==='guest')document.body.classList.add('guest');
@@ -490,7 +567,7 @@ function push(m,remote){
  if(!remote){const last=msgs[msgs.length-1];if(ROLE!=='guest'&&last&&last.t&&Date.now()-last.t>IDLE)archive();
   /* only my first message in a conversation gets the "you can answer" tip for the other person */
   if(ROLE!=='guest'&&sideOf(m.from)==='tr'&&!m.err&&!msgs.some(x=>sideOf(x.from)==='tr'))m.tip=true;
-  m.t=m.t||Date.now();m.far=m.far||prefs.far;m.id=m.id||rid(8)}
+  m.t=m.t||Date.now();m.far=m.far||prefs.far;m.me=m.me||ME;m.id=m.id||rid(8)}
  msgs.push(m);if(!remote)linkSend({type:'msg',m});if(msgs.length>600)msgs=msgs.slice(-600);saveMsgs();render()}
 
 /* ---------- history ---------- */
@@ -530,7 +607,8 @@ function vScore(v,l){
 
 function voiceFor(l){
  if(vCache[l]&&voices.includes(vCache[l]))return vCache[l];
- const vs=voices.filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(l)).map(v=>[vScore(v,l),v]).filter(x=>x[0]>=0).sort((a,b)=>b[0]-a[0]);
+ const pre=(LI[l]?LI[l].bcp:l).split('-')[0].toLowerCase();
+ const vs=voices.filter(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith(pre)).map(v=>[vScore(v,l),v]).filter(x=>x[0]>=0).sort((a,b)=>b[0]-a[0]);
  return vCache[l]=vs.length?vs[0][1]:null;
 }
 /* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
@@ -548,9 +626,9 @@ function speak(text,l){
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
-function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';
+function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from===ME?(m.far||prefs.far):ME;
  /* with the other person on their own phone, each phone reads only what its owner needs to hear */
- if(ROLE==='guest'&&t==='tr')return;if(ROLE==='host'&&peerOn()&&t!=='tr')return;
+ if(ROLE==='guest'&&t===ME)return;if(ROLE==='host'&&peerOn()&&t!==ME)return;
 speak(m.tip&&ROLE!=='guest'&&L[t].tip?m[t]+'  '+L[t].tip:m[t],t)}}
 
 /* ---------- speech in ---------- */
@@ -559,7 +637,7 @@ function arm(){clearTimeout(silT);if(!live||live.stopping)return;
  if(live.text||live.partial)silT=setTimeout(stopListen,1700);
  else silT=setTimeout(()=>{if(live&&!live.text&&!live.partial&&!live.stopping){toast(live.side,'quiet');stopListen()}},6000)}
 function bump(){arm();render()}
-function noMic(side){if(side!=='tr')return;document.body.classList.add('nomic');const i=$('#in-tr');i.focus();i.placeholder=L.tr.kbd}
+function noMic(side){if(side!=='tr')return;document.body.classList.add('nomic');const i=$('#in-tr');i.focus();i.placeholder=L[ME].kbd}
 function startListen(side){
  if(editing!=null){editing=null;editDraft=''}
  stopSpeak();unlock();
@@ -586,11 +664,12 @@ function startRec(side,attempt){
  r.onstart=r.onaudiostart=()=>{if(rec!==r){try{r.abort()}catch(e){}return}if(!began){began=true;arm()}};
  r.onresult=e=>{if(rec!==r||!live){try{r.abort()}catch(e){}return}began=heard=true;let f='',p='';for(const x of e.results){if(x.isFinal)f+=x[0].transcript;else p+=x[0].transcript}live.text=f.trim();live.partial=p.trim();bump()};
  r.onerror=e=>{if(rec!==r)return;err=e.error||'';
-  if(err==='not-allowed'||err==='service-not-allowed'){nativeOK=false;applyPrefs();toast(side,'perm')}};
+  if(err==='not-allowed'||err==='service-not-allowed'){nativeOK=false;applyPrefs();toast(side,'perm')}
+  else if(err==='language-not-supported'){toast(side,'langNoMic');if(side==='tr')noMic('tr')}};
  r.onend=()=>{if(rec!==r)return;rec=null;
   if(live&&!live.stopping&&!heard){
-   if(err&&err!=='no-speech'&&err!=='aborted'&&err!=='not-allowed'&&err!=='service-not-allowed'&&attempt<1){setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);return}
-   if(err==='no-speech'||!err)toast(side,'quiet');else if(err!=='not-allowed'&&err!=='service-not-allowed')toast(side,'micfail');
+   if(err&&!/no-speech|aborted|not-allowed|service-not-allowed|language-not-supported/.test(err)&&attempt<1){setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);return}
+   if(err==='no-speech'||!err)toast(side,'quiet');else if(!/not-allowed|service-not-allowed|language-not-supported/.test(err))toast(side,'micfail');
   }
   finish()};
  rec=r;
@@ -610,7 +689,7 @@ function releaseMic(){
   let k;try{k=new SR()}catch(e){audioReset();return}
   releaser=k;let done=false;
   const end=()=>{if(done)return;done=true;if(releaser===k)releaser=null;try{k.abort()}catch(e){}audioReset()};
-  k.lang='tr-TR';k.continuous=false;k.interimResults=false;
+  k.lang=L[ME].bcp;k.continuous=false;k.interimResults=false;
   k.onstart=k.onaudiostart=()=>{try{k.stop()}catch(e){}setTimeout(end,400)};
   k.onresult=k.onerror=()=>{};k.onend=end;
   try{k.start()}catch(e){end();return}
@@ -640,24 +719,25 @@ function finish(){
 
 /* ---------- translation ---------- */
 async function webTr(q,s,t){
+ s=G(s);t=G(t);if(s===t)return q;
  try{const r=await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${s}&tl=${t}&dt=t&q=${encodeURIComponent(q)}`);const j=await r.json();const o=j[0].map(x=>x[0]).join('');if(o)return o}catch(e){}
  try{const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=${s}|${t}`);const j=await r.json();return j.responseData.translatedText||''}catch(e){}
  return '';
 }
 async function translate(src,text){
- const far=prefs.far,tgt=src==='tr'?far:'tr';
+ const far=prefs.far,tgt=src===ME?far:ME;
  if(samp){
-  const ctx=msgs.filter(m=>!m.err&&(m.from==='tr'||m.from===far)).slice(-4).map(m=>`${L[m.from].en} speaker: ${m[m.from]}`).join('\n');
-  const prompt=`You are a live interpreter in a face-to-face conversation between a ${L[far].en} speaker and a Turkish speaker.
+  const ctx=msgs.filter(m=>!m.err&&(m.from===ME||m.from===far)).slice(-4).map(m=>`${L[m.from].en} speaker: ${m[m.from]}`).join('\n');
+  const prompt=`You are a live interpreter in a face-to-face conversation between a ${L[far].en} speaker and a ${L[ME].en} speaker.
 The ${L[src].en} speaker just said the text below. It may come from speech recognition, so expect missing punctuation, misheard words, or words written phonetically in another language's spelling. Reconstruct the most likely intended sentence. If it is clearly in the other language of this conversation, treat it as that language.
 Translate it into natural, spoken ${L[tgt].en}. Keep tone, politeness level, names and numbers. Add nothing.
 ${ctx?'Recent conversation for context:\n'+ctx+'\n':''}
 Text: """${text}"""
-Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original text","translation":"translated text"}`;
+Answer with JSON only: {"from":"${far}" or "${ME}","original":"cleaned original text","translation":"translated text"}`;
   try{
    const r=await samp(prompt,{modelTier:'quick',cache:false});const s=r.text||'';
    const j=JSON.parse(s.slice(s.indexOf('{'),s.lastIndexOf('}')+1));
-   if(j&&j.translation){const f=j.from===far||j.from==='tr'?j.from:src;return{from:f,original:j.original||text,translation:j.translation}}
+   if(j&&j.translation){const f=j.from===far||j.from===ME?j.from:src;return{from:f,original:j.original||text,translation:j.translation}}
   }catch(e){if(code(e)==='not_granted')samp=null}
  }
  return{from:src,original:text,translation:await webTr(text,src,tgt)};
@@ -666,7 +746,7 @@ Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original tex
 function stemSet(t){return new Set(String(t||'').toLocaleLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).filter(w=>[...w].length>=3).map(w=>w.slice(0,4)))}
 function sim(a,b){const A=stemSet(a),B=stemSet(b);if(!A.size||!B.size)return 1;let n=0;for(const x of A)if(B.has(x))n++;return 2*n/(A.size+B.size)}
 async function backfill(m){
- if(!m||m.err||m.row||m.back)return;const tgt=m.from==='tr'?(m.far||prefs.far):'tr',t=m[tgt];if(!t)return;
+ if(!m||m.err||m.row||m.back)return;const tgt=m.from===ME?(m.far||prefs.far):ME,t=m[tgt];if(!t)return;
  const b=await webTr(t,tgt,m.from);if(b&&msgs.includes(m)){m.back=b;saveMsgs();render();linkSend({type:'upd',m})}
 }
 let editing=null,editDraft='';
@@ -680,19 +760,21 @@ async function reTranslate(i,text){
  const m=msgs[i];closeEdit();if(!m||!text||text===m[m.from])return;
  const far=m.far||prefs.far;m.busy=true;delete m.back;render();
  let r;try{r=await translate(m.from,text)}catch(e){r={from:m.from,original:text,translation:''}}
- for(const k of ['tr','hu','en','de'])delete m[k];
- m.from=r.from;m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;m.edited=true;delete m.busy;delete m.tip;
+ delete m[ME];delete m[far];
+ m.from=r.from;m[r.from]=r.original;m[r.from===ME?far:ME]=r.translation;m.edited=true;delete m.busy;delete m.tip;
  m.err=!r.translation;m.off=m.err&&!navigator.onLine;
  saveMsgs();render();linkSend({type:'upd',m});speakMsg(m);backfill(m);
 }
 async function send(side,text,row){
  const src=lang(side),far=prefs.far;
- if(row){const m={from:src,tr:row[0],row:true};m[far]=row[COL[far]];push(m);speakMsg(m);return}
+ if(row){const t1=L[src][row];
+  if(hasUI(far)){const m={from:src,row:true};m[src]=t1;m[far]=L[far][row];push(m);speakMsg(m);return}
+  text=t1}
  if(pending)return;
  pending={side,text};render();
  let r;try{r=await translate(src,text)}catch(e){r={from:src,original:text,translation:''}}
  pending=null;
- const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation){m.err=true;if(!navigator.onLine)m.off=true}
+ const m={from:r.from};m[r.from]=r.original;m[r.from===ME?far:ME]=r.translation;if(!r.translation){m.err=true;if(!navigator.onLine)m.off=true}
  push(m);speakMsg(m);backfill(m);
 }
 
@@ -700,6 +782,13 @@ async function send(side,text,row){
 let typing=false;
 document.addEventListener('pointerdown',e=>{const a=document.activeElement;typing=!!(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&!e.target.closest('form.in,form.edit'))},true);
 document.addEventListener('click',e=>{
+ /* language pickers: flag and name open a list; a tap anywhere else closes it without starting the microphone */
+ const lp=e.target.closest('.lpick');
+ if(lp){const open=!$('#dd-'+lp.dataset.side).hidden;closeDD();if(!open)openDD(lp.dataset.side);return}
+ const lo=e.target.closest('.ldd .lo');if(lo){pickLang(lo.closest('.half').id,lo.dataset.l);return}
+ if(e.target.closest('.ldd .ldef')){DEF=ME;save('tercuman.def',DEF);closeDD();toast('tr','defSet');return}
+ if(e.target.closest('.ldd'))return;
+ if(ddOpen()){closeDD();return}
  if(e.target.closest('#qrb')){$('#qrBig').hidden=false;return}
  if(e.target.closest('#qrBig')){$('#qrBig').hidden=true;return}
  const ed=e.target.closest('form.edit');
@@ -707,16 +796,34 @@ document.addEventListener('click',e=>{
  const me=e.target.closest('#tr [data-me]');
  if(me&&!live){openEdit(+me.dataset.me);return}
  const chip=e.target.closest('.chip');
- if(chip){unlock();send(chip.dataset.side,'',PH[+chip.dataset.p]);return}
+ if(chip){unlock();send(chip.dataset.side,'',chip.dataset.k);return}
  const say=e.target.closest('.say');
  if(say){unlock();const b=say.closest('.them[data-i]'),m=msgs[+b.dataset.i],l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
  const half=e.target.closest('.half');
- if(half&&!e.target.closest('form.in,.chips,.camb,.peer')){
+ if(half&&!e.target.closest('form.in,.chips,.camb,.peer,.lpick,.ldd')){
   if(typing){typing=false;document.activeElement.blur();return}
   if(live)stopListen();else startListen(half.id);return}
- const sg=e.target.closest('.seg button');
- if(sg&&sg.dataset.far!==prefs.far){if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();archive();prefs.far=sg.dataset.far;linkSend({type:'lang',far:prefs.far});applyLang();applyPrefs();render()}
 });
+const ddOpen=()=>!$('#dd-far').hidden||!$('#dd-tr').hidden;
+function closeDD(){$('#dd-far').hidden=true;$('#dd-tr').hidden=true;document.querySelectorAll('.lpick').forEach(b=>b.setAttribute('aria-expanded','false'))}
+function openDD(side){
+ if(live)stopListen();
+ const cur=lang(side),other=lang(side==='tr'?'far':'tr'),ui=ROLE==='guest'?prefs.far:ME,mine=side==='tr'&&ROLE==='host',M=L[ME];
+ const dd=$('#dd-'+side);
+ dd.innerHTML=(mine&&ME!==DEF?`<button class="ldef">★ ${esc(M.makeDef)}</button>`:'')+
+  LANGS.map(x=>x[0]).filter(l=>l!==other).map(l=>`<button class="lo${l===cur?' cur':''}" data-l="${l}" role="option" aria-selected="${l===cur}">${flagHTML(l)}<span><b>${esc(lname(l,l))}</b>${ui!==l?`<small>${esc(lname(l,ui))}</small>`:''}</span>${mine&&l===DEF?`<i>${esc(M.isDef)}</i>`:''}</button>`).join('');
+ dd.hidden=false;$('#lp-'+side).setAttribute('aria-expanded','true');
+ const c=dd.querySelector('.cur');if(c)dd.scrollTop=Math.max(0,c.offsetTop-dd.clientHeight/2+c.offsetHeight/2);
+}
+/* changing a language starts a fresh conversation (the old one goes to history); the other phone follows */
+function pickLang(side,l){
+ closeDD();if(!LI[l]||l===lang(side)||l===lang(side==='tr'?'far':'tr'))return;
+ if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();speechQ=null;
+ if(ROLE==='host')archive();else msgs=[];
+ if(side==='far')prefs.far=l;else ME=l;
+ linkSend({type:'lang',far:prefs.far,me:ME});
+ applyLang();applyPrefs();render();
+}
 document.addEventListener('submit',e=>{const f=e.target.closest('form.edit');if(!f)return;e.preventDefault();reTranslate(+f.dataset.ed,editDraft.trim())});
 document.addEventListener('input',e=>{if(e.target.id==='edT')editDraft=e.target.value});
 document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
@@ -733,8 +840,8 @@ let clrT=0;$('#bClr').onclick=function(){
    who opens the old link later), the conversation goes to history and a fresh QR code is made for the next person */
 $('#bShare').onclick=shareLink;
 let endT=0;$('#bEnd').onclick=function(){
- if(this.classList.contains('arm')){clearTimeout(endT);this.classList.remove('arm');this.textContent='Bitir';endSession()}
- else{this.classList.add('arm');this.textContent='Emin misin?';endT=setTimeout(()=>{this.classList.remove('arm');this.textContent='Bitir'},3000)}
+ const M=L[ME];if(this.classList.contains('arm')){clearTimeout(endT);this.classList.remove('arm');this.textContent=M.endB;endSession()}
+ else{this.classList.add('arm');this.textContent=M.endSure;endT=setTimeout(()=>{this.classList.remove('arm');this.textContent=L[ME].endB},3000)}
 };
 async function endSession(){
  if(ROLE!=='host'||!LINK.room)return;
@@ -755,17 +862,18 @@ let openConv=null;
 const fmtD=t=>new Date(t).toLocaleString('tr-TR',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const fmtT=t=>new Date(t).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
 const lc=s=>String(s||'').toLocaleLowerCase('tr');
-const farOf=m=>m.far||['hu','en','de'].find(k=>m[k])||'hu';
-const trOf=m=>m.tr||'',otherOf=m=>m[farOf(m)]||'';
+const meOf=m=>m.me||'tr';
+const farOf=m=>m.far||Object.keys(m).find(k=>LI[k]&&k!==meOf(m)&&typeof m[k]==='string')||'hu';
+const trOf=m=>m[meOf(m)]||'',otherOf=m=>m[farOf(m)]||'';
 const convFar=c=>[...new Set(c.msgs.map(farOf))];
 function allConvs(){const c=msgs.length?[{start:msgs[0].t||Date.now(),end:msgs[msgs.length-1].t||Date.now(),msgs,cur:true}]:[];return c.concat(hist)}
 function hl(text,q){const s=String(text||''),i=q?lc(s).indexOf(q):-1;if(i<0)return esc(s);return esc(s.slice(0,i))+'<mark>'+esc(s.slice(i,i+q.length))+'</mark>'+esc(s.slice(i+q.length))}
 function line(m,q,ci,showDate){
- const me=m.from==='tr',f=farOf(m),tag=ci!=null?'button':'div';
- const who=me?'Sen':'Karşı taraf ('+(L[f]?L[f].trName:f)+')';
+ const me=m.from===meOf(m),f=farOf(m),tag=ci!=null?'button':'div';
+ const who=me?'Sen':'Karşı taraf ('+lname(f,'tr')+')';
  const when=m.t?(showDate?fmtD(m.t):fmtT(m.t))+' · ':'';
  const main=m.err&&!me?'(çevrilemedi)':trOf(m),sub=otherOf(m);
- return `<${tag} class="ln${me?' me':''}"${ci!=null?` data-c="${ci}"`:''} style="--c:${L[f]?L[f].color:'#888'}"><small>${esc(when+who)}</small><div class="t">${hl(main,q)}</div>${sub?`<div class="o">${hl(sub,q)}</div>`:''}</${tag}>`;
+ return `<${tag} class="ln${me?' me':''}"${ci!=null?` data-c="${ci}"`:''} style="--c:${L[f].color}"><small>${esc(when+who)}</small><div class="t">${hl(main,q)}</div>${sub?`<div class="o">${hl(sub,q)}</div>`:''}</${tag}>`;
 }
 function showList(){
  openConv=null;P.back.hidden=true;P.act.hidden=true;P.srch.hidden=false;P.title.textContent='Konuşma geçmişi';P.st.textContent='';
@@ -777,7 +885,7 @@ function showList(){
  }
  P.list.innerHTML=cs.map((c,ci)=>{
   const fl=convFar(c),first=c.msgs.find(m=>trOf(m))||c.msgs[0];
-  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]]?L[fl[0]].color:'#888'}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${fl.map(f=>`<svg class="fl"><use href="#fl-${f}"/></svg>`+esc(L[f]?L[f].trName:f)).join(', ')} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
+  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]].color}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${fl.map(f=>flagHTML(f)+esc(lname(f,'tr'))).join(', ')} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
 }
 function showConv(ci){
  const c=allConvs()[ci];if(!c)return;openConv=c;
@@ -786,8 +894,8 @@ function showConv(ci){
  P.list.innerHTML=c.msgs.map(m=>line(m,'',null,false)).join('');P.list.scrollTop=0;
 }
 function convText(c){
- return `Tercüman · ${fmtD(c.start)} · Türkçe ve ${convFar(c).map(f=>L[f]?L[f].trName:f).join(', ')}\n\n`+
-  c.msgs.map(m=>`${m.t?fmtT(m.t)+' ':''}${m.from==='tr'?'Sen':'Karşı taraf'}: ${trOf(m)}\n      (${farOf(m).toUpperCase()}) ${otherOf(m)}`).join('\n\n');
+ return `Tercüman · ${fmtD(c.start)} · ${lname(meOf(c.msgs[0]||{}),'tr')} ve ${convFar(c).map(f=>lname(f,'tr')).join(', ')}\n\n`+
+  c.msgs.map(m=>`${m.t?fmtT(m.t)+' ':''}${m.from===meOf(m)?'Sen':'Karşı taraf'}: ${trOf(m)}\n      (${farOf(m).toUpperCase()}) ${otherOf(m)}`).join('\n\n');
 }
 function copyText(t){
  const ok=()=>{P.st.textContent='Kopyalandı.'};
@@ -831,7 +939,7 @@ window.addEventListener('resize',placeOrb);
 const CDN={tf:'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',
  coco:'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js',
  tess:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'};
-const OCRL={hu:'hun',en:'eng',de:'deu'};
+const OCRL=new Proxy({},{get:(_,l)=>LI[l]?LI[l].ocr:'eng'});
 const OBJ={person:'İnsan',bicycle:'Bisiklet',car:'Araba',motorcycle:'Motosiklet',airplane:'Uçak',bus:'Otobüs',train:'Tren',truck:'Kamyon',boat:'Tekne',
  'traffic light':'Trafik ışığı','fire hydrant':'Yangın musluğu','stop sign':'Dur işareti','parking meter':'Park sayacı',bench:'Bank',bird:'Kuş',cat:'Kedi',dog:'Köpek',
  horse:'At',sheep:'Koyun',cow:'İnek',elephant:'Fil',bear:'Ayı',zebra:'Zebra',giraffe:'Zürafa',backpack:'Sırt çantası',umbrella:'Şemsiye',handbag:'El çantası',
@@ -843,7 +951,7 @@ const OBJ={person:'İnsan',bicycle:'Bisiklet',car:'Araba',motorcycle:'Motosiklet
  microwave:'Mikrodalga fırın',oven:'Fırın',toaster:'Ekmek kızartma makinesi',sink:'Lavabo',refrigerator:'Buzdolabı',book:'Kitap',clock:'Saat',vase:'Vazo',
  scissors:'Makas','teddy bear':'Oyuncak ayı','hair drier':'Saç kurutma makinesi',toothbrush:'Diş fırçası'};
 const SAYICON='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg>';
-const flagSvg=l=>`<svg class="fl"><use href="#fl-${l}"/></svg>`;
+const flagSvg=flagHTML;
 const letters=t=>(String(t||'').match(/\p{L}/gu)||[]).length;
 /* drop stray marks OCR picks up from sign edges and borders (| _ — etc.) */
 const clean=t=>String(t||'').split(/\s+/).filter(w=>/[\p{L}\p{N}]/u.test(w)).join(' ').trim();
@@ -918,7 +1026,7 @@ async function attach(st,myTap){
 async function openCam(force){
  if(live)stopListen();stopSpeak();tapId++;
  C.el.classList.add('open');C.el.classList.remove('shot','nocam');C.cov.innerHTML='';$('#cFail').hidden=true;
- $('#cLang').innerHTML=`${flagSvg(prefs.far)} ${L[prefs.far].trName} → ${flagSvg('tr')} Türkçe`;
+ $('#cLang').innerHTML=`${flagSvg(prefs.far)} ${L[prefs.far].trName} → ${flagSvg(ME)} ${L[ME].name}`;
  DIAG.length=0;diagT0=performance.now();showDiag(true);
  const myTap=tapId;
  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){diagStatic();dlog('Bu tarayıcıda getUserMedia yok');camFail('Bu tarayıcıda canlı kamera açılamıyor.');return}
@@ -1045,7 +1153,7 @@ async function ocrAt(frame,p){
  return null;
 }
 /* translation: one request for all text keeps the context; ALL-CAPS signs are translated in normal case and put back in caps */
-const LOC={hu:'hu',en:'en',de:'de',tr:'tr'};
+const LOC=new Proxy({},{get:(_,l)=>LI[l]?LI[l].bcp:'en'});
 const isUpper=t=>letters(t)>=2&&t===t.toLocaleUpperCase()&&t!==t.toLocaleLowerCase();
 function forMT(t,l){
  if(!isUpper(t)||letters(t)<4)return t;const low=t.toLocaleLowerCase(LOC[l]);
@@ -1054,17 +1162,20 @@ function forMT(t,l){
 async function trTexts(texts){
  const src=texts.map(t=>forMT(t,prefs.far));let out=null;
  if(src.length>1&&src.join('\n\n').length<4500){
-  const r=await webTr(src.join('\n\n'),prefs.far,'tr');const parts=r?r.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean):[];
+  const r=await webTr(src.join('\n\n'),prefs.far,ME);const parts=r?r.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean):[];
   if(parts.length===src.length)out=parts;
  }
- if(!out){out=[];await pool(src.map((_,i)=>i),4,async i=>{out[i]=await webTr(src[i],prefs.far,'tr')})}
- return texts.map((t,i)=>{const o=(out[i]||'').trim();return isUpper(t)?o.toLocaleUpperCase('tr'):o});
+ if(!out){out=[];await pool(src.map((_,i)=>i),4,async i=>{out[i]=await webTr(src[i],prefs.far,ME)})}
+ return texts.map((t,i)=>{const o=(out[i]||'').trim();return isUpper(t)?o.toLocaleUpperCase(L[ME].bcp):o});
 }
 async function objAt(frame,p){
  const m=await getCoco(),ds=await m.detect(frame,20,0.4);
  return ds.filter(d=>d.score>=0.55&&OBJ[d.class]&&p.x>=d.bbox[0]&&p.x<=d.bbox[0]+d.bbox[2]&&p.y>=d.bbox[1]&&p.y<=d.bbox[1]+d.bbox[3])
   .sort((a,b)=>a.bbox[2]*a.bbox[3]-b.bbox[2]*b.bbox[3])[0]||null;
 }
+/* object names: Turkish names are built in; for any other language of my half they are translated once */
+const objC={};
+async function myObj(cls){if(ME==='tr')return OBJ[cls];if(ME==='en')return cap(cls);const k=ME+'|'+cls;if(!objC[k])objC[k]=cap(await webTr(cls,'en',ME)||cls);return objC[k]}
 async function farName(en){if(prefs.far==='en')return en.charAt(0).toUpperCase()+en.slice(1);const t=await webTr(en,'en',prefs.far);return t||''}
 C.view.addEventListener('click',async e=>{
  if(C.el.classList.contains('shot')||e.target.closest('.ccard'))return;
@@ -1076,7 +1187,7 @@ C.view.addEventListener('click',async e=>{
  const obj=await objP;if(id!==tapId)return;
  if(obj){
   const [bx,by,bw,bh]=obj.bbox;box=`<i class="obox" style="left:${bx*M.s+M.ox}px;top:${by*M.s+M.oy}px;width:${bw*M.s}px;height:${bh*M.s}px"></i>`;
-  const tr=OBJ[obj.class];
+  const tr=obj.my=await myObj(obj.class);if(id!==tapId)return;
   objHtml=`<b>${esc(tr)}</b><div class="pn" id="pn">${flagSvg(prefs.far)}<span>${DOTS}</span></div>`;
   C.cov.innerHTML=box+placeCard(x,y,objHtml+`<span class="tag">${DOTS} yazı aranıyor</span>`,M);
   farName(obj.class).then(n=>{if(id!==tapId||!n)return;obj.far=n;const el=$('#pn');if(el)el.innerHTML=`${flagSvg(prefs.far)}<span>${esc(n)}</span><button class="csay" data-say="${esc(n)}" aria-label="Dinle">${SAYICON}</button>`});
@@ -1085,9 +1196,9 @@ C.view.addEventListener('click',async e=>{
  if(txt){
   C.cov.innerHTML=box+placeCard(x,y,`<b>${DOTS}</b><div class="o">${esc(txt)}</div>`,M);
   const tr=(await trTexts([txt]))[0];if(id!==tapId)return;
-  C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(tr||'Çeviri yapılamadı')}</b><div class="o">${flagSvg(prefs.far)} ${esc(txt)}</div>${obj?`<span class="tag">${esc(OBJ[obj.class])}</span>`:''}`,M);
+  C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(tr||'Çeviri yapılamadı')}</b><div class="o">${flagSvg(prefs.far)} ${esc(txt)}</div>${obj?`<span class="tag">${esc(obj.my)}</span>`:''}`,M);
  }else if(obj){
-  const n=obj.far;C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(OBJ[obj.class])}</b><div class="pn" id="pn">${flagSvg(prefs.far)}<span>${n?esc(n):DOTS}</span>${n?`<button class="csay" data-say="${esc(n)}" aria-label="Dinle">${SAYICON}</button>`:''}</div>`,M);
+  const n=obj.far;C.cov.innerHTML=box+placeCard(x,y,`<b>${esc(obj.my)}</b><div class="pn" id="pn">${flagSvg(prefs.far)}<span>${n?esc(n):DOTS}</span>${n?`<button class="csay" data-say="${esc(n)}" aria-label="Dinle">${SAYICON}</button>`:''}</div>`,M);
  }else{
   C.cov.innerHTML=placeCard(x,y,`<div class="o" style="margin:0">Burada belirgin bir nesne ya da yazı bulamadım. Biraz yaklaşıp tekrar dokun.</div>`,M);
  }
@@ -1260,17 +1371,19 @@ function onLink(o){
  LINK.seen=Date.now();if(ROLE==='host')LINK.joined=true;if(window.__dbg)console.log('LINK '+ROLE+' got '+o.type+' '+JSON.stringify(o).slice(0,90));
  if(o.type==='msg'&&o.m&&!msgs.some(x=>x.id===o.m.id)){push(o.m,true);speakMsg(o.m)}
  else if(o.type==='upd'&&o.m)updMsg(o.m);
- else if(ROLE==='host'&&o.type==='hello')linkSend({type:'state',far:prefs.far,name:NAME,msgs});
+ else if(ROLE==='host'&&o.type==='hello')linkSend({type:'state',far:prefs.far,me:ME,name:NAME,msgs});
+ else if(o.type==='lang'&&o.far&&LI[o.far]){
+  if(ROLE==='guest'){prefs.far=o.far;if(LI[o.me])ME=o.me;msgs=[];applyLang();render()}
+  else if(o.far!==prefs.far&&o.far!==ME){if(live)finish();archive();prefs.far=o.far;applyLang();applyPrefs();render()}}
  else if(ROLE==='guest'){
-  if(o.type==='state'){if(o.far&&o.far!==prefs.far){prefs.far=o.far;applyLang()}const st=Array.isArray(o.msgs)?o.msgs:[],mine=msgs.filter(x=>!st.some(y=>y.id===x.id));msgs=st.concat(mine).sort((a,b)=>(a.t||0)-(b.t||0));render()}
+  if(o.type==='state'){if((o.far&&o.far!==prefs.far)||(LI[o.me]&&o.me!==ME)){if(o.far)prefs.far=o.far;if(LI[o.me])ME=o.me;applyLang()}const st=Array.isArray(o.msgs)?o.msgs:[],mine=msgs.filter(x=>!st.some(y=>y.id===x.id));msgs=st.concat(mine).sort((a,b)=>(a.t||0)-(b.t||0));render()}
   else if(o.type==='clear'){msgs=[];render()}
-  else if(o.type==='lang'&&o.far){prefs.far=o.far;msgs=[];applyLang();render()}
  }
  linkUI();
 }
 /* a message changed on the other phone (back-translation arrived, or it was corrected) */
 function updMsg(m){
- const i=msgs.findIndex(x=>x.id===m.id);if(i<0)return;const old=msgs[i],t=m.from==='tr'?(m.far||prefs.far):'tr';
+ const i=msgs.findIndex(x=>x.id===m.id);if(i<0)return;const old=msgs[i],t=m.from===ME?(m.far||prefs.far):ME;
  msgs[i]=Object.assign({},m,{tip:old.tip});saveMsgs();render();
  if(m.edited&&old[t]!==m[t])speakMsg(msgs[i]);
 }
@@ -1278,9 +1391,9 @@ function updMsg(m){
    The link opens the conversation in the other phone's browser, exactly like scanning the QR code. */
 function shareLink(){
  if(!LINK.room||!navigator.share)return;const T=L[prefs.far];
- navigator.share({title:'Tercüman',text:T.inv.replace('{n}',NAME||'Tercüman'),url:joinUrl()}).then(()=>{},()=>{}).catch(()=>{});
+ navigator.share({title:'Tercüman',text:T.inv.split('{n}').join(NAME||'Tercüman'),url:joinUrl()}).then(()=>{},()=>{}).catch(()=>{});
 }
-function joinUrl(){return location.origin+location.pathname+'#join='+LINK.room+'.'+LINK.keyRaw+'&l='+prefs.far+'&n='+encodeURIComponent(NAME||'')+'&b='+LINK.bi}
+function joinUrl(){return location.origin+location.pathname+'#join='+LINK.room+'.'+LINK.keyRaw+'&l='+prefs.far+'&m='+ME+'&n='+encodeURIComponent(NAME||'')+'&b='+LINK.bi}
 async function drawQR(){
  if(ROLE!=='host'||!LINK.room)return;
  $('#bShare').hidden=!navigator.share;
@@ -1297,14 +1410,16 @@ function linkUI(){
   document.body.classList.toggle('solo',!!solo);document.body.classList.toggle('joined',!!solo);
   if(solo&&live&&live.side==='far')finish();
   const q=$('#qrb');q.hidden=!$('#qrS').innerHTML;q.classList.toggle('on',on);$('#qrC').textContent=on?T.on:T.qr;$('#far').classList.toggle('hasqr',!q.hidden&&!on);
-  const pt=$('#peerTr');pt.hidden=!on&&!solo;pt.textContent=on?'Karşı taraf bağlı':L.tr.wait;pt.classList.toggle('off',!on);
+  const pt=$('#peerTr');pt.hidden=!on&&!solo;pt.textContent=on?L[ME].peerOn:L[ME].wait;pt.classList.toggle('off',!on);
  }
  else{const p=$('#peerFar');p.hidden=false;p.textContent=on?T.conn:T.lost;p.classList.toggle('off',!on);const g=$('#gLeave');g.hidden=false;if(!g.classList.contains('arm'))g.textContent=T.leave}
 }
+function guestTexts(){
+ if(ROLE!=='guest')return;const T=L[prefs.far],n=JOIN.n||'Tercüman';document.documentElement.lang=prefs.far;
+ $('#gjF').innerHTML=flagHTML(prefs.far);$('#gjT').textContent=T.inv.split('{n}').join(n);$('#gjN').textContent=T.jn.split('{n}').join(n);$('#gjB').textContent=T.join;
+}
 function guestStart(){
- document.body.classList.add('guest');const T=L[prefs.far],n=JOIN.n||'Tercüman';
- document.documentElement.lang=prefs.far;
- $('#gjF use').setAttribute('href','#fl-'+prefs.far);$('#gjT').textContent=T.inv.replace('{n}',n);$('#gjN').textContent=T.jn.replace('{n}',n);$('#gjB').textContent=T.join;
+ document.body.classList.add('guest');guestTexts();
  if(load('tercuman.ended',[]).includes(JOIN.room)){guestEnded('ended',false);return}
  $('#gjoin').hidden=false;
  $('#gjB').addEventListener('click',()=>{unlock();$('#gjoin').hidden=true;linkStart();render()});
@@ -1318,13 +1433,12 @@ function guestEnded(key,remember,canRejoin){
  if(remember||key==='ended'){const e=load('tercuman.ended',[]);if(!e.includes(JOIN.room)){e.push(JOIN.room);save('tercuman.ended',e.slice(-30))}}
  if(live)finish();stopSpeak();speechQ=null;clearInterval(LINK.timer);
  if(LINK.cl){try{LINK.cl.end(true)}catch(e){}LINK.cl=null}LINK.up=false;LINK.q=[];
- const T=L[prefs.far];$('#gjoin').hidden=true;$('#geF use').setAttribute('href','#fl-'+prefs.far);$('#geT').textContent=T[key];
+ const T=L[prefs.far];$('#gjoin').hidden=true;$('#geF').innerHTML=flagHTML(prefs.far);$('#geT').textContent=T[key];
  const b=$('#geB');b.hidden=!canRejoin;b.textContent=T.join;b.onclick=()=>location.reload();
  $('#gend').hidden=false;
 }
 /* ---------- welcome ---------- */
 let NAME=load('tercuman.name','');
-const WEL=['Günaydın','Tünaydın','İyi akşamlar'];
 const SKY=[ /* morning sun on the horizon, afternoon sun, evening moon */
  '<g fill="#ffd23f"><circle cx="60" cy="62" r="22"/></g><g stroke="#ffd23f" stroke-width="4" stroke-linecap="round"><path d="M60 26v-12M33 38l-8-8M87 38l8-8M22 60H10M98 60h12"/></g><rect x="0" y="62" width="120" height="18" fill="#c4122f"/><path d="M6 64h108" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"/>',
  '<circle cx="60" cy="40" r="20" fill="#ffd23f"/><g stroke="#ffd23f" stroke-width="4" stroke-linecap="round"><path d="M60 8v-6M60 72v6M28 40h-6M92 40h6M37 17l-4-4M83 17l4-4M37 63l-4 4M83 63l4 4"/></g>',
@@ -1336,49 +1450,67 @@ function closeSplash(){
  spl.classList.add('out');document.body.classList.remove('intro');
  setTimeout(()=>{spl.classList.remove('open','out','wait');closing=false},1700);
 }
-const greetText=()=>NAME?`${WEL[dayPart()]}, ${NAME}!`:`${WEL[dayPart()]}!`;
-function askName(){spl.classList.add('ask');spl.classList.remove('wait');$('#wtx').textContent='Hoş geldin!';$('#nmIn').value=NAME}
+const greetText=()=>{const w=L[ME]['wel'+dayPart()];return NAME?`${w}, ${NAME}!`:`${w}!`};
+/* every text of the welcome screen follows my language */
+function splashTexts(){
+ const M=L[ME];if(!$('#spl'))return;
+ $('.spl .go').textContent=M.go;$('.spl .ask-t').textContent=M.askT;$('#nmIn').placeholder=M.nameP;$('#nmIn').setAttribute('aria-label',M.nameP);
+ $('#nfGo').textContent=M.start;$('#chg').textContent=M.chg;$('#dfT').textContent=M.defL;
+ if(spl.classList.contains('ask'))$('#wtx').textContent=M.welcome;
+ else if(spl.classList.contains('open')&&!closing)$('#wtx').textContent=NAME?M.welcomeN.split('{n}').join(NAME):M.welcome;
+}
+function askName(){
+ spl.classList.add('ask');spl.classList.remove('wait');$('#nmIn').value=NAME;
+ const sel=$('#dfL');sel.innerHTML=LANGS.map(x=>`<option value="${x[0]}">${esc(lname(x[0],x[0]))}</option>`).join('');sel.value=ME;
+ splashTexts();
+}
 /* speak the greeting; when it ends, fade away. onBlocked runs if the phone refuses sound without a tap */
 function greet(onBlocked){
  if(!prefs.speak||!SS){splT=setTimeout(closeSplash,1800);return}
  let ok=false;
- try{const v=voiceFor('tr'),u=new SpeechSynthesisUtterance(wtext);if(v){u.voice=v;u.lang=v.lang}else u.lang='tr-TR';
+ try{const v=voiceFor(ME),u=new SpeechSynthesisUtterance(wtext);if(v){u.voice=v;u.lang=v.lang}else u.lang=L[ME].bcp;
   u.rate=1;u.onstart=()=>{ok=true;unlocked=true;clearTimeout(splT);splT=setTimeout(closeSplash,5000)};
   u.onend=u.onerror=()=>{if(ok)setTimeout(closeSplash,350)};
   SS.cancel();SS.speak(u);
  }catch(e){}
  setTimeout(()=>{if(!ok){try{SS.cancel()}catch(e){}onBlocked&&onBlocked()}},1000);
 }
-function welcome(){
+async function welcome(){
  closing=false;clearTimeout(splT);
+ /* a language without hand-written texts gets them translated first, so the greeting is spoken in the right language */
+ if(!hasUI(ME)){try{await Promise.race([needUI(ME),new Promise(r=>setTimeout(r,2500))])}catch(e){}}
  wtext=greetText();$('#sky').innerHTML=SKY[dayPart()];spl.classList.remove('out','ask','wait');spl.classList.add('open');document.body.classList.add('intro');
  if(!NAME){askName();return}
- $('#wtx').textContent=`Hoş geldin, ${NAME}!`;
+ splashTexts();
  greet(()=>spl.classList.add('wait'));
 }
 $('#nf').addEventListener('submit',e=>{
  e.preventDefault();e.stopPropagation();let v=$('#nmIn').value.trim().replace(/\s+/g,' ');
- if(v)v=v.split(' ').map(w=>w.charAt(0).toLocaleUpperCase('tr')+w.slice(1)).join(' ');
+ if(v)v=v.split(' ').map(w=>w.charAt(0).toLocaleUpperCase(L[ME].bcp)+w.slice(1)).join(' ');
  NAME=v;save('tercuman.name',NAME);$('#nmIn').blur();
- wtext=greetText();$('#wtx').textContent=NAME?`Hoş geldin, ${NAME}!`:'Hoş geldin!';spl.classList.remove('ask');
+ const d=$('#dfL').value;if(LI[d]){DEF=d;save('tercuman.def',DEF);ME=DEF;fixFar();applyLang();applyPrefs();render()}
+ wtext=greetText();spl.classList.remove('ask');splashTexts();
  unlocked=true;greet(()=>splT=setTimeout(closeSplash,600));
 });
+/* choosing a language in the welcome form shows the form in that language right away */
+$('#dfL').addEventListener('change',e=>{const d=e.target.value;if(!LI[d])return;ME=d;fixFar();splashTexts();if(!hasUI(d))needUI(d).then(()=>{if(ME===d)splashTexts()})});
+$('#dfL').addEventListener('click',e=>e.stopPropagation());
 $('#chg').addEventListener('click',e=>{e.stopPropagation();clearTimeout(splT);try{SS&&SS.cancel()}catch(_){}askName();setTimeout(()=>$('#nmIn').focus(),50)});
 /* when sound was blocked, the first tap plays the greeting and starts the fade together */
 spl.addEventListener('click',e=>{
  e.stopPropagation();if(spl.classList.contains('ask')||e.target.closest('.nf')||closing)return;
  let playing=false;try{playing=SS&&SS.speaking}catch(_){}
- if(prefs.speak&&!playing){unlocked=true;speak(wtext,'tr')}
+ if(prefs.speak&&!playing){unlocked=true;speak(wtext,ME)}
  closeSplash();
 });
 let hiddenAt=0;const AWAY=2*60e3;
-function freshStart(){if(ROLE!=='host')return;if(C.el.classList.contains('open'))closeCam();if(live)finish();stopSpeak();archive();applyLang();render();welcome()}
+function freshStart(){if(ROLE!=='host')return;if(C.el.classList.contains('open'))closeCam();if(live)finish();stopSpeak();archive();closeDD();ME=DEF;fixFar();applyLang();applyPrefs();render();welcome()}
 setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.7.4';
+const APP_VERSION='1.8.0';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
