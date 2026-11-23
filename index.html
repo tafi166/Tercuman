@@ -726,7 +726,8 @@ function camFail(msg,waiting,retry){if(!waiting)cstat('cam','');C.el.classList.a
  $('#cFailT').textContent=msg+(STANDALONE?' Ana ekrana eklenen uygulamalarda bu bilinen bir iPhone sorunu; Safari\'de canlı kamera genelde açılır.':'')+' Telefonun kendi kamerasıyla çekip yazıları yine çevirebilirsin.';
  $('#cRetry').hidden=!retry;$('#cFail').hidden=false}
 const STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
-let camLive=load('tercuman.camLive','');
+try{localStorage.removeItem('tercuman.camLive')}catch(e){}
+let camLive=load('tercuman.camLive2','');
 async function openCam(force){
  if(live)stopListen();stopSpeak();tapId++;
  C.el.classList.add('open');C.el.classList.remove('shot','nocam');C.cov.innerHTML='';$('#cFail').hidden=true;
@@ -741,7 +742,7 @@ async function openCam(force){
     (a hanging request can also keep the phone's own camera busy); offer the working way and a retry */
  if(STANDALONE&&camLive==='0'&&!force){camFail('Bu uygulamada canlı kamera son seferde açılmadı.',false,true);return}
  cstat('cam','Kamera izni bekleniyor…');
- const slow=setTimeout(()=>{if(myTap===tapId&&!stream){camLive='0';save('tercuman.camLive','0');camFail('Canlı kamera yanıt vermiyor.',true)}},4000);
+ const slow=setTimeout(()=>{if(myTap===tapId&&!stream){camLive='0';save('tercuman.camLive2','0');camFail('Canlı kamera yanıt vermiyor.',true)}},4000);
  const tries=[{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},{facingMode:'environment'},true];
  let err=null,got=null;
  for(const v of tries){
@@ -751,7 +752,7 @@ async function openCam(force){
  clearTimeout(slow);
  if(!got){if(myTap===tapId)camFail(CAM_ERR[err&&err.name]||('Kamera açılamadı'+(err&&err.name?' ('+err.name+')':'')+'.'));return}
  if(myTap!==tapId||!C.el.classList.contains('open')||C.el.classList.contains('shot')){got.getTracks().forEach(t=>t.stop());return}
- stream=got;$('#cFail').hidden=true;C.el.classList.remove('nocam');camLive='1';save('tercuman.camLive','1');
+ stream=got;$('#cFail').hidden=true;C.el.classList.remove('nocam');camLive='1';save('tercuman.camLive2','1');
  C.v.setAttribute('playsinline','');C.v.setAttribute('webkit-playsinline','');C.v.muted=true;
  C.v.srcObject=stream;
  /* play() can hang on some iPhones, so it is not awaited: wait for the first picture instead */
@@ -1091,15 +1092,19 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.6.3'; /* keep equal to VERSION in sw.js */
+const APP_VERSION='1.6.4';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
-if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!FRAMED){
- const t0=Date.now(),had=!!navigator.serviceWorker.controller;
- /* a new version that arrives in the first seconds after opening is loaded right away, once */
- navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&Date.now()-t0<20000&&!sessionStorage.getItem('tercuman.upd')){try{sessionStorage.setItem('tercuman.upd','1')}catch(e){}location.reload()}});
- window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{})});
+/* no service worker: on iPhone a home-screen app controlled by one cannot open the live camera (WebKit bug 252465).
+   Remove the one that versions 1.5.0-1.6.3 installed, delete its saved files, and reload once so this page runs free of it. */
+if('serviceWorker' in navigator&&!FRAMED){
+ const ctl=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).then(()=>{
+  if(window.caches)caches.keys().then(ks=>ks.filter(k=>k.startsWith('tercuman-')).forEach(k=>caches.delete(k))).catch(()=>{});
+  let done=false;try{done=!!sessionStorage.getItem('tercuman.nosw')}catch(e){}
+  if(ctl&&!done){try{sessionStorage.setItem('tercuman.nosw','1')}catch(e){}location.reload()}
+ }).catch(()=>{});
 }
 applyLang();applyPrefs();render();placeOrb();
 if(SS&&!voices.length)setTimeout(welcome,250);else welcome();
