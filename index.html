@@ -623,70 +623,57 @@ function voiceFor(l){
 }
 /* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
 function audioMode(t){try{if(navigator.audioSession)navigator.audioSession.type=t}catch(e){}}
-function stopSpeak(){ttsSeq++;try{if(curSrc){curSrc.onended=null;curSrc.stop()}}catch(e){}curSrc=null;try{if(audEl){audEl.onended=audEl.onerror=null;audEl.pause()}}catch(e){}try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
-function unlock(){wake();if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
-/* ---- clear, loud voice for every language ----
-   Translations are read by Google's free text-to-speech voice (the same service that translates), and the sound goes
-   through a compressor and a limiter: quiet parts are lifted, loud parts held back, so it sounds full and loud without
-   distortion. If that is not reachable, the phone's own voice reads it. */
-let AC=null,acIn=null,curSrc=null,audEl=null,ttsSeq=0,ttsMode='wa';const bufC=new Map();
-const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-function ac(){
- if(AC)return AC;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
- try{AC=new C();
-  const lift=AC.createDynamicsCompressor();lift.threshold.value=-32;lift.knee.value=10;lift.ratio.value=5;lift.attack.value=.004;lift.release.value=.25;
-  const boost=AC.createGain();boost.gain.value=1.9;
-  const lim=AC.createDynamicsCompressor();lim.threshold.value=-2;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.08;
-  lift.connect(boost);boost.connect(lim);lim.connect(AC.destination);acIn=lift;
- }catch(e){AC=null}
- return AC}
-/* sound may only start after a tap: every tap wakes the sound engine and the player */
-function wake(){
- const a=ac();if(a&&a.state!=='running')try{a.resume()}catch(e){}
- if(!audEl){audEl=new Audio();audEl.preload='auto';audEl.setAttribute('playsinline','');try{audEl.src=SILENT;const p=audEl.play();p&&p.catch&&p.catch(()=>{})}catch(e){}}
+function stopSpeak(){ttsSeq++;try{if(audEl){audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause()}}catch(e){}try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
+function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
+/* ---- clear voice for every language ----
+   Translations are read by Google's free text-to-speech voice (the same service that translates) through one audio
+   player. iPhone lets that player make sound later only if it was started once by a tap, so every tap starts it
+   silently until that has worked. Any failure is noticed (error, refusal, or no sound starting within a few seconds),
+   and then the phone's own voice reads the text instead. */
+let audEl=null,elOK=false,ttsSeq=0,ttsBad=0,ttsBadAt=0;
+const SILENT='data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
+function wake(e){
+ if(elOK||(e&&e.isTrusted===false))return;
+ if(!audEl){audEl=new Audio();audEl.preload='auto';audEl.setAttribute('playsinline','')}
+ if(!audEl.paused)return; /* never interrupt a voice that is playing */
+ /* calling play() inside a tap is what unlocks the player on iPhone, whatever this silent clip does */
+ try{audEl.src=SILENT;audEl.volume=1;const p=audEl.play();elOK=true;if(p&&p.catch)p.catch(()=>{})}catch(e){}
 }
-for(const ev of ['pointerdown','touchend','click'])document.addEventListener(ev,wake,{capture:true,passive:true});
+for(const ev of ['touchend','click'])document.addEventListener(ev,wake,{capture:true,passive:true});
 const ttsCode=l=>l==='pt-BR'?'pt-BR':l==='zh'?'zh-CN':G(l);
-/* two addresses of the same voice: the first can be read by the page and boosted, the second only played as it is */
-const ttsUrl=(t,l)=>`https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}&total=1&idx=0&textlen=${t.length}`;
-const ttsUrl2=(t,l)=>`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}`;
+const ttsUrl=(t,l)=>`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}`;
 /* the voice service reads at most about 200 characters at once: split at sentence ends, then commas, then spaces */
 function ttsParts(text){
  const out=[];let rest=String(text).replace(/\s+/g,' ').trim();
  while(rest.length>180){let cut=-1;for(const re of [/[.!?。！？]\s/g,/[,;:،、，]\s/g,/\s/g]){let m;re.lastIndex=0;while((m=re.exec(rest))&&m.index<180)cut=m.index+1;if(cut>40)break}
   if(cut<=0)cut=180;out.push(rest.slice(0,cut).trim());rest=rest.slice(cut).trim()}
  if(rest)out.push(rest);return out}
-async function ttsBuf(t,l){
- const k=l+'|'+t;if(bufC.has(k))return bufC.get(k);
- const r=await fetch(ttsUrl(t,l));if(!r.ok)throw new Error('tts '+r.status);
- const ab=await r.arrayBuffer();const b=await new Promise((res,rej)=>{const q=AC.decodeAudioData(ab,res,rej);q&&q.catch&&q.catch(rej)});
- bufC.set(k,b);if(bufC.size>80)bufC.delete(bufC.keys().next().value);return b}
-function playBuf(b,seq){return new Promise(res=>{if(seq!==ttsSeq)return res();const s=AC.createBufferSource();s.buffer=b;s.connect(acIn);curSrc=s;s.onended=()=>{if(curSrc===s)curSrc=null;res()};s.start()})}
-function playEl(url,seq){return new Promise((res,rej)=>{if(seq!==ttsSeq)return res();const a=audEl||(audEl=new Audio());a.onended=()=>res();a.onerror=()=>rej(new Error('audio'));a.src=url;a.volume=1;const p=a.play();if(p&&p.catch)p.catch(rej)})}
-/* true: it was read (or stopped on purpose); false: nothing could be played, the phone's voice takes over */
+/* resolves when the part has been read; rejects when sound did not start */
+function playEl(url,seq){return new Promise((res,rej)=>{
+ if(seq!==ttsSeq)return res();if(!audEl){audEl=new Audio();audEl.setAttribute('playsinline','')}
+ const a=audEl;let began=false,t1=0,t2=0;
+ const end=f=>{clearTimeout(t1);clearTimeout(t2);a.onended=a.onerror=a.onplaying=null;f()};
+ a.onplaying=()=>{began=true;clearTimeout(t1);t2=setTimeout(()=>end(res),60000)};
+ a.onended=()=>end(res);
+ a.onerror=()=>end(()=>began?res():rej(new Error('audio')));
+ t1=setTimeout(()=>{try{a.pause()}catch(e){}end(()=>rej(new Error('no sound')))},6000);
+ a.src=url;a.volume=1;
+ try{const p=a.play();if(p&&p.catch)p.catch(e=>end(()=>began?res():rej(e)))}catch(e){end(()=>rej(e))}
+})}
+/* true: read (or stopped on purpose); false: no sound, the phone's own voice takes over */
 async function cloudSpeak(text,l,seq){
- const parts=ttsParts(text);if(!parts.length)return true;
- const a=ttsMode==='wa'?ac():null;
- if(a){
-  if(a.state!=='running')try{await a.resume()}catch(e){}
-  if(a.state==='running'){
-   let started=false;
-   try{const ps=parts.map(t=>ttsBuf(t,l));ps.forEach(x=>x.catch(()=>{}));
-    for(const x of ps){const b=await x;if(seq!==ttsSeq)return true;started=true;await playBuf(b,seq)}
-    return true}
-   catch(e){if(started)return true;ttsMode='el'}
-  }
- }
- try{for(const t of parts){if(seq!==ttsSeq)return true;await playEl(ttsUrl2(t,l),seq)}return true}catch(e){return false}
+ const parts=ttsParts(text);let any=false;
+ try{for(const t of parts){if(seq!==ttsSeq)return true;await playEl(ttsUrl(t,l),seq);any=true}ttsBad=0;return true}
+ catch(e){ttsBad++;ttsBadAt=Date.now();return any}
 }
 /* speech that arrives while the microphone is listening waits: playing sound would cut the microphone on iPhone */
 let speechQ=null;
 function flushSpeech(){if(!live&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l)}}
 function speak(text,l){
  if(!text)return;if(live){speechQ={text,l};return}
- stopSpeak();audioMode('playback');wake();
+ stopSpeak();audioMode('playback');
  const done=()=>{speakingLang=null;render()};
- if(navigator.onLine!==false){
+ if(navigator.onLine!==false&&(ttsBad<2||Date.now()-ttsBadAt>120e3)){
   const seq=ttsSeq;speakingLang=l;render();
   cloudSpeak(text,l,seq).then(ok=>{if(seq!==ttsSeq)return;if(ok)done();else devSpeak(text,l,done)});
   return}
@@ -1608,7 +1595,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.8.1';
+const APP_VERSION='1.8.2';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
