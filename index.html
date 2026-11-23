@@ -286,6 +286,14 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .ph button,.pact button{min-height:44px;padding:0 14px;border-radius:12px;font-weight:700;background:light-dark(#e9eaec,#24272b)}
 .ph .x{width:44px;padding:0;font-size:22px}
 .srch{width:100%;font:inherit;font-size:16px;padding:12px 16px;border-radius:999px;border:1px solid light-dark(#d5d5d5,#33363b);background:light-dark(#fff,#1c1e21);color:inherit;margin-bottom:10px}
+.sw{position:relative;border-radius:16px;overflow:hidden;flex:none;transition:opacity .2s,transform .2s}
+.sw.gone{opacity:0;transform:translateX(-30px)}
+.sw .sdel{position:absolute;top:0;bottom:0;right:0;width:100px;display:grid;place-items:center;padding-left:12px;background:#e0202f;color:#fff;border-radius:0 16px 16px 0}
+.sw .sdel svg{width:26px;height:26px}
+.sw .swf{position:relative;z-index:1;transition:transform .22s ease;touch-action:pan-y}
+.sw.drag .swf{transition:none}
+.sw:not(.drag):not(.open) .sdel{visibility:hidden}
+.sw .swf>.conv,.sw .swf>.ln{width:100%;display:block;text-align:start}
 .plist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:12px}
 .conv{display:block;width:100%;text-align:start;background:light-dark(#fff,#1c1e21);border-radius:16px;padding:12px 14px;border-inline-start:6px solid var(--c,#888)}
 .conv b{display:block;font-size:16px}.conv span{font-size:13px;opacity:.7}
@@ -299,6 +307,7 @@ button.ln{display:block;width:100%;text-align:start}
 .ln .o{font-size:15px;opacity:.75}
 .pact{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:10px}
 .pact .arm{background:#c4122f;color:#fff}
+.pact[hidden],#srch[hidden],#pBack[hidden]{display:none!important}
 .pnote{font-size:13px;opacity:.65;text-align:center;margin:10px 0 0}
 #pst{font-size:14px;font-weight:600;color:light-dark(#0b6b3a,#7fdca5);min-height:1.2em}
 @keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
@@ -595,6 +604,7 @@ function vScore(v,l){
  const n=(v.name||'')+' '+(v.voiceURI||'');
  if(BAD.test(v.name||'')||/eloquence|novelty/i.test(n))return -1;
  let s=0;
+ if(/compact/i.test(n))s-=20;
  if(/premium/i.test(n))s+=100;else if(/enhanced|gelişmiş|verbessert|améliorée/i.test(n))s+=80;
  if(/siri/i.test(n))s+=60;
  if(/neural|natural|online/i.test(n))s+=50;
@@ -613,15 +623,77 @@ function voiceFor(l){
 }
 /* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
 function audioMode(t){try{if(navigator.audioSession)navigator.audioSession.type=t}catch(e){}}
-function stopSpeak(){try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
-function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
+function stopSpeak(){ttsSeq++;try{if(curSrc){curSrc.onended=null;curSrc.stop()}}catch(e){}curSrc=null;try{if(audEl){audEl.onended=audEl.onerror=null;audEl.pause()}}catch(e){}try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
+function unlock(){wake();if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
+/* ---- clear, loud voice for every language ----
+   Translations are read by Google's free text-to-speech voice (the same service that translates), and the sound goes
+   through a compressor and a limiter: quiet parts are lifted, loud parts held back, so it sounds full and loud without
+   distortion. If that is not reachable, the phone's own voice reads it. */
+let AC=null,acIn=null,curSrc=null,audEl=null,ttsSeq=0,ttsMode='wa';const bufC=new Map();
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+function ac(){
+ if(AC)return AC;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+ try{AC=new C();
+  const lift=AC.createDynamicsCompressor();lift.threshold.value=-32;lift.knee.value=10;lift.ratio.value=5;lift.attack.value=.004;lift.release.value=.25;
+  const boost=AC.createGain();boost.gain.value=1.9;
+  const lim=AC.createDynamicsCompressor();lim.threshold.value=-2;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.08;
+  lift.connect(boost);boost.connect(lim);lim.connect(AC.destination);acIn=lift;
+ }catch(e){AC=null}
+ return AC}
+/* sound may only start after a tap: every tap wakes the sound engine and the player */
+function wake(){
+ const a=ac();if(a&&a.state!=='running')try{a.resume()}catch(e){}
+ if(!audEl){audEl=new Audio();audEl.preload='auto';audEl.setAttribute('playsinline','');try{audEl.src=SILENT;const p=audEl.play();p&&p.catch&&p.catch(()=>{})}catch(e){}}
+}
+for(const ev of ['pointerdown','touchend','click'])document.addEventListener(ev,wake,{capture:true,passive:true});
+const ttsCode=l=>l==='pt-BR'?'pt-BR':l==='zh'?'zh-CN':G(l);
+/* two addresses of the same voice: the first can be read by the page and boosted, the second only played as it is */
+const ttsUrl=(t,l)=>`https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}&total=1&idx=0&textlen=${t.length}`;
+const ttsUrl2=(t,l)=>`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}`;
+/* the voice service reads at most about 200 characters at once: split at sentence ends, then commas, then spaces */
+function ttsParts(text){
+ const out=[];let rest=String(text).replace(/\s+/g,' ').trim();
+ while(rest.length>180){let cut=-1;for(const re of [/[.!?。！？]\s/g,/[,;:،、，]\s/g,/\s/g]){let m;re.lastIndex=0;while((m=re.exec(rest))&&m.index<180)cut=m.index+1;if(cut>40)break}
+  if(cut<=0)cut=180;out.push(rest.slice(0,cut).trim());rest=rest.slice(cut).trim()}
+ if(rest)out.push(rest);return out}
+async function ttsBuf(t,l){
+ const k=l+'|'+t;if(bufC.has(k))return bufC.get(k);
+ const r=await fetch(ttsUrl(t,l));if(!r.ok)throw new Error('tts '+r.status);
+ const ab=await r.arrayBuffer();const b=await new Promise((res,rej)=>{const q=AC.decodeAudioData(ab,res,rej);q&&q.catch&&q.catch(rej)});
+ bufC.set(k,b);if(bufC.size>80)bufC.delete(bufC.keys().next().value);return b}
+function playBuf(b,seq){return new Promise(res=>{if(seq!==ttsSeq)return res();const s=AC.createBufferSource();s.buffer=b;s.connect(acIn);curSrc=s;s.onended=()=>{if(curSrc===s)curSrc=null;res()};s.start()})}
+function playEl(url,seq){return new Promise((res,rej)=>{if(seq!==ttsSeq)return res();const a=audEl||(audEl=new Audio());a.onended=()=>res();a.onerror=()=>rej(new Error('audio'));a.src=url;a.volume=1;const p=a.play();if(p&&p.catch)p.catch(rej)})}
+/* true: it was read (or stopped on purpose); false: nothing could be played, the phone's voice takes over */
+async function cloudSpeak(text,l,seq){
+ const parts=ttsParts(text);if(!parts.length)return true;
+ const a=ttsMode==='wa'?ac():null;
+ if(a){
+  if(a.state!=='running')try{await a.resume()}catch(e){}
+  if(a.state==='running'){
+   let started=false;
+   try{const ps=parts.map(t=>ttsBuf(t,l));ps.forEach(x=>x.catch(()=>{}));
+    for(const x of ps){const b=await x;if(seq!==ttsSeq)return true;started=true;await playBuf(b,seq)}
+    return true}
+   catch(e){if(started)return true;ttsMode='el'}
+  }
+ }
+ try{for(const t of parts){if(seq!==ttsSeq)return true;await playEl(ttsUrl2(t,l),seq)}return true}catch(e){return false}
+}
 /* speech that arrives while the microphone is listening waits: playing sound would cut the microphone on iPhone */
 let speechQ=null;
 function flushSpeech(){if(!live&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l)}}
 function speak(text,l){
  if(!text)return;if(live){speechQ={text,l};return}
- stopSpeak();audioMode('playback');const v=voiceFor(l);
+ stopSpeak();audioMode('playback');wake();
  const done=()=>{speakingLang=null;render()};
+ if(navigator.onLine!==false){
+  const seq=ttsSeq;speakingLang=l;render();
+  cloudSpeak(text,l,seq).then(ok=>{if(seq!==ttsSeq)return;if(ok)done();else devSpeak(text,l,done)});
+  return}
+ devSpeak(text,l,done);
+}
+function devSpeak(text,l,done){
+ const v=voiceFor(l);
  if(SS&&v){try{const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=1;u.pitch=1;u.volume=1;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render();return}catch(e){}}
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
@@ -875,23 +947,45 @@ function line(m,q,ci,showDate){
  const main=m.err&&!me?'(çevrilemedi)':trOf(m),sub=otherOf(m);
  return `<${tag} class="ln${me?' me':''}"${ci!=null?` data-c="${ci}"`:''} style="--c:${L[f].color}"><small>${esc(when+who)}</small><div class="t">${hl(main,q)}</div>${sub?`<div class="o">${hl(sub,q)}</div>`:''}</${tag}>`;
 }
+function saveHist(){let ok=false;while(!ok){try{localStorage.setItem('tercuman.hist',JSON.stringify(hist));ok=true}catch(e){if(hist.length<2)break;hist.pop()}}}
+/* each row sits on a red delete button; swiping it left uncovers the button, one tap deletes, no question asked */
+const swr=(inner,attrs)=>`<div class="sw"${attrs}><button class="sdel" aria-label="Sil"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 9Zm4 2v9h2v-9h-2Zm4 0v9h2v-9h-2Z"/></svg></button><div class="swf">${inner}</div></div>`;
+function delRow(row){
+ const cs=allConvs(),c=cs[+row.dataset.sc];if(!c)return;
+ if(row.dataset.mi!=null){const i=+row.dataset.mi;if(i>=0&&i<c.msgs.length)c.msgs.splice(i,1)}
+ const empty=row.dataset.mi==null||!c.msgs.length;
+ if(c.cur){if(empty){msgs.length=0;if(ROLE==='host')linkSend({type:'clear'})}saveMsgs();render()}
+ else{if(empty)hist=hist.filter(h=>h!==c);saveHist()}
+ row.classList.add('gone');
+ setTimeout(()=>{if(openConv&&!empty)showConv(allConvs().indexOf(openConv));else showList()},220);
+}
+let swS=null,swOpen=null;
+const swClose=()=>{if(swOpen){swOpen.querySelector('.swf').style.transform='';swOpen.classList.remove('open');swOpen=null}};
+P.list.addEventListener('pointerdown',e=>{const r=e.target.closest('.sw');if(!r||e.target.closest('.sdel'))return;swS={r,x:e.clientX,y:e.clientY,dx:0,on:false,base:r===swOpen?-88:0}},{passive:true});
+P.list.addEventListener('pointermove',e=>{
+ if(!swS)return;const dx=e.clientX-swS.x,dy=e.clientY-swS.y;
+ if(!swS.on){if(Math.abs(dx)>10&&Math.abs(dx)>Math.abs(dy)*1.3){swS.on=true;if(swOpen&&swOpen!==swS.r)swClose();swS.r.classList.add('drag')}else if(Math.abs(dy)>10){swS=null;return}else return}
+ swS.dx=dx;const x=Math.max(-120,Math.min(0,swS.base+dx));swS.r.querySelector('.swf').style.transform=`translateX(${x}px)`});
+const swEnd=()=>{if(!swS)return;const s=swS;swS=null;if(!s.on)return;s.r.classList.remove('drag');s.r.dataset.swiped=Date.now();
+ if(s.base+s.dx<-44){s.r.querySelector('.swf').style.transform='translateX(-88px)';s.r.classList.add('open');swOpen=s.r}else{s.r.querySelector('.swf').style.transform='';s.r.classList.remove('open');if(swOpen===s.r)swOpen=null}};
+P.list.addEventListener('pointerup',swEnd);P.list.addEventListener('pointercancel',swEnd);
 function showList(){
  openConv=null;P.back.hidden=true;P.act.hidden=true;P.srch.hidden=false;P.title.textContent='Konuşma geçmişi';P.st.textContent='';
  const q=lc(P.srch.value.trim()),cs=allConvs();
  if(!cs.length){P.list.innerHTML='<p class="pnote">Henüz kayıtlı konuşma yok. Konuştukça burada birikecek.</p>';return}
  if(q){
   const res=[];cs.forEach((c,ci)=>c.msgs.forEach(m=>{if(lc(trOf(m)+'\n'+otherOf(m)).includes(q)||lc(fmtD(m.t||c.start)).includes(q))res.push([ci,m])}));
-  P.list.innerHTML=res.length?res.slice(0,200).map(([ci,m])=>line(m,q,ci,true)).join(''):'<p class="pnote">Sonuç bulunamadı.</p>';return;
+  P.list.innerHTML=res.length?res.slice(0,200).map(([ci,m])=>swr(line(m,q,ci,true),` data-sc="${ci}" data-mi="${cs[ci].msgs.indexOf(m)}"`)).join(''):'<p class="pnote">Sonuç bulunamadı.</p>';return;
  }
  P.list.innerHTML=cs.map((c,ci)=>{
   const fl=convFar(c),first=c.msgs.find(m=>trOf(m))||c.msgs[0];
-  return `<button class="conv" data-c="${ci}" style="--c:${L[fl[0]].color}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${fl.map(f=>flagHTML(f)+esc(lname(f,'tr'))).join(', ')} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`}).join('');
+  return swr(`<button class="conv" data-c="${ci}" style="--c:${L[fl[0]].color}"><b>${c.cur?'Şu anki konuşma':esc(fmtD(c.start))}</b><span>${fl.map(f=>flagHTML(f)+esc(lname(f,'tr'))).join(', ')} · ${c.msgs.length} mesaj · ${fmtT(c.start)} - ${fmtT(c.end)}</span><p>${esc(trOf(first)||otherOf(first))}</p></button>`,` data-sc="${ci}"`)}).join('');
 }
 function showConv(ci){
  const c=allConvs()[ci];if(!c)return;openConv=c;
  P.back.hidden=false;P.act.hidden=false;P.srch.hidden=true;P.st.textContent='';P.del.textContent='Sil';P.del.classList.remove('arm');
  P.title.textContent=c.cur?'Şu anki konuşma':fmtD(c.start);
- P.list.innerHTML=c.msgs.map(m=>line(m,'',null,false)).join('');P.list.scrollTop=0;
+ P.list.innerHTML=c.msgs.map((m,mi)=>swr(line(m,'',null,false),` data-sc="${ci}" data-mi="${mi}"`)).join('');P.list.scrollTop=0;
 }
 function convText(c){
  return `Tercüman · ${fmtD(c.start)} · ${lname(meOf(c.msgs[0]||{}),'tr')} ve ${convFar(c).map(f=>lname(f,'tr')).join(', ')}\n\n`+
@@ -906,14 +1000,18 @@ $('#bHist').onclick=()=>{if(live)stopListen();P.srch.value='';showList();P.pan.c
 $('#pClose').onclick=()=>P.pan.classList.remove('open');
 P.back.onclick=showList;
 P.srch.addEventListener('input',showList);
-P.list.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(b)showConv(+b.dataset.c)});
+P.list.addEventListener('click',e=>{
+ const d=e.target.closest('.sdel');if(d){const r=d.closest('.sw');if(r&&r.classList.contains('open'))delRow(r);return}
+ const r=e.target.closest('.sw');
+ if(r&&(r.dataset.swiped&&Date.now()-r.dataset.swiped<350))return;
+ if(swOpen){swClose();return}
+ const b=e.target.closest('[data-c]');if(b)showConv(+b.dataset.c)});
 $('#pCopy').onclick=()=>{if(openConv)copyText(convText(openConv))};
 $('#pShare').onclick=()=>{if(!openConv)return;const t=convText(openConv);
  if(navigator.share)navigator.share({title:'Tercüman konuşması',text:t}).catch(e=>{if(e&&e.name!=='AbortError')copyText(t)});else copyText(t)};
 P.del.onclick=function(){
  if(!openConv)return;
- if(!this.classList.contains('arm')){this.classList.add('arm');this.textContent='Emin misin? Tekrar bas';return}
- if(openConv.cur){msgs=[];saveMsgs();render()}else{hist=hist.filter(h=>h!==openConv);save('tercuman.hist',hist)}
+ if(openConv.cur){msgs.length=0;saveMsgs();render();if(ROLE==='host')linkSend({type:'clear'})}else{hist=hist.filter(h=>h!==openConv);saveHist()}
  P.srch.value='';
  showList();
 };
@@ -1510,7 +1608,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.8.0';
+const APP_VERSION='1.8.1';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
