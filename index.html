@@ -177,6 +177,16 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 #cst{position:absolute;left:50%;top:calc(max(12px,env(safe-area-inset-top)) + 64px);transform:translateX(-50%);background:rgba(0,0,0,.65);padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 .cbot{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 16px max(20px,env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.65))}
 .chint{margin:0;font-size:14px;text-align:center;opacity:.92;text-wrap:balance}
+.crow{display:flex;align-items:center;justify-content:center;gap:34px}
+.cgal,.cgap{width:52px;height:52px;flex:none}
+.cgal{border-radius:14px;background:rgba(255,255,255,.18);display:grid;place-items:center;cursor:pointer}
+.cgal svg{width:26px;height:26px}
+.cfail{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,86vw);background:rgba(20,20,20,.88);border-radius:20px;padding:18px;text-align:center;display:flex;flex-direction:column;gap:14px}
+.cfail[hidden]{display:none}
+.cfail p{margin:0;font-size:15px;line-height:1.4}
+.cfb{display:block;min-height:50px;line-height:50px;border-radius:999px;background:#fff;color:#c4122f;font-weight:800;cursor:pointer}
+.cam.shot .cfail{display:none}
+.cam.nocam .chint,.cam.nocam #cSnap{visibility:hidden}
 .snap{width:76px;height:76px;border-radius:50%;background:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.35);transition:transform .12s}
 .snap:active{transform:scale(.92)}
 .cam.shot .cbot,.cam.shot .chint{display:none}
@@ -289,7 +299,9 @@ button.ln{display:block;width:100%;text-align:start}
  </div>
  <div class="ctop"><button id="cClose" aria-label="Kamerayı kapat">×</button><span class="clang" id="cLang"></span></div>
  <p id="cst" hidden></p>
- <div class="cbot"><p class="chint">Bir nesneye ya da yazıya dokun. Fotoğraf çekersen tüm yazıları çeviririm.</p><button class="snap" id="cSnap" aria-label="Fotoğraf çek"></button></div>
+ <div class="cbot"><p class="chint">Bir nesneye ya da yazıya dokun. Fotoğraf çekersen tüm yazıları çeviririm.</p>
+  <div class="crow"><label class="cgal" aria-label="Galeriden seç ya da telefonun kamerasıyla çek"><input type="file" id="cFile" accept="image/*" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 12h14l-4.5-6-3.5 4.5-2.5-3L5 17Zm3.5-7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg></label><button class="snap" id="cSnap" aria-label="Fotoğraf çek"></button><span class="cgap"></span></div></div>
+ <div class="cfail" id="cFail" hidden><p id="cFailT"></p><label class="cfb"><input type="file" id="cFile2" accept="image/*" hidden>Fotoğraf çek ya da galeriden seç</label></div>
  <div class="sheet" id="sheet">
   <div class="sact"><div class="sseg" role="group" aria-label="Görünüm"><button id="vTr" aria-pressed="true">Çeviri</button><button id="vOr" aria-pressed="false">Orijinal</button></div><button class="pri" id="sSave">Kaydet</button><button id="sRe" class="ico" aria-label="Yeniden çek" title="Yeniden çek"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></svg></button></div>
   <div class="slist" id="slist"></div>
@@ -703,20 +715,36 @@ function getOCR(){
    else if(m.progress<1)cstat('ocr','Yazı tanıma hazırlanıyor… %'+Math.round(m.progress*100))}});
   cstat('ocr','');return w}).catch(e=>{tessP=null;cstat('ocr','');throw e});
  return tessP}
+const CAM_ERR={NotAllowedError:'Kamera izni kapalı. Safari\'de "aA" > Web Sitesi Ayarları > Kamera > İzin Ver yap. Ana ekrandaki uygulamada izin her açılışta sorulabilir.',
+ NotReadableError:'Kamera şu an başka bir uygulama tarafından kullanılıyor. Diğer uygulamayı kapatıp tekrar dene.',
+ NotFoundError:'Bu cihazda kamera bulunamadı.',SecurityError:'Kameraya bu sayfadan erişilemiyor.',AbortError:'Kamera başlatılamadı, tekrar dene.'};
+function camFail(msg){cstat('cam','');C.el.classList.add('nocam');$('#cFailT').textContent=msg+' Bunun yerine telefonun kendi kamerasıyla çekebilir ya da galeriden fotoğraf seçebilirsin.';$('#cFail').hidden=false}
 async function openCam(){
  if(live)stopListen();stopSpeak();tapId++;
- C.el.classList.add('open');C.el.classList.remove('shot');C.cov.innerHTML='';
+ C.el.classList.add('open');C.el.classList.remove('shot','nocam');C.cov.innerHTML='';$('#cFail').hidden=true;
  $('#cLang').innerHTML=`${flagSvg(prefs.far)} ${L[prefs.far].trName} → ${flagSvg('tr')} Türkçe`;
- if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){cstat('cam','Bu tarayıcı kameraya erişemiyor.');return}
+ if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){camFail('Bu tarayıcıda canlı kamera açılamıyor.');return}
  cstat('cam','Kamera açılıyor…');
- try{
-  stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:2560},height:{ideal:1440}}});
-  if(!C.el.classList.contains('open')){stream.getTracks().forEach(t=>t.stop());stream=null;return}
-  C.v.srcObject=stream;await C.v.play().catch(()=>{});cstat('cam','');
-  getCoco().catch(()=>{});getOCR().catch(()=>{});
- }catch(e){cstat('cam','Kameraya izin verilmedi. Ayarlar > Safari > Kamera bölümünden izin ver.')}
+ /* speech output leaves iOS in a play-only audio mode, which can block capture */
+ audioMode('auto');
+ /* try the sharpest setting first, then simpler ones; only a refusal stops the attempts */
+ const tries=[{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},{facingMode:'environment'},true];
+ let err=null;stream=null;
+ for(const v of tries){
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:v});break}
+  catch(e){err=e;if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError'))break}
+ }
+ if(!stream){camFail(CAM_ERR[err&&err.name]||('Kamera açılamadı'+(err&&err.name?' ('+err.name+')':'')+'.'));return}
+ if(!C.el.classList.contains('open')){stream.getTracks().forEach(t=>t.stop());stream=null;return}
+ C.v.setAttribute('playsinline','');C.v.setAttribute('webkit-playsinline','');C.v.muted=true;
+ C.v.srcObject=stream;
+ try{await C.v.play()}catch(e){}
+ /* some phones need a second play() once the picture arrives; if it never does, say so */
+ const t0=Date.now();while(!C.v.videoWidth&&Date.now()-t0<4000){await new Promise(r=>setTimeout(r,200));if(C.v.paused)C.v.play().catch(()=>{})}
+ if(!C.v.videoWidth){camFail('Kamera açıldı ama görüntü gelmedi.');return}
+ cstat('cam','');getCoco().catch(()=>{});getOCR().catch(()=>{});
 }
-function closeCam(){tapId++;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;C.v.srcObject=null;C.el.classList.remove('open','shot');C.cov.innerHTML='';for(const k in cst)cst[k]='';cstat('msg','');shot=null}
+function closeCam(){tapId++;$('#cFail').hidden=true;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;C.v.srcObject=null;C.el.classList.remove('open','shot');C.cov.innerHTML='';for(const k in cst)cst[k]='';cstat('msg','');shot=null}
 function grab(){const v=C.v,w=v.videoWidth,h=v.videoHeight;if(!w||!h)return null;const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);return c}
 function vidMap(){const v=C.v,r=v.getBoundingClientRect(),vw=v.videoWidth,vh=v.videoHeight;if(!vw)return null;const s=Math.max(r.width/vw,r.height/vh);return{s,ox:(r.width-vw*s)/2,oy:(r.height-vh*s)/2,W:r.width,H:r.height,left:r.left,top:r.top}}
 function placeCard(x,y,html,M){const cx=Math.min(Math.max(x,Math.min(165,M.W/2)),M.W-Math.min(165,M.W/2)),up=y>M.H*.58;
@@ -943,8 +971,21 @@ function prepFile(canvas,key){const s=shot;canvas.toBlob(b=>{if(b&&s)s.files[key
 function showView(k){if(!shot)return;const cv=k==='tr'&&shot.tr?shot.tr:shot.orig;shot.view=cv===shot.tr?'tr':'orig';C.img.src=cv.toDataURL('image/jpeg',.9);
  $('#vTr').setAttribute('aria-pressed',shot.view==='tr');$('#vOr').setAttribute('aria-pressed',shot.view==='orig');$('#vTr').disabled=!shot.tr}
 async function pool(items,n,fn){let i=0;await Promise.all(Array.from({length:Math.min(n,items.length)},async()=>{while(i<items.length){const it=items[i++];try{await fn(it)}catch(e){}}}))}
-$('#cSnap').addEventListener('click',async e=>{
- e.stopPropagation();const frame=grab();if(!frame)return;const id=++tapId;
+$('#cSnap').addEventListener('click',e=>{e.stopPropagation();const frame=grab();if(frame)translatePhoto(frame)});
+/* a photo from the gallery or from the phone's own camera app: no camera permission needed */
+async function fromFile(f){
+ if(!f)return;try{
+  const url=URL.createObjectURL(f),img=new Image();img.decoding='async';
+  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;img.src=url});
+  const s=Math.min(1,2560/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement('canvas');
+  c.width=Math.round(img.naturalWidth*s);c.height=Math.round(img.naturalHeight*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+  $('#cFail').hidden=true;translatePhoto(c);
+ }catch(e){cstat('msg','Bu fotoğraf açılamadı.',2500)}
+}
+for(const id of ['cFile','cFile2'])$('#'+id).addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';fromFile(f)});
+for(const el of document.querySelectorAll('.cgal,.cfb'))el.addEventListener('click',e=>e.stopPropagation());
+async function translatePhoto(frame){
+ const id=++tapId;
  shot={orig:frame,tr:null,files:{},stamp:stamp(),view:'orig'};
  C.v.pause();C.cov.innerHTML='';C.el.classList.add('shot');showView('orig');prepFile(frame,'orig');
  C.list.innerHTML=`<p class="snote">${DOTS} Yazılar okunuyor…</p>`;
@@ -965,9 +1006,9 @@ $('#cSnap').addEventListener('click',async e=>{
   if(!blocks.length){const n=C.list.querySelector('.snote');if(shown&&n)n.remove();if(!shown)C.list.innerHTML='<p class="snote">Fotoğrafta okunabilir bir yazı bulamadım. Yazıya biraz daha yaklaşıp düz tutarak tekrar dene.</p>';return}
   await show(blocks,true,2);
  }catch(err){ocrBusy=false;cstat('ocr','');if(id===tapId)C.list.innerHTML='<p class="snote">Yazı tanıma yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.</p>'}
-});
+}
 $('#vTr').onclick=()=>showView('tr');$('#vOr').onclick=()=>showView('orig');
-$('#sRe').onclick=()=>{tapId++;shot=null;C.el.classList.remove('shot');C.img.removeAttribute('src');C.v.play().catch(()=>{})};
+$('#sRe').onclick=()=>{tapId++;shot=null;C.el.classList.remove('shot');C.img.removeAttribute('src');if(stream)C.v.play().catch(()=>{});else{$('#cFail').hidden=false;$('#cFile2').click()}};
 $('#sSave').onclick=()=>{
  if(!shot)return;const f=shot.files[shot.view];if(!f){cstat('msg','Hazırlanıyor, bir saniye sonra tekrar dene.',2000);return}
  if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(()=>{});return}
@@ -1031,7 +1072,7 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.6.0'; /* keep equal to VERSION in sw.js */
+const APP_VERSION='1.6.1'; /* keep equal to VERSION in sw.js */
 $('#ver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
