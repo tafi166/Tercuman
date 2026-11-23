@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>Tercüman</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -624,7 +625,7 @@ function voiceFor(l){
 /* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
 /* returns true when the audio mode really changed: iPhone needs a moment then, or the first syllables are lost */
 function audioMode(t){try{if(navigator.audioSession&&navigator.audioSession.type!==t){navigator.audioSession.type=t;return true}}catch(e){}return false}
-function stopSpeak(){ttsSeq++;try{if(audEl){audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause()}}catch(e){}try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
+function stopSpeak(){ttsSeq++;try{if(audEl){audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause()}}catch(e){}try{if(SS&&speakingLang)SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
 function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
 let hadTap=false; /* iPhone gives a web app no sound at all until the first touch after it was started */
 /* ---- clear voice for every language ----
@@ -633,6 +634,9 @@ let hadTap=false; /* iPhone gives a web app no sound at all until the first touc
    silently until that has worked. Any failure is noticed (error, refusal, or no sound starting within a few seconds),
    and then the phone's own voice reads the text instead. */
 let audEl=null,elOK=false,ttsSeq=0,ttsBad=0,ttsBadAt=0;
+/* remembered once Google's voice has really played on this phone; until then the phone's own voice is used where a first sound must not fail */
+let ttsOK=load('tercuman.ttsok',0),voiceUsed='';
+function voiceNote(v){voiceUsed=v;try{const e=$('#ver2');if(e)e.textContent='Sürüm '+APP_VERSION+' · Ses: '+(v==='g'?'Google':'telefon')}catch(e){}}
 const SILENT='data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA';
 function wake(e){
  if(e&&e.isTrusted===false)return;hadTap=true;
@@ -658,10 +662,10 @@ function playEl(url,seq){return new Promise((res,rej)=>{
  if(seq!==ttsSeq)return res();if(!audEl){audEl=new Audio();audEl.setAttribute('playsinline','')}
  const a=audEl;let began=false,t1=0,t2=0;
  const end=f=>{clearTimeout(t1);clearTimeout(t2);a.onended=a.onerror=a.onplaying=null;f()};
- a.onplaying=()=>{began=true;clearTimeout(t1);t2=setTimeout(()=>end(res),60000)};
+ a.onplaying=()=>{began=true;clearTimeout(t1);t2=setTimeout(()=>end(res),60000);if(!ttsOK){ttsOK=Date.now();save('tercuman.ttsok',ttsOK)}voiceNote('g')};
  a.onended=()=>end(res);
  a.onerror=()=>end(()=>began?res():rej(new Error('audio')));
- t1=setTimeout(()=>{try{a.pause()}catch(e){}end(()=>rej(new Error('no sound')))},6000);
+ t1=setTimeout(()=>{try{a.pause()}catch(e){}end(()=>rej(new Error('no sound')))},4000);
  a.src=url;a.volume=1;
  try{const p=a.play();if(p&&p.catch)p.catch(e=>end(()=>began?res():rej(e)))}catch(e){end(()=>rej(e))}
 })}
@@ -669,14 +673,16 @@ function playEl(url,seq){return new Promise((res,rej)=>{
 async function cloudSpeak(text,l,seq){
  const parts=ttsParts(text);let any=false;
  try{for(const t of parts){if(seq!==ttsSeq)return true;await playEl(ttsUrl(t,l),seq);any=true}ttsBad=0;return true}
- catch(e){ttsBad++;ttsBadAt=Date.now();return any}
+ catch(e){ttsBad++;ttsBadAt=Date.now();if(!any&&ttsOK){ttsOK=0;save('tercuman.ttsok',0)}return any}
 }
 /* speech that arrives while the microphone is listening waits: playing sound would cut the microphone on iPhone */
 let speechQ=null;
 function flushSpeech(){if(!live&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l)}}
-function speak(text,l,onDone){
+function speak(text,l,onDone,safe){
  if(!text)return;if(live){speechQ={text,l};return}
  stopSpeak();const changed=audioMode('playback');
+ /* a sound that must work right now (the greeting on a touch) uses the phone's voice until Google's voice has proven itself */
+ if(safe&&!ttsOK){const seq=ttsSeq;speakingLang=l;render();devSpeak(text,l,()=>{if(seq!==ttsSeq)return;speakingLang=null;render();onDone&&onDone()});return}
  const seq=ttsSeq,done=()=>{if(seq!==ttsSeq)return;speakingLang=null;render();onDone&&onDone()};
  speakingLang=l;render();
  const go=()=>{
@@ -687,7 +693,7 @@ function speak(text,l,onDone){
  if(changed)setTimeout(go,350);else go();
 }
 function devSpeak(text,l,done){
- const v=voiceFor(l);
+ voiceNote('p');const v=voiceFor(l);
  if(SS&&v){try{const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=1;u.pitch=1;u.volume=1;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render();return}catch(e){}}
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
@@ -1559,7 +1565,7 @@ function askName(){
 /* speak the greeting; when it ends, fade away */
 function greet(){
  if(!prefs.speak){splT=setTimeout(closeSplash,1800);return}
- speak(wtext,ME,()=>{if(spl.classList.contains('open'))setTimeout(closeSplash,350)});
+ speak(wtext,ME,()=>{if(spl.classList.contains('open'))setTimeout(closeSplash,350)},true);
  clearTimeout(splT);splT=setTimeout(closeSplash,9000);
 }
 async function welcome(){
@@ -1598,8 +1604,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.8.3';
-$('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
+const APP_VERSION='1.8.4';
+$('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;if(voiceUsed)voiceNote(voiceUsed);
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
 /* no service worker: on iPhone a home-screen app controlled by one cannot open the live camera (WebKit bug 252465).
