@@ -53,7 +53,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .qrb{position:absolute;right:12px;bottom:12px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;color:#1b1b1b;border-radius:14px;padding:7px 7px 5px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
 .qrb[hidden],.guest .qrb{display:none}
 .qrs{display:block;width:84px;height:84px}.qrs svg,.qrl svg{display:block;width:100%;height:100%}
-.qrc{font-size:11px;font-weight:700;max-width:92px;text-align:center;line-height:1.15}
+.qrc{font-size:11px;font-weight:700;width:96px;text-align:center;line-height:1.2;text-wrap:balance;padding-bottom:1px}
 .qrb.on{padding:8px 12px;flex-direction:row}.qrb.on .qrs{display:none}.qrb.on .qrc{max-width:none;font-size:13px}
 .qrb.on .qrc::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;background:#1fb35a;margin-inline-end:6px;vertical-align:0}
 .hasqr #m-far{padding-bottom:120px}
@@ -381,13 +381,13 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',leftMe:'Kilépett a beszélgetésből.',micfail:'A mikrofon nem indult el, koppintson újra.',quiet:'Nem hallottam semmit, koppintson újra.',perm:'A mikrofon nincs engedélyezve. Írjon inkább lent.',ended:'A beszélgetés véget ért. Köszönjük!',leave:'Kilépés',leaveSure:'Biztosan kilép? Koppintson újra.',qr:'Saját telefonon',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',leftMe:'Kilépett a beszélgetésből.',micfail:'A mikrofon nem indult el, koppintson újra.',quiet:'Nem hallottam semmit, koppintson újra.',perm:'A mikrofon nincs engedélyezve. Írjon inkább lent.',ended:'A beszélgetés véget ért. Köszönjük!',leave:'Kilépés',leaveSure:'Biztosan kilép? Koppintson újra.',qr:'Olvassa be, és beszéljen a saját telefonjáról',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',leftMe:'You left the conversation.',micfail:"The microphone didn't start, tap again.",quiet:"I didn't hear anything, tap again.",perm:'The microphone is not allowed. Please type below instead.',ended:'The conversation has ended. Thank you!',leave:'Leave',leaveSure:'Leave the conversation? Tap again.',qr:'On your phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',leftMe:'You left the conversation.',micfail:"The microphone didn't start, tap again.",quiet:"I didn't hear anything, tap again.",perm:'The microphone is not allowed. Please type below instead.',ended:'The conversation has ended. Thank you!',leave:'Leave',leaveSure:'Leave the conversation? Tap again.',qr:'Scan to talk from your own phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',leftMe:'Sie haben das Gespräch verlassen.',micfail:'Das Mikrofon ist nicht gestartet, bitte erneut tippen.',quiet:'Ich habe nichts gehört, bitte erneut tippen.',perm:'Das Mikrofon ist nicht erlaubt. Bitte unten schreiben.',ended:'Das Gespräch wurde beendet. Vielen Dank!',leave:'Verlassen',leaveSure:'Wirklich verlassen? Bitte erneut tippen.',qr:'Auf Ihrem Handy',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',leftMe:'Sie haben das Gespräch verlassen.',micfail:'Das Mikrofon ist nicht gestartet, bitte erneut tippen.',quiet:'Ich habe nichts gehört, bitte erneut tippen.',perm:'Das Mikrofon ist nicht erlaubt. Bitte unten schreiben.',ended:'Das Gespräch wurde beendet. Vielen Dank!',leave:'Verlassen',leaveSure:'Wirklich verlassen? Bitte erneut tippen.',qr:'Scannen und vom eigenen Handy sprechen',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
  tr:{name:'Türkçe',wait:'Bağlantı bekleniyor…',micfail:'Mikrofon başlamadı, tekrar dokun.',quiet:'Ses duyulmadı, tekrar dokun.',perm:'Mikrofon izni yok. Aşağıya yazabilirsin.',endB:'Bitir',endSure:'Emin misin?',endDone:'Sohbet bitti. Eski QR kod artık çalışmaz.',left:'Karşı taraf sohbetten ayrıldı.',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
@@ -551,14 +551,17 @@ function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr
 speak(m.tip&&ROLE!=='guest'&&L[t].tip?m[t]+'  '+L[t].tip:m[t],t)}}
 
 /* ---------- speech in ---------- */
-function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
+/* the microphone never stays open on its own: it closes 1.7 s after the last word, or after 6 s if nothing was said */
+function arm(){clearTimeout(silT);if(!live||live.stopping)return;
+ if(live.text||live.partial)silT=setTimeout(stopListen,1700);
+ else silT=setTimeout(()=>{if(live&&!live.text&&!live.partial&&!live.stopping){toast(live.side,'quiet');stopListen()}},6000)}
 function bump(){arm();render()}
 function noMic(side){if(side!=='tr')return;document.body.classList.add('nomic');const i=$('#in-tr');i.focus();i.placeholder=L.tr.kbd}
 function startListen(side){
  if(editing!=null){editing=null;editDraft=''}
  stopSpeak();unlock();
  if(dict){
-  live={side,text:'',partial:'',eng:'dict'};render();
+  live={side,text:'',partial:'',eng:'dict'};render();arm();
   let p;try{p=dict.start()}catch(e){p=Promise.reject(e)}
   Promise.resolve(p).catch(e=>{if(code(e)==='not_granted'){dict=null;applyPrefs()}live=null;render()});
   maxT=setTimeout(stopListen,45000);return;
@@ -577,8 +580,8 @@ function startRec(side,attempt){
  let r;try{r=new SR()}catch(e){live=null;render();toast(side,'micfail');return}
  r.lang=L[lang(side)].bcp;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
  let began=false,heard=false,err='';
- r.onstart=r.onaudiostart=()=>{began=true};
- r.onresult=e=>{if(rec!==r||!live)return;began=heard=true;let f='',p='';for(const x of e.results){if(x.isFinal)f+=x[0].transcript;else p+=x[0].transcript}live.text=f.trim();live.partial=p.trim();bump()};
+ r.onstart=r.onaudiostart=()=>{if(rec!==r){try{r.abort()}catch(e){}return}if(!began){began=true;arm()}};
+ r.onresult=e=>{if(rec!==r||!live){try{r.abort()}catch(e){}return}began=heard=true;let f='',p='';for(const x of e.results){if(x.isFinal)f+=x[0].transcript;else p+=x[0].transcript}live.text=f.trim();live.partial=p.trim();bump()};
  r.onerror=e=>{if(rec!==r)return;err=e.error||'';
   if(err==='not-allowed'||err==='service-not-allowed'){nativeOK=false;applyPrefs();toast(side,'perm')}};
  r.onend=()=>{if(rec!==r)return;rec=null;
@@ -607,6 +610,7 @@ function finish(){
  clearTimeout(silT);clearTimeout(maxT);clearTimeout(stopT);if(!live)return;
  const side=live.side,t=(live.text+' '+live.partial).trim();live=null;
  if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}
+ audioMode('auto');
  if(t)send(side,t);else render();
  setTimeout(flushSpeech,400);
 }
@@ -1343,7 +1347,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.7.1';
+const APP_VERSION='1.7.2';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
