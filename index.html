@@ -73,12 +73,25 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .guest #tr,.guest .bar{display:none}
 .guest .app{grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr)}
 .guest #far,.guest.face #far{transform:none;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.solo #far{display:none}
+.solo .app,.solo.side .app{grid-template-rows:auto minmax(0,1fr);grid-template-columns:minmax(0,1fr)}
+.solo .bar,.solo.side .bar{flex-direction:row;padding:max(6px,env(safe-area-inset-top)) 10px 6px}
+.solo.side .seg{flex-direction:row}
+.solo #bMode,.solo .seg{display:none}
+.bar>.endb{display:none;width:auto;padding:0 14px;font-size:14px;font-weight:800;border-radius:999px;background:light-dark(#f2e3e5,#3a1e23);color:light-dark(#a10f27,#ff9aa8)}
+.joined .bar>.endb{display:grid}
+.gleave{position:absolute;right:0;top:calc(100% + 6px);width:auto!important;font-size:12px;font-weight:700;background:rgba(0,0,0,.28);padding:5px 10px;border-radius:999px;color:#fff;z-index:2}
+.guest #far>.hd{z-index:3}
+.gleave.arm{background:#1b1b1b}
+.gleave[hidden]{display:none}
 .gjoin{position:fixed;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:var(--far);color:#fff}
 .gjoin[hidden]{display:none}
 .gjoin .fl{width:64px;height:43px;border-radius:6px}
 .gjoin b{font-size:clamp(26px,7.5vw,36px);line-height:1.15;text-wrap:balance}
 .gjoin p{margin:0;font-size:16px;opacity:.9;max-width:32ch;line-height:1.45}
 .gjoin button{min-height:56px;padding:0 34px;border-radius:999px;background:#fff;color:var(--far);font-size:18px;font-weight:800;margin-top:6px}
+#far>.htoast,#tr>.htoast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);width:auto;max-width:86%;margin:0;z-index:4;background:rgba(0,0,0,.78);color:#fff;font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;text-align:center;pointer-events:none}
+.htoast[hidden]{display:none}
 .tipn{align-self:flex-start;max-width:88%;font-size:14px;font-style:italic;opacity:.9;padding:0 6px;margin-top:-2px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
@@ -289,8 +302,9 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="far" lang="hu">
   <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="peer" id="peerFar" hidden></span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="peer" id="peerFar" hidden></span><button class="gleave" id="gLeave" hidden></button><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
+  <div class="htoast" id="toast-far" role="status" hidden></div>
   <div class="ctl gctl"><form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form></div>
   <button class="qrb" id="qrb" hidden><span class="qrs" id="qrS"></span><span class="qrc" id="qrC"></span></button>
   <div class="qrbig" id="qrBig" hidden><div class="qrcard"><span class="qrl" id="qrL"></span><p id="qrT"></p></div></div>
@@ -304,6 +318,7 @@ button.ln{display:block;width:100%;text-align:start}
   </div>
   <button id="bSpk" class="on" title="Sesli okuma" aria-label="Sesli okuma"><svg class="sOn" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Zm-2.5-8.8v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg><svg class="sOff" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" fill="none"/></svg></button>
   <button id="bClr" title="Yeni konuşma (iki kez dokun). Eskisi geçmişe kaydedilir." aria-label="Yeni konuşma"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H7l-3 3V4Zm7 3v2H9v2h2v2h2v-2h2V9h-2V7h-2Z"/></svg></button>
+  <button id="bEnd" class="endb" title="Sohbeti bitir (iki kez dokun). Karşı tarafın linki kapanır." aria-label="Sohbeti bitir">Bitir</button>
   <button id="bHist" title="Konuşma geçmişi" aria-label="Konuşma geçmişi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3a9 9 0 0 0-9 9H1l3.9 3.9L8.8 12H6a7 7 0 1 1 2.05 4.95l-1.42 1.42A9 9 0 1 0 13 3Zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12Z"/></svg></button>
  </nav>
 
@@ -312,6 +327,7 @@ button.ln{display:block;width:100%;text-align:start}
   
   <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><span class="peer" id="peerTr" hidden>Karşı taraf bağlı</span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
+  <div class="htoast" id="toast-tr" role="status" hidden></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
    <button class="camb" id="bCam" aria-label="Kamera ile çevir"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 4 7.2 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-3.2L15 4H9Zm3 4.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg></button>
@@ -321,6 +337,7 @@ button.ln{display:block;width:100%;text-align:start}
  </section>
 </div>
 
+<div class="gjoin" id="gend" hidden><svg class="fl" id="geF"><use href="#fl-hu"/></svg><b id="geT"></b><button id="geB" hidden></button></div>
 <div class="gjoin" id="gjoin" hidden><svg class="fl" id="gjF"><use href="#fl-hu"/></svg><b id="gjT"></b><p id="gjN"></p><button id="gjB"></button></div>
 
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
@@ -364,16 +381,16 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',qr:'Saját telefonon',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',leftMe:'Kilépett a beszélgetésből.',micfail:'A mikrofon nem indult el, koppintson újra.',quiet:'Nem hallottam semmit, koppintson újra.',perm:'A mikrofon nincs engedélyezve. Írjon inkább lent.',ended:'A beszélgetés véget ért. Köszönjük!',leave:'Kilépés',leaveSure:'Biztosan kilép? Koppintson újra.',qr:'Saját telefonon',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',qr:'On your phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',leftMe:'You left the conversation.',micfail:"The microphone didn't start, tap again.",quiet:"I didn't hear anything, tap again.",perm:'The microphone is not allowed. Please type below instead.',ended:'The conversation has ended. Thank you!',leave:'Leave',leaveSure:'Leave the conversation? Tap again.',qr:'On your phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',qr:'Auf Ihrem Handy',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',leftMe:'Sie haben das Gespräch verlassen.',micfail:'Das Mikrofon ist nicht gestartet, bitte erneut tippen.',quiet:'Ich habe nichts gehört, bitte erneut tippen.',perm:'Das Mikrofon ist nicht erlaubt. Bitte unten schreiben.',ended:'Das Gespräch wurde beendet. Vielen Dank!',leave:'Verlassen',leaveSure:'Wirklich verlassen? Bitte erneut tippen.',qr:'Auf Ihrem Handy',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',wait:'Bağlantı bekleniyor…',micfail:'Mikrofon başlamadı, tekrar dokun.',quiet:'Ses duyulmadı, tekrar dokun.',perm:'Mikrofon izni yok. Aşağıya yazabilirsin.',endB:'Bitir',endSure:'Emin misin?',endDone:'Sohbet bitti. Eski QR kod artık çalışmaz.',left:'Karşı taraf sohbetten ayrıldı.',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const GREET=[ /* morning 05-12, afternoon 12-18, evening 18-05 */
  ['Günaydın!','Jó reggelt!','Good morning!','Guten Morgen!'],
@@ -413,7 +430,7 @@ const ROLE=JOIN?'guest':'host';
 if(JOIN){prefs.far=JOIN.l;msgs=[]}
 const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
 const MQTT_JS='https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js',QR_JS='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
-const LINK={room:'',keyRaw:'',key:null,cl:null,bi:0,up:false,seen:0,timer:0,q:[]};
+const LINK={room:'',keyRaw:'',key:null,cl:null,bi:0,up:false,seen:0,timer:0,q:[],joined:false,ended:false};
 let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=null,unlocked=false,silT=0,maxT=0,stopT=0;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let FRAMED=true;try{FRAMED=window.top!==window}catch(e){}
@@ -463,6 +480,7 @@ function applyPrefs(){
  $('#bSpk').classList.toggle('off',!prefs.speak);$('#bSpk').classList.toggle('on',prefs.speak);
  document.body.classList.toggle('nomic',!dict&&!nativeOK);
  if(ROLE!=='guest')save('tercuman.prefs',prefs);
+ if(typeof linkUI==='function'&&LINK.room)linkUI();
 }
 function saveMsgs(){if(ROLE!=='guest')save('tercuman.msgs',msgs)}
 function push(m,remote){
@@ -516,8 +534,12 @@ function voiceFor(l){
 function audioMode(t){try{if(navigator.audioSession)navigator.audioSession.type=t}catch(e){}}
 function stopSpeak(){try{SS&&SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
 function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
+/* speech that arrives while the microphone is listening waits: playing sound would cut the microphone on iPhone */
+let speechQ=null;
+function flushSpeech(){if(!live&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l)}}
 function speak(text,l){
- if(!text)return;stopSpeak();audioMode('playback');const v=voiceFor(l);
+ if(!text)return;if(live){speechQ={text,l};return}
+ stopSpeak();audioMode('playback');const v=voiceFor(l);
  const done=()=>{speakingLang=null;render()};
  if(SS&&v){try{const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=1;u.pitch=1;u.volume=1;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render();return}catch(e){}}
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
@@ -542,18 +564,36 @@ function startListen(side){
   maxT=setTimeout(stopListen,45000);return;
  }
  if(SR&&nativeOK){
-  try{
-   audioMode('play-and-record');
-   rec=new SR();rec.lang=L[lang(side)].bcp;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-   live={side,text:'',partial:'',eng:'native'};
-   rec.onresult=e=>{let f='',p='';for(const r of e.results){if(r.isFinal)f+=r[0].transcript;else p+=r[0].transcript}if(live){live.text=f.trim();live.partial=p.trim();bump()}};
-   rec.onerror=e=>{if(/not-allowed|service-not-allowed|audio-capture/.test(e.error)){nativeOK=false;applyPrefs()}};
-   rec.onend=()=>{rec=null;finish()};
-   rec.start();render();maxT=setTimeout(stopListen,45000);return;
-  }catch(e){nativeOK=false;live=null;applyPrefs()}
+  if(rec){const old=rec;rec=null;try{old.abort()}catch(e){}}
+  live={side,text:'',partial:'',eng:'native'};render();
+  startRec(side,0);maxT=setTimeout(stopListen,45000);return;
  }
  noMic(side);
 }
+/* one recognition session; every handler checks that it still belongs to the current session, so a late
+   "ended" signal from an earlier one can no longer stop a new one. A session that does not start is retried once. */
+function startRec(side,attempt){
+ audioMode('play-and-record');
+ let r;try{r=new SR()}catch(e){live=null;render();toast(side,'micfail');return}
+ r.lang=L[lang(side)].bcp;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+ let began=false,heard=false,err='';
+ r.onstart=r.onaudiostart=()=>{began=true};
+ r.onresult=e=>{if(rec!==r||!live)return;began=heard=true;let f='',p='';for(const x of e.results){if(x.isFinal)f+=x[0].transcript;else p+=x[0].transcript}live.text=f.trim();live.partial=p.trim();bump()};
+ r.onerror=e=>{if(rec!==r)return;err=e.error||'';
+  if(err==='not-allowed'||err==='service-not-allowed'){nativeOK=false;applyPrefs();toast(side,'perm')}};
+ r.onend=()=>{if(rec!==r)return;rec=null;
+  if(live&&!live.stopping&&!heard){
+   if(err&&err!=='no-speech'&&err!=='aborted'&&err!=='not-allowed'&&err!=='service-not-allowed'&&attempt<1){setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);return}
+   if(err==='no-speech'||!err)toast(side,'quiet');else if(err!=='not-allowed'&&err!=='service-not-allowed')toast(side,'micfail');
+  }
+  finish()};
+ rec=r;
+ try{r.start()}catch(e){rec=null;if(attempt<1)setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);else{live=null;render();toast(side,'micfail')}return}
+ setTimeout(()=>{if(rec===r&&!began&&live&&!live.stopping){rec=null;try{r.abort()}catch(e){}
+  if(attempt<1)startRec(side,attempt+1);else{clearTimeout(maxT);live=null;render();toast(side,'micfail')}}},3000);
+}
+let toastT={};
+function toast(side,key){const el=$('#toast-'+side);if(!el)return;const T=L[lang(side)];el.textContent=T[key]||key;el.hidden=false;clearTimeout(toastT[side]);toastT[side]=setTimeout(()=>{el.hidden=true},3500)}
 function stopListen(){
  clearTimeout(silT);clearTimeout(maxT);if(!live)return;
  if(live.stopping){finish();return}
@@ -568,6 +608,7 @@ function finish(){
  const side=live.side,t=(live.text+' '+live.partial).trim();live=null;
  if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}
  if(t)send(side,t);else render();
+ setTimeout(flushSpeech,400);
 }
 
 /* ---------- translation ---------- */
@@ -660,6 +701,25 @@ let clrT=0;$('#bClr').onclick=function(){
  if(this.classList.contains('arm')){clearTimeout(clrT);this.classList.remove('arm');if(live)finish();stopSpeak();archive();render()}
  else{this.classList.add('arm');clrT=setTimeout(()=>this.classList.remove('arm'),2500)}
 };
+
+/* ending the conversation: the guest's link is closed for good (a kept "end" note waits on the server for anyone
+   who opens the old link later), the conversation goes to history and a fresh QR code is made for the next person */
+let endT=0;$('#bEnd').onclick=function(){
+ if(this.classList.contains('arm')){clearTimeout(endT);this.classList.remove('arm');this.textContent='Bitir';endSession()}
+ else{this.classList.add('arm');this.textContent='Emin misin?';endT=setTimeout(()=>{this.classList.remove('arm');this.textContent='Bitir'},3000)}
+};
+async function endSession(){
+ if(ROLE!=='host'||!LINK.room)return;
+ const cl=LINK.cl,room=LINK.room;
+ if(live)finish();stopSpeak();speechQ=null;
+ try{if(cl&&LINK.up){const p=await seal({type:'end'});await new Promise(r=>{cl.publish(`tercuman/v1/${room}/h`,p,{qos:1,retain:true},()=>r());setTimeout(r,2500)})}}catch(e){}
+ clearInterval(LINK.timer);if(cl){try{cl.end(false)}catch(e){}}
+ try{localStorage.removeItem('tercuman.room')}catch(e){}
+ Object.assign(LINK,{room:'',keyRaw:'',key:null,cl:null,bi:0,up:false,seen:0,timer:0,q:[],joined:false});
+ archive();$('#qrS').innerHTML='';$('#qrL').innerHTML='';$('#qrBig').hidden=true;
+ document.body.classList.remove('solo','joined');linkUI();render();toast('tr','endDone');
+ linkStart();
+}
 
 /* ---------- history panel ---------- */
 const P={pan:$('#pan'),list:$('#plist'),srch:$('#srch'),act:$('#pact'),back:$('#pBack'),title:$('#panT'),st:$('#pst'),del:$('#pDel')};
@@ -1166,7 +1226,10 @@ function connectBroker(){
   if(!ok&&LINK.cl===cl&&LINK.bi===0&&!o){cl.end(true);LINK.cl=null;LINK.bi=1;drawQR();connectBroker()}},9000);
 }
 function onLink(o){
- if(!o||!o.type)return;LINK.seen=Date.now();if(window.__dbg)console.log('LINK '+ROLE+' got '+o.type+' '+JSON.stringify(o).slice(0,90));
+ if(!o||!o.type||LINK.ended)return;
+ if(o.type==='end'){if(ROLE==='guest')guestEnded('ended',true);return}
+ if(o.type==='bye'){if(ROLE==='host'){LINK.joined=false;LINK.seen=0;toast('tr','left');linkUI()}return}
+ LINK.seen=Date.now();if(ROLE==='host')LINK.joined=true;if(window.__dbg)console.log('LINK '+ROLE+' got '+o.type+' '+JSON.stringify(o).slice(0,90));
  if(o.type==='msg'&&o.m&&!msgs.some(x=>x.id===o.m.id)){push(o.m,true);speakMsg(o.m)}
  else if(o.type==='upd'&&o.m)updMsg(o.m);
  else if(ROLE==='host'&&o.type==='hello')linkSend({type:'state',far:prefs.far,name:NAME,msgs});
@@ -1191,15 +1254,38 @@ async function drawQR(){
 }
 function linkUI(){
  const T=L[prefs.far],on=peerOn();
- if(ROLE==='host'){const q=$('#qrb');q.hidden=!$('#qrS').innerHTML;q.classList.toggle('on',on);$('#qrC').textContent=on?T.on:T.qr;$('#far').classList.toggle('hasqr',!q.hidden&&!on);$('#peerTr').hidden=!on}
- else{const p=$('#peerFar');p.hidden=false;p.textContent=on?T.conn:T.lost;p.classList.toggle('off',!on)}
+ if(LINK.ended)return;
+ if(ROLE==='host'){
+  /* once the other person joins from their own phone, their half leaves this screen and mine fills it.
+     A short drop keeps the layout; after two quiet minutes their half and the QR code come back. */
+  const solo=LINK.joined&&LINK.seen&&Date.now()-LINK.seen<120000;if(LINK.joined&&!solo)LINK.joined=false;
+  document.body.classList.toggle('solo',!!solo);document.body.classList.toggle('joined',!!solo);
+  if(solo&&live&&live.side==='far')finish();
+  const q=$('#qrb');q.hidden=!$('#qrS').innerHTML;q.classList.toggle('on',on);$('#qrC').textContent=on?T.on:T.qr;$('#far').classList.toggle('hasqr',!q.hidden&&!on);
+  const pt=$('#peerTr');pt.hidden=!on&&!solo;pt.textContent=on?'Karşı taraf bağlı':L.tr.wait;pt.classList.toggle('off',!on);
+ }
+ else{const p=$('#peerFar');p.hidden=false;p.textContent=on?T.conn:T.lost;p.classList.toggle('off',!on);const g=$('#gLeave');g.hidden=false;if(!g.classList.contains('arm'))g.textContent=T.leave}
 }
 function guestStart(){
  document.body.classList.add('guest');const T=L[prefs.far],n=JOIN.n||'Tercüman';
  document.documentElement.lang=prefs.far;
  $('#gjF use').setAttribute('href','#fl-'+prefs.far);$('#gjT').textContent=T.inv.replace('{n}',n);$('#gjN').textContent=T.jn.replace('{n}',n);$('#gjB').textContent=T.join;
+ if(load('tercuman.ended',[]).includes(JOIN.room)){guestEnded('ended',false);return}
  $('#gjoin').hidden=false;
  $('#gjB').addEventListener('click',()=>{unlock();$('#gjoin').hidden=true;linkStart();render()});
+ let lvT=0;$('#gLeave').addEventListener('click',function(e){e.stopPropagation();const T=L[prefs.far];
+  if(this.classList.contains('arm')){clearTimeout(lvT);linkSend({type:'bye'});setTimeout(()=>guestEnded('leftMe',false,true),400)}
+  else{this.classList.add('arm');this.textContent=T.leaveSure;lvT=setTimeout(()=>{this.classList.remove('arm');this.textContent=T.leave},3000)}});
+}
+/* the conversation is over for the guest: everything stops and the old link stays closed on this phone */
+function guestEnded(key,remember,canRejoin){
+ if(LINK.ended)return;LINK.ended=true;
+ if(remember||key==='ended'){const e=load('tercuman.ended',[]);if(!e.includes(JOIN.room)){e.push(JOIN.room);save('tercuman.ended',e.slice(-30))}}
+ if(live)finish();stopSpeak();speechQ=null;clearInterval(LINK.timer);
+ if(LINK.cl){try{LINK.cl.end(true)}catch(e){}LINK.cl=null}LINK.up=false;LINK.q=[];
+ const T=L[prefs.far];$('#gjoin').hidden=true;$('#geF use').setAttribute('href','#fl-'+prefs.far);$('#geT').textContent=T[key];
+ const b=$('#geB');b.hidden=!canRejoin;b.textContent=T.join;b.onclick=()=>location.reload();
+ $('#gend').hidden=false;
 }
 /* ---------- welcome ---------- */
 let NAME=load('tercuman.name','');
@@ -1256,7 +1342,8 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.7.0';
+if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
+const APP_VERSION='1.7.1';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
