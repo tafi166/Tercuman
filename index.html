@@ -625,7 +625,7 @@ function voiceFor(l){
 /* iOS keeps a quiet earpiece route after the mic was used; ask for normal playback */
 /* returns true when the audio mode really changed: iPhone needs a moment then, or the first syllables are lost */
 function audioMode(t){try{if(navigator.audioSession&&navigator.audioSession.type!==t){navigator.audioSession.type=t;return true}}catch(e){}return false}
-function stopSpeak(){ttsSeq++;try{if(audEl){audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause()}}catch(e){}try{if(SS&&speakingLang)SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
+function stopSpeak(){ttsSeq++;try{if(acSrc){acSrc.onended=null;acSrc.stop()}}catch(e){}acSrc=null;try{if(audEl){audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause()}}catch(e){}try{if(SS&&speakingLang)SS.cancel()}catch(e){}try{const p=ttsC&&ttsC.stop();p&&p.catch&&p.catch(()=>{})}catch(e){}speakingLang=null}
 function unlock(){if(unlocked||!SS)return;unlocked=true;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;SS.speak(u)}catch(e){}}
 let hadTap=false; /* iPhone gives a web app no sound at all until the first touch after it was started */
 /* ---- clear voice for every language ----
@@ -641,7 +641,7 @@ const SILENT='data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAAB
 function wake(e){
  if(e&&e.isTrusted===false)return;hadTap=true;
  if(!speakingLang&&!live)audioMode('playback');
- unlock();
+ unlock();acUnlock();
  if(elOK)return;
  if(!audEl){audEl=new Audio();audEl.preload='auto';audEl.setAttribute('playsinline','')}
  if(!audEl.paused)return; /* never interrupt a voice that is playing */
@@ -651,6 +651,7 @@ function wake(e){
 for(const ev of ['touchend','click'])document.addEventListener(ev,wake,{capture:true,passive:true});
 const ttsCode=l=>l==='pt-BR'?'pt-BR':l==='zh'?'zh-CN':G(l);
 const ttsUrl=(t,l)=>`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}`;
+const ttsGapi=(t,l)=>`https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=${ttsCode(l)}&q=${encodeURIComponent(t)}&total=1&idx=0&textlen=${t.length}`;
 /* the voice service reads at most about 200 characters at once: split at sentence ends, then commas, then spaces */
 function ttsParts(text){
  const out=[];let rest=String(text).replace(/\s+/g,' ').trim();
@@ -670,20 +671,59 @@ function playEl(url,seq){return new Promise((res,rej)=>{
  try{const p=a.play();if(p&&p.catch)p.catch(e=>end(()=>began?res():rej(e)))}catch(e){end(()=>rej(e))}
 })}
 /* true: read (or stopped on purpose); false: no sound, the phone's own voice takes over */
+/* On iPhone an <audio> player that has played can leave the microphone deaf for the next recognition (WebKit keeps
+   the audio set up for playback). Sound played through Web Audio does not do that, so it is used whenever Google's
+   voice can be loaded that way; it is also run through a compressor and limiter, which makes it fuller and louder.
+   Web Audio is checked while it plays: if its clock does not move, nothing is heard, and the player takes over. */
+let AC=null,acIn=null,acSrc=null,waOK=load('tercuman.wa',null)===true?true:null;
+function acMake(){
+ if(AC)return AC;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+ try{AC=new C();
+  const lift=AC.createDynamicsCompressor();lift.threshold.value=-30;lift.knee.value=10;lift.ratio.value=4;lift.attack.value=.004;lift.release.value=.25;
+  const boost=AC.createGain();boost.gain.value=1.7;
+  const lim=AC.createDynamicsCompressor();lim.threshold.value=-2;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=.001;lim.release.value=.08;
+  lift.connect(boost);boost.connect(lim);lim.connect(AC.destination);acIn=lift;
+ }catch(e){AC=null}
+ return AC}
+/* inside a touch: start the engine and play one silent sample, which is what unlocks it on iPhone */
+function acUnlock(){const a=acMake();if(!a||a.state==='running')return;try{a.resume();const s=a.createBufferSource();s.buffer=a.createBuffer(1,1,22050);s.connect(a.destination);s.start(0)}catch(e){}}
+async function waBuf(t,l){
+ const c=new AbortController(),k=setTimeout(()=>c.abort(),5000);
+ try{const r=await fetch(ttsGapi(t,l),{signal:c.signal});if(!r.ok)throw new Error('tts '+r.status);const ab=await r.arrayBuffer();
+  return await new Promise((res,rej)=>{const q=AC.decodeAudioData(ab,res,rej);q&&q.catch&&q.catch(rej)})}finally{clearTimeout(k)}}
+/* resolves true when played to the end (or stopped on purpose), false when the engine did not really play */
+function waPlay(b,seq){return new Promise(res=>{
+ if(seq!==ttsSeq)return res(true);const s=AC.createBufferSource();s.buffer=b;s.connect(acIn);acSrc=s;
+ const t0=AC.currentTime;let fin=false;const end=v=>{if(fin)return;fin=true;if(acSrc===s)acSrc=null;res(v)};
+ s.onended=()=>end(true);s.start();
+ if(b.duration>.7)setTimeout(()=>{if(!fin&&AC.currentTime-t0<.2){try{s.onended=null;s.stop()}catch(e){}end(false)}},600);
+})}
 async function cloudSpeak(text,l,seq){
  const parts=ttsParts(text);let any=false;
+ if(waOK!==false&&acMake()){
+  if(AC.state!=='running')try{await AC.resume()}catch(e){}
+  if(AC.state==='running'){
+   try{const ps=parts.map(t=>waBuf(t,l));ps.forEach(x=>x.catch(()=>{}));
+    for(const x of ps){const b=await x;if(seq!==ttsSeq)return true;const ok=await waPlay(b,seq);if(!ok)throw new Error('silent');any=true}
+    if(waOK!==true){waOK=true;save('tercuman.wa',true)}voiceNote('g');ttsBad=0;return true}
+   catch(e){if(any)return true;if(e&&e.message!=='silent'&&e.name!=='AbortError'){waOK=false;save('tercuman.wa',null)}}
+  }
+ }
  try{for(const t of parts){if(seq!==ttsSeq)return true;await playEl(ttsUrl(t,l),seq);any=true}ttsBad=0;return true}
  catch(e){ttsBad++;ttsBadAt=Date.now();if(!any&&ttsOK){ttsOK=0;save('tercuman.ttsok',0)}return any}
+ finally{elRelease()}
 }
+/* after the player was used: empty it, so iPhone takes its audio setup down before the microphone starts */
+function elRelease(){if(!audEl)return;try{audEl.onended=audEl.onerror=audEl.onplaying=null;audEl.pause();audEl.removeAttribute('src');audEl.load()}catch(e){}}
 /* speech that arrives while the microphone is listening waits: playing sound would cut the microphone on iPhone */
 let speechQ=null;
-function flushSpeech(){if(!live&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l)}}
+function flushSpeech(){if(!live&&!releaser&&speechQ){const q=speechQ;speechQ=null;speak(q.text,q.l,q.onDone,q.safe)}}
 function speak(text,l,onDone,safe){
- if(!text)return;if(live){speechQ={text,l};return}
- stopSpeak();const changed=audioMode('playback');
+ if(!text)return;if(live||releaser){speechQ={text,l,onDone,safe};return}
+ clearTimeout(relT);stopSpeak();const changed=audioMode('playback');
  /* a sound that must work right now (the greeting on a touch) uses the phone's voice until Google's voice has proven itself */
  if(safe&&!ttsOK){const seq=ttsSeq;speakingLang=l;render();devSpeak(text,l,()=>{if(seq!==ttsSeq)return;speakingLang=null;render();onDone&&onDone()});return}
- const seq=ttsSeq,done=()=>{if(seq!==ttsSeq)return;speakingLang=null;render();onDone&&onDone()};
+ const seq=ttsSeq,done=()=>{if(seq!==ttsSeq)return;speakingLang=null;render();onDone&&onDone();if(relWanted){relWanted=false;releaseMic()}};
  speakingLang=l;render();
  const go=()=>{
   if(seq!==ttsSeq)return;
@@ -728,12 +768,16 @@ function startListen(side){
 }
 /* one recognition session; every handler checks that it still belongs to the current session, so a late
    "ended" signal from an earlier one can no longer stop a new one. A session that does not start is retried once. */
+let sawAudio=load('tercuman.aud',false);
 function startRec(side,attempt){
- cancelRelease();audioMode('play-and-record');
+ cancelRelease();elRelease();audioMode('play-and-record');
  let r;try{r=new SR()}catch(e){live=null;render();toast(side,'micfail');return}
  r.lang=L[lang(side)].bcp;r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
- let began=false,heard=false,err='';
- r.onstart=r.onaudiostart=()=>{if(rec!==r){try{r.abort()}catch(e){}return}if(!began){began=true;arm()}};
+ let began=false,heard=false,err='',audio=false;
+ r.onstart=r.onaudiostart=e=>{if(rec!==r){try{r.abort()}catch(e){}return}
+  if(e&&e.type==='audiostart'){audio=true;if(!sawAudio){sawAudio=true;save('tercuman.aud',true)}}
+  if(!began){began=true;arm()}};
+ r.onsoundstart=r.onspeechstart=()=>{audio=true};
  r.onresult=e=>{if(rec!==r||!live){try{r.abort()}catch(e){}return}began=heard=true;let f='',p='';for(const x of e.results){if(x.isFinal)f+=x[0].transcript;else p+=x[0].transcript}live.text=f.trim();live.partial=p.trim();bump()};
  r.onerror=e=>{if(rec!==r)return;err=e.error||'';
   if(err==='not-allowed'||err==='service-not-allowed'){nativeOK=false;applyPrefs();toast(side,'perm')}
@@ -748,19 +792,23 @@ function startRec(side,attempt){
  try{r.start()}catch(e){rec=null;if(attempt<1)setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);else{live=null;render();toast(side,'micfail')}return}
  setTimeout(()=>{if(rec===r&&!began&&live&&!live.stopping){rec=null;try{r.abort()}catch(e){}
   if(attempt<1)startRec(side,attempt+1);else{clearTimeout(maxT);live=null;render();toast(side,'micfail')}}},3000);
+ /* on phones that report when the microphone delivers sound: started but deaf after 2.5 s means stuck, start a fresh one */
+ if(sawAudio)setTimeout(()=>{if(rec===r&&began&&!audio&&!heard&&live&&!live.stopping){rec=null;try{r.abort()}catch(e){}
+  if(attempt<1)setTimeout(()=>{if(live&&!rec)startRec(side,attempt+1)},300);else{clearTimeout(maxT);live=null;render();toast(side,'micfail')}}},2500);
 }
 /* iPhone Safari bug: when a recognition session ends, the microphone can stay open (orange dot) and keep listening.
    The known cure is a short session that is started and then stopped by hand; after that the audio is reset. */
 const IOSDEV=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-let releaser=null,relT=0;
+let releaser=null,relT=0,relWanted=false;
 function audioReset(){audioMode('playback');if(!speakingLang)audioMode('auto')}
 function releaseMic(){
  clearTimeout(relT);
  relT=setTimeout(()=>{
   if(live||rec||releaser||!SR)return;
+  if(speakingLang){relWanted=true;return}
   let k;try{k=new SR()}catch(e){audioReset();return}
   releaser=k;let done=false;
-  const end=()=>{if(done)return;done=true;if(releaser===k)releaser=null;try{k.abort()}catch(e){}audioReset()};
+  const end=()=>{if(done)return;done=true;if(releaser===k)releaser=null;try{k.abort()}catch(e){}audioReset();setTimeout(flushSpeech,150)};
   k.lang=L[ME].bcp;k.continuous=false;k.interimResults=false;
   k.onstart=k.onaudiostart=()=>{try{k.stop()}catch(e){}setTimeout(end,400)};
   k.onresult=k.onerror=()=>{};k.onend=end;
@@ -1604,7 +1652,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Da
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
 if(window.__test)window.__app={speak,state:()=>({live:!!live,rec:!!rec,nativeOK,dict:!!dict})};
-const APP_VERSION='1.8.4';
+const APP_VERSION='1.8.5';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;if(voiceUsed)voiceNote(voiceUsed);
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
