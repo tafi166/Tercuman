@@ -29,7 +29,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #far{background:var(--far);padding-top:max(12px,env(safe-area-inset-top))}
 #tr{background:var(--tr);padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .face #far{transform:rotate(180deg);padding-top:12px;padding-bottom:max(12px,env(safe-area-inset-top))}
-.hd{display:flex;align-items:baseline;gap:9px}
+.hd{display:flex;align-items:baseline;gap:9px;position:relative;min-height:44px;align-items:center}
+.hmic{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#fff;display:none;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:background .2s,color .2s,transform .2s}
+#far .hmic{color:var(--far)}#tr .hmic{color:var(--tr)}
+.hmic svg{width:22px;height:22px}
+.started .hmic{display:grid;animation:rise .35s ease-out}
+.listening .hmic{background:var(--hot);color:#1b1b1b!important;transform:scale(1.12);animation:hotp 1.3s ease-out infinite}
+.tipn{align-self:flex-start;max-width:88%;font-size:14px;font-style:italic;opacity:.9;padding:0 6px;margin-top:-2px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
 .spk{width:22px;height:22px;opacity:0;transition:opacity .2s;align-self:center}
@@ -69,8 +75,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .orb .ring{width:38%;height:38%;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 9px rgba(255,255,255,.07);animation:breathe 2.6s ease-in-out infinite;transition:background .25s,color .25s}
 .orb .ring svg{width:46%;height:46%}
 .started .orb .rt{opacity:0;animation-play-state:paused}
-.started .orb{opacity:.16;transform:scale(1.15)}
-.listening .orb{opacity:.5;transform:scale(1)}
+.started .bgm{opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
 .listening .orb .ring{background:var(--hot);color:#1b1b1b;animation:hotp 1.3s ease-out infinite}
 .half::after{content:'';position:absolute;inset:5px;border-radius:26px;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:inset 0 0 0 3px var(--hot),inset 0 0 46px rgba(255,210,63,.35)}
 .listening::after{opacity:1;animation:glow 1.6s ease-in-out infinite}
@@ -216,7 +221,7 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="far" lang="hu">
   <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
   <div class="chips" id="c-far"></div>
  </section>
@@ -234,7 +239,7 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="tr" lang="tr">
   <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
@@ -282,13 +287,13 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
  tr:{name:'Türkçe',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
@@ -334,7 +339,7 @@ function render(){
   h+=msgs.map((m,i)=>{
    if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
    if(m.err)return `<div class="b them err">${T.err}</div>`;
-   return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`}).join('');
+   return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`+(m.tip&&s==='far'&&L[l].tip?`<div class="tipn">${esc(L[l].tip)}</div>`:'')}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
   if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
   const el=$('#m-'+s);el.innerHTML=h;el.scrollTop=el.scrollHeight;
@@ -362,6 +367,8 @@ function applyPrefs(){
 }
 function push(m){
  const last=msgs[msgs.length-1];if(last&&last.t&&Date.now()-last.t>IDLE)archive();
+ /* only my first message in a conversation gets the "you can answer" tip for the other person */
+ if(sideOf(m.from)==='tr'&&!m.err&&!msgs.some(x=>sideOf(x.from)==='tr'))m.tip=true;
  m.t=Date.now();m.far=prefs.far;msgs.push(m);if(msgs.length>600)msgs=msgs.slice(-600);save('tercuman.msgs',msgs);render()}
 
 /* ---------- history ---------- */
@@ -414,7 +421,7 @@ function speak(text,l){
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
-function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';speak(m[t],t)}}
+function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';speak(m.tip&&L[t].tip?m[t]+'  '+L[t].tip:m[t],t)}}
 
 /* ---------- speech in ---------- */
 function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
