@@ -32,12 +32,24 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #far{background:var(--far);padding-top:max(12px,env(safe-area-inset-top))}
 #tr{background:var(--tr);padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .face #far{transform:rotate(180deg);padding-top:12px;padding-bottom:max(12px,env(safe-area-inset-top))}
-.hd{display:flex;align-items:baseline;gap:9px;position:relative;min-height:44px;align-items:center}
-.hmic{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:#fff;display:none;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:background .2s,color .2s,transform .2s}
+.hd{display:flex;gap:9px;position:relative;min-height:58px;align-items:center}
+.hmic{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:#fff;display:none;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:background .2s,color .2s,transform .2s}
 #far .hmic{color:var(--far)}#tr .hmic{color:var(--tr)}
-.hmic svg{width:22px;height:22px}
-.started .hmic{display:grid;animation:rise .35s ease-out}
+.hmic svg{width:28px;height:28px}
+.started .hmic{display:grid;animation:rise .35s ease-out,breatheMic 2.8s .35s ease-in-out infinite}
 .listening .hmic{background:var(--hot);color:#1b1b1b!important;transform:scale(1.12);animation:hotp 1.3s ease-out infinite}
+.b.me.ed{cursor:pointer;position:relative;padding-inline-end:30px}
+.pen{position:absolute;right:10px;bottom:9px;width:14px;height:14px;opacity:.6}
+.back{align-self:flex-end;max-width:88%;font-size:13.5px;line-height:1.35;opacity:.85;margin-top:-3px;padding:0 6px;text-align:end}
+#tr .back{cursor:pointer}
+.back.warn{opacity:1;background:#fff3c4;color:#3a2d00;border-radius:10px;padding:5px 9px}
+.back b{display:block;font-weight:700}
+.edit{align-self:stretch;display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.22);border-radius:18px;padding:8px}
+.edit textarea{font:inherit;font-size:16px;line-height:1.35;border:0;border-radius:12px;padding:10px 12px;resize:none;color:#1b1b1b;background:#fff;outline:0}
+.edit textarea:focus{box-shadow:0 0 0 3px #ffd23f}
+.erow{display:flex;gap:8px;justify-content:flex-end}
+.erow button{min-height:44px;padding:0 16px;border-radius:999px;font-weight:700}
+.esave{background:#fff;color:var(--tr)}.ecancel{background:rgba(255,255,255,.18)}
 .tipn{align-self:flex-start;max-width:88%;font-size:14px;font-style:italic;opacity:.9;padding:0 6px;margin-top:-2px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
@@ -207,6 +219,7 @@ button.ln{display:block;width:100%;text-align:start}
 @keyframes wv{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
 @keyframes breathe{50%{box-shadow:0 0 0 20px rgba(255,255,255,.02),0 0 0 9px rgba(255,255,255,.08)}}
 @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes breatheMic{0%,100%{transform:scale(1);box-shadow:0 4px 14px rgba(0,0,0,.25),0 0 0 0 rgba(255,255,255,.45)}50%{transform:scale(1.08);box-shadow:0 6px 18px rgba(0,0,0,.25),0 0 0 12px rgba(255,255,255,0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes hotp{0%{box-shadow:0 0 0 0 rgba(255,210,63,.6)}100%{box-shadow:0 0 0 26px rgba(255,210,63,0)}}
 @keyframes glow{50%{opacity:.55}}
@@ -295,16 +308,16 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
- tr:{name:'Türkçe',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
+ tr:{name:'Türkçe',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
   hint:'Mikrofon çalışmıyor mu? Kutuya dokun ve klavyedeki mikrofon tuşuyla konuş.',kbd:'Klavyedeki mikrofona bas ↓'}};
 const GREET=[ /* morning 05-12, afternoon 12-18, evening 18-05 */
  ['Günaydın!','Jó reggelt!','Good morning!','Guten Morgen!'],
@@ -345,12 +358,20 @@ function render(){
   const l=lang(s),T=L[l];let h='';
   let lastThem=-1;msgs.forEach((m,i)=>{if(sideOf(m.from)!==s)lastThem=i});
   h+=msgs.map((m,i)=>{
-   if(sideOf(m.from)===s)return `<div class="b me">${esc(m[m.from])}</div>`;
+   if(sideOf(m.from)===s){
+    if(s==='tr'&&editing===i)return `<form class="edit" data-ed="${i}"><textarea id="edT" rows="2" aria-label="Mesajı düzelt">${esc(editDraft)}</textarea><div class="erow"><button type="button" class="ecancel">Vazgeç</button><button class="esave">Düzelt ve çevir</button></div></form>`;
+    let o=`<div class="b me${s==='tr'?' ed':''}"${s==='tr'?` data-me="${i}"`:''}>${esc(m[m.from])}${s==='tr'&&!m.row?'<svg class="pen" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/></svg>':''}</div>`;
+    if(m.busy)return o;
+    if(m.back&&!m.err){const warn=sim(m[m.from],m.back)<.55;
+     o+=`<div class="back${warn?' warn':''}"${s==='tr'?` data-me="${i}"`:''}>${esc(T.back)} ${esc(m.back)}${warn?`<b>${esc(T.warn)}</b>`:''}</div>`}
+    return o}
+   if(m.busy)return `<div class="b them">${DOTS}</div>`;
    if(m.err)return `<div class="b them err">${m.off?T.off:T.err}</div>`;
    return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`+(m.tip&&s==='far'&&L[l].tip?`<div class="tipn">${esc(L[l].tip)}</div>`:'')}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
   if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
-  const el=$('#m-'+s);el.innerHTML=h;el.scrollTop=el.scrollHeight;
+  const el=$('#m-'+s);
+  if(!(s==='tr'&&editing!=null&&el.querySelector('form.edit'))){el.innerHTML=h;if(!(s==='tr'&&editing!=null))el.scrollTop=el.scrollHeight}
   const on=!!live&&live.side===s&&!live.stopping;
   const half=$('#'+s);half.classList.toggle('listening',on);half.classList.toggle('speaking',!!speakingLang&&sideOf(speakingLang)===s);
   half.classList.toggle('started',!!(msgs.length||pending||live));
@@ -436,6 +457,7 @@ function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTim
 function bump(){arm();render()}
 function noMic(side){if(side!=='tr')return;document.body.classList.add('nomic');const i=$('#in-tr');i.focus();i.placeholder=L.tr.kbd}
 function startListen(side){
+ if(editing!=null){editing=null;editDraft=''}
  stopSpeak();unlock();
  if(dict){
   live={side,text:'',partial:'',eng:'dict'};render();
@@ -496,21 +518,48 @@ Answer with JSON only: {"from":"${far}" or "tr","original":"cleaned original tex
  }
  return{from:src,original:text,translation:await webTr(text,src,tgt)};
 }
+/* back-translation: the translation is turned back into the speaker's language, so both sides can check what was understood */
+function stemSet(t){return new Set(String(t||'').toLocaleLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).filter(w=>[...w].length>=3).map(w=>w.slice(0,4)))}
+function sim(a,b){const A=stemSet(a),B=stemSet(b);if(!A.size||!B.size)return 1;let n=0;for(const x of A)if(B.has(x))n++;return 2*n/(A.size+B.size)}
+async function backfill(m){
+ if(!m||m.err||m.row||m.back)return;const tgt=m.from==='tr'?(m.far||prefs.far):'tr',t=m[tgt];if(!t)return;
+ const b=await webTr(t,tgt,m.from);if(b&&msgs.includes(m)){m.back=b;save('tercuman.msgs',msgs);render()}
+}
+let editing=null,editDraft='';
+function openEdit(i){
+ const m=msgs[i];if(!m||m.busy)return;if(live)finish();stopSpeak();
+ editing=i;editDraft=m[m.from];render();
+ const t=$('#edT');if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);t.scrollIntoView&&t.scrollIntoView({block:'nearest'})}
+}
+function closeEdit(){editing=null;editDraft='';render()}
+async function reTranslate(i,text){
+ const m=msgs[i];closeEdit();if(!m||!text||text===m[m.from])return;
+ const far=m.far||prefs.far;m.busy=true;delete m.back;render();
+ let r;try{r=await translate(m.from,text)}catch(e){r={from:m.from,original:text,translation:''}}
+ for(const k of ['tr','hu','en','de'])delete m[k];
+ m.from=r.from;m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;m.edited=true;delete m.busy;delete m.tip;
+ m.err=!r.translation;m.off=m.err&&!navigator.onLine;
+ save('tercuman.msgs',msgs);render();speakMsg(m);backfill(m);
+}
 async function send(side,text,row){
  const src=lang(side),far=prefs.far;
- if(row){const m={from:src,tr:row[0]};m[far]=row[COL[far]];push(m);speakMsg(m);return}
+ if(row){const m={from:src,tr:row[0],row:true};m[far]=row[COL[far]];push(m);speakMsg(m);return}
  if(pending)return;
  pending={side,text};render();
  let r;try{r=await translate(src,text)}catch(e){r={from:src,original:text,translation:''}}
  pending=null;
  const m={from:r.from};m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;if(!r.translation){m.err=true;if(!navigator.onLine)m.off=true}
- push(m);speakMsg(m);
+ push(m);speakMsg(m);backfill(m);
 }
 
 /* ---------- events ---------- */
 let typing=false;
-document.addEventListener('pointerdown',e=>{const a=document.activeElement;typing=!!(a&&a.tagName==='INPUT'&&!e.target.closest('form.in'))},true);
+document.addEventListener('pointerdown',e=>{const a=document.activeElement;typing=!!(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&!e.target.closest('form.in,form.edit'))},true);
 document.addEventListener('click',e=>{
+ const ed=e.target.closest('form.edit');
+ if(ed){if(e.target.closest('.ecancel'))closeEdit();return}
+ const me=e.target.closest('#tr [data-me]');
+ if(me&&!live){openEdit(+me.dataset.me);return}
  const chip=e.target.closest('.chip');
  if(chip){unlock();send(chip.dataset.side,'',PH[+chip.dataset.p]);return}
  const say=e.target.closest('.say');
@@ -522,6 +571,8 @@ document.addEventListener('click',e=>{
  const sg=e.target.closest('.seg button');
  if(sg&&sg.dataset.far!==prefs.far){if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();archive();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
 });
+document.addEventListener('submit',e=>{const f=e.target.closest('form.edit');if(!f)return;e.preventDefault();reTranslate(+f.dataset.ed,editDraft.trim())});
+document.addEventListener('input',e=>{if(e.target.id==='edT')editDraft=e.target.value});
 document.querySelectorAll('form.in').forEach(f=>f.addEventListener('submit',e=>{
  e.preventDefault();unlock();const s=f.dataset.side,i=$('#in-'+s),v=i.value.trim();if(!v)return;i.value='';i.blur();send(s,v);
 }));
@@ -980,7 +1031,7 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.5.0'; /* keep equal to VERSION in sw.js */
+const APP_VERSION='1.6.0'; /* keep equal to VERSION in sw.js */
 $('#ver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();

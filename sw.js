@@ -1,6 +1,6 @@
 /* Tercüman service worker: the app opens without internet.
    Keep VERSION equal to APP_VERSION in index.html; changing it makes phones pick up the new files. */
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 const SHELL = 'tercuman-shell-' + VERSION;
 const LIBS = 'tercuman-libs-v1';
 
