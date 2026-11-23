@@ -50,6 +50,35 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .erow{display:flex;gap:8px;justify-content:flex-end}
 .erow button{min-height:44px;padding:0 16px;border-radius:999px;font-weight:700}
 .esave{background:#fff;color:var(--tr)}.ecancel{background:rgba(255,255,255,.18)}
+.qrb{position:absolute;right:12px;bottom:12px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;color:#1b1b1b;border-radius:14px;padding:7px 7px 5px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.qrb[hidden],.guest .qrb{display:none}
+.qrs{display:block;width:84px;height:84px}.qrs svg,.qrl svg{display:block;width:100%;height:100%}
+.qrc{font-size:11px;font-weight:700;max-width:92px;text-align:center;line-height:1.15}
+.qrb.on{padding:8px 12px;flex-direction:row}.qrb.on .qrs{display:none}.qrb.on .qrc{max-width:none;font-size:13px}
+.qrb.on .qrc::before{content:'';display:inline-block;width:9px;height:9px;border-radius:50%;background:#1fb35a;margin-inline-end:6px;vertical-align:0}
+.hasqr #m-far{padding-bottom:120px}
+.qrbig{position:absolute;inset:0;z-index:5;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px}
+.qrbig[hidden]{display:none}
+.qrcard{background:#fff;color:#1b1b1b;border-radius:20px;padding:12px;width:min(240px,74%);text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.qrl{display:block;width:100%;aspect-ratio:1}
+.qrcard p{margin:8px 2px 0;font-size:13.5px;line-height:1.35;font-weight:600}
+.peer{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;background:rgba(0,0,0,.28);padding:4px 9px;border-radius:999px;max-width:42%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.peer[hidden]{display:none}
+.peer::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:#43e07c;margin-inline-end:5px}
+.peer.off::before{background:#ffb347}
+#far .gctl{display:none}
+.guest #far .gctl{display:flex}
+#far>.qrb{position:absolute;width:auto;max-width:none;margin:0;z-index:2}
+#far>.qrbig{position:absolute;width:auto;max-width:none;margin:0;z-index:5}
+.guest #tr,.guest .bar{display:none}
+.guest .app{grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr)}
+.guest #far,.guest.face #far{transform:none;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.gjoin{position:fixed;inset:0;z-index:11;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center;background:var(--far);color:#fff}
+.gjoin[hidden]{display:none}
+.gjoin .fl{width:64px;height:43px;border-radius:6px}
+.gjoin b{font-size:clamp(26px,7.5vw,36px);line-height:1.15;text-wrap:balance}
+.gjoin p{margin:0;font-size:16px;opacity:.9;max-width:32ch;line-height:1.45}
+.gjoin button{min-height:56px;padding:0 34px;border-radius:999px;background:#fff;color:var(--far);font-size:18px;font-weight:800;margin-top:6px}
 .tipn{align-self:flex-start;max-width:88%;font-size:14px;font-style:italic;opacity:.9;padding:0 6px;margin-top:-2px}
 .hd b{font-size:24px;font-weight:800;letter-spacing:-.01em}
 .hd small{font-size:14px;opacity:.85;flex:1}
@@ -260,9 +289,11 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="far" lang="hu">
   <div class="bgm" id="bg-far" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-far" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-far" startOffset="25%" id="w1-far"></textPath></text><text text-anchor="middle"><textPath href="#cp-far" startOffset="75%" id="w2-far"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl" id="fg-far"><use href="#fl-hu"/></svg><b id="nm-far">Magyar</b><span class="peer" id="peerFar" hidden></span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-far" aria-live="polite"></div>
-  <div class="chips" id="c-far"></div>
+  <div class="ctl gctl"><form class="in" data-side="far"><input id="in-far" autocomplete="off" enterkeyhint="send"><button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5 21 12 3 3.5v6.6l12 1.9-12 1.9z"/></svg></button></form></div>
+  <button class="qrb" id="qrb" hidden><span class="qrs" id="qrS"></span><span class="qrc" id="qrC"></span></button>
+  <div class="qrbig" id="qrBig" hidden><div class="qrcard"><span class="qrl" id="qrL"></span><p id="qrT"></p></div></div>
  </section>
 
  <nav class="bar" aria-label="Ayarlar">
@@ -279,7 +310,7 @@ button.ln{display:block;width:100%;text-align:start}
  <section class="half" id="tr" lang="tr">
   <div class="bgm" id="bg-tr" aria-hidden="true"><div class="orb"><svg class="rt" viewBox="0 0 200 200"><path id="cp-tr" fill="none" d="M100,100 m-55,0 a55,55 0 1,1 110,0 a55,55 0 1,1 -110,0"/><text text-anchor="middle"><textPath href="#cp-tr" startOffset="25%" id="w1-tr"></textPath></text><text text-anchor="middle"><textPath href="#cp-tr" startOffset="75%" id="w2-tr"></textPath></text></svg><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span></div></div>
   
-  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
+  <div class="hd"><svg class="fl"><use href="#fl-tr"/></svg><b>Türkçe</b><span class="peer" id="peerTr" hidden>Karşı taraf bağlı</span><span class="hmic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg></span><svg class="spk" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></div>
   <div class="msgs" id="m-tr" aria-live="polite"></div>
   <div class="chips" id="c-tr"></div>
   <div class="ctl">
@@ -289,6 +320,8 @@ button.ln{display:block;width:100%;text-align:start}
   <p class="hint" id="h-tr"></p>
  </section>
 </div>
+
+<div class="gjoin" id="gjoin" hidden><svg class="fl" id="gjF"><use href="#fl-hu"/></svg><b id="gjT"></b><p id="gjN"></p><button id="gjB"></button></div>
 
 <div class="spl" id="spl" role="dialog" aria-label="Karşılama">
  <div class="logo" role="img" aria-label="Tercüman"><span>T</span><svg class="le" viewBox="0 0 50 32" aria-hidden="true"><path fill="#fff" d="M7 2H27A5 5 0 0 1 32 7V9L16 13.5V18.5L32 23V25A5 5 0 0 1 27 30H7A5 5 0 0 1 2 25V7A5 5 0 0 1 7 2Z"/><rect class="tg" x="15.5" y="14.5" width="10" height="3" rx="1.5" fill="#ff8fa3"/><circle cx="11" cy="8.2" r="2.4" fill="#1b1b1b"/><g fill="none" stroke="#ffd23f" stroke-width="3.2" stroke-linecap="round"><path class="s1" d="M35.5 12.5Q38 16 35.5 19.5"/><path class="s2" d="M40 9.5Q44.5 16 40 22.5"/><path class="s3" d="M44.5 6.5Q50 16 44.5 25.5"/></g></svg><span>RCÜMAN</span></div>
@@ -331,13 +364,13 @@ button.ln{display:block;width:100%;text-align:start}
 <script>
 {
 const L={
- hu:{name:'Magyar',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
+ hu:{name:'Magyar',qr:'Saját telefonon',qrT:'Olvassa be a telefonja kamerájával, és a beszélgetést a saját telefonján folytathatja.',on:'Telefonja csatlakozott',inv:'{n} meghívta Önt a beszélgetésbe',join:'Csatlakozás',jn:'Amit mond, törökre fordítjuk, és amit {n} mond, azt magyarul hallja.',conn:'Kapcsolódva',lost:'Nincs kapcsolat',back:'Visszafordítva:',warn:' Lehet, hogy a jelentés megváltozott.',off:'Nincs internetkapcsolat, a fordítás nem sikerült.',en:'Hungarian',trName:'Macarca',bcp:'hu-HU',color:'#2c6845',tap:'Koppintson bárhova',pill:'Beszéljen',w:['KOPPINTS','BESZÉLJ'],tip:'Ha válaszolni szeretne, koppintson a saját oldalán a mikrofonra, és beszéljen.',listen:'Hallgatom…',stop:'Kész',work:'Fordítás…',ph:'Írjon ide…',send:'Küldés',
   empty:'Koppintson bárhova ezen a felén, és beszéljen magyarul. A partnere törökül hallja a fordítást.',err:'Nem sikerült lefordítani. Próbálja újra.',
   hint:'Nincs mikrofon? Koppintson a mezőbe, és használja a billentyűzet mikrofonját.',kbd:'Billentyűzet mikrofonja ↓'},
- en:{name:'English',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
+ en:{name:'English',qr:'On your phone',qrT:'Scan with your phone camera to continue the conversation on your own phone.',on:'Your phone is connected',inv:'{n} invited you to the conversation',join:'Join',jn:'What you say is translated into Turkish, and you hear what {n} says in English.',conn:'Connected',lost:'Not connected',back:'Back-translated:',warn:' The meaning may have changed.',off:'No internet connection, could not translate.',en:'English',trName:'İngilizce',bcp:'en-US',color:'#1f4f91',tap:'Tap anywhere to speak',pill:'Speak',w:['TAP','TALK'],tip:'To reply, tap the microphone on your side and speak.',listen:'Listening…',stop:'Done',work:'Translating…',ph:'Type here…',send:'Send',
   empty:'Tap anywhere on this side and speak English. Your partner will hear the translation in Turkish.',err:"Couldn't translate. Please try again.",
   hint:"No microphone? Tap the text box and use your keyboard's microphone.",kbd:'Use the keyboard mic ↓'},
- de:{name:'Deutsch',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
+ de:{name:'Deutsch',qr:'Auf Ihrem Handy',qrT:'Scannen Sie den Code mit Ihrer Handykamera, um das Gespräch auf Ihrem eigenen Handy fortzusetzen.',on:'Ihr Handy ist verbunden',inv:'{n} hat Sie zum Gespräch eingeladen',join:'Beitreten',jn:'Was Sie sagen, wird ins Türkische übersetzt, und was {n} sagt, hören Sie auf Deutsch.',conn:'Verbunden',lost:'Keine Verbindung',back:'Rückübersetzt:',warn:' Die Bedeutung hat sich vielleicht verändert.',off:'Keine Internetverbindung, Übersetzung nicht möglich.',en:'German',trName:'Almanca',bcp:'de-DE',color:'#2a2e35',tap:'Irgendwo tippen',pill:'Sprechen',w:['TIPPEN','SPRECHEN'],tip:'Zum Antworten tippen Sie auf das Mikrofon auf Ihrer Seite und sprechen Sie.',listen:'Ich höre zu…',stop:'Fertig',work:'Übersetze…',ph:'Hier schreiben…',send:'Senden',
   empty:'Tippen Sie irgendwo auf diese Seite und sprechen Sie Deutsch. Ihr Gegenüber hört die Übersetzung auf Türkisch.',err:'Übersetzung fehlgeschlagen. Bitte erneut versuchen.',
   hint:'Kein Mikrofon? Tippen Sie ins Textfeld und nutzen Sie das Mikrofon der Tastatur.',kbd:'Mikrofon der Tastatur ↓'},
  tr:{name:'Türkçe',back:'Karşıya giden:',warn:' Anlam değişmiş olabilir, düzeltmek için mesajına dokun.',off:'İnternet bağlantısı yok, çeviri yapılamadı.',en:'Turkish',bcp:'tr-TR',tap:'Her yere dokun, konuş',pill:'Konuş',w:['BAS','KONUŞ'],stop:'Bitir',listen:'Dinliyorum…',work:'Çevriliyor…',ph:'Buraya yaz…',err:'Çeviri yapılamadı. Tekrar dene.',
@@ -368,6 +401,19 @@ const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
 
 let msgs=load('tercuman.msgs',[]),prefs=Object.assign({face:true,speak:true,far:'hu'},load('tercuman.prefs',{}));
 if(!L[prefs.far]||prefs.far==='tr')prefs.far='hu';
+/* ---------- shared conversation: the other person can join from their own phone by scanning a QR code ----------
+   Messages travel through a free public MQTT server, end-to-end encrypted with AES-GCM. The key exists only in the
+   QR link after the # sign, which browsers never send to any server, so the server sees only unreadable data. */
+const rid=n=>{const a=crypto.getRandomValues(new Uint8Array(n));return Array.from(a,x=>'abcdefghijkmnpqrstuvwxyz23456789'[x%32]).join('')};
+const b64u=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const ub64u=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+const JOIN=(()=>{const h=location.hash.slice(1);if(!h.startsWith('join='))return null;const q=new URLSearchParams(h),[room,key]=(q.get('join')||'').split('.');
+ if(!room||!key)return null;const l=q.get('l');return{room,key,l:['hu','en','de'].includes(l)?l:'en',n:(q.get('n')||'').slice(0,30),b:+q.get('b')||0}})();
+const ROLE=JOIN?'guest':'host';
+if(JOIN){prefs.far=JOIN.l;msgs=[]}
+const BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt'];
+const MQTT_JS='https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js',QR_JS='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+const LINK={room:'',keyRaw:'',key:null,cl:null,bi:0,up:false,seen:0,timer:0,q:[]};
 let live=null,pending=null,speakingLang=null,dict=null,samp=null,ttsC=null,rec=null,unlocked=false,silT=0,maxT=0,stopT=0;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 let FRAMED=true;try{FRAMED=window.top!==window}catch(e){}
@@ -390,7 +436,7 @@ function render(){
     return o}
    if(m.busy)return `<div class="b them">${DOTS}</div>`;
    if(m.err)return `<div class="b them err">${m.off?T.off:T.err}</div>`;
-   return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`+(m.tip&&s==='far'&&L[l].tip?`<div class="tipn">${esc(L[l].tip)}</div>`:'')}).join('');
+   return `<div class="b them${i===lastThem?' last':''}" data-i="${i}"><span>${esc(textFor(m,l))}</span><button class="say" aria-label="▶"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg></button></div>`+(m.tip&&s==='far'&&ROLE!=='guest'&&L[l].tip?`<div class="tipn">${esc(L[l].tip)}</div>`:'')}).join('');
   if(live){const t=(live.text+' '+live.partial).trim();h+=live.side===s?`<div class="b me live">${t?esc(t):DOTS}</div>`:`<div class="b them">${DOTS}</div>`}
   if(pending)h+=pending.side===s?`<div class="b me">${esc(pending.text)}</div>`:`<div class="b them">${DOTS}</div>`;
   const el=$('#m-'+s);
@@ -408,32 +454,36 @@ function applyLang(){
  $('#h-tr').textContent=L.tr.hint;
  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.far===prefs.far));
  phrases();
- for(const s of ['far','tr']){const c=COL[lang(s)];$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[c])}</button>`).join('')}
+ $('#in-far').placeholder=T.ph;$('#qrC').textContent=T.qr;$('#qrT').textContent=T.qrT;drawQR();linkUI();
+ for(const s of ['tr']){const c=COL[lang(s)];$('#c-'+s).innerHTML=PH.map((p,i)=>`<button class="chip" data-side="${s}" data-p="${i}">${esc(p[c])}</button>`).join('')}
 }
 function applyPrefs(){
- document.body.className=prefs.face?'face':'side';
+ document.body.className=prefs.face?'face':'side';if(ROLE==='guest')document.body.classList.add('guest');
  $('#bMode').classList.toggle('on',prefs.face);
  $('#bSpk').classList.toggle('off',!prefs.speak);$('#bSpk').classList.toggle('on',prefs.speak);
  document.body.classList.toggle('nomic',!dict&&!nativeOK);
- save('tercuman.prefs',prefs);
+ if(ROLE!=='guest')save('tercuman.prefs',prefs);
 }
-function push(m){
- const last=msgs[msgs.length-1];if(last&&last.t&&Date.now()-last.t>IDLE)archive();
- /* only my first message in a conversation gets the "you can answer" tip for the other person */
- if(sideOf(m.from)==='tr'&&!m.err&&!msgs.some(x=>sideOf(x.from)==='tr'))m.tip=true;
- m.t=Date.now();m.far=prefs.far;msgs.push(m);if(msgs.length>600)msgs=msgs.slice(-600);save('tercuman.msgs',msgs);render()}
+function saveMsgs(){if(ROLE!=='guest')save('tercuman.msgs',msgs)}
+function push(m,remote){
+ if(!remote){const last=msgs[msgs.length-1];if(ROLE!=='guest'&&last&&last.t&&Date.now()-last.t>IDLE)archive();
+  /* only my first message in a conversation gets the "you can answer" tip for the other person */
+  if(ROLE!=='guest'&&sideOf(m.from)==='tr'&&!m.err&&!msgs.some(x=>sideOf(x.from)==='tr'))m.tip=true;
+  m.t=m.t||Date.now();m.far=m.far||prefs.far;m.id=m.id||rid(8)}
+ msgs.push(m);if(!remote)linkSend({type:'msg',m});if(msgs.length>600)msgs=msgs.slice(-600);saveMsgs();render()}
 
 /* ---------- history ---------- */
 const IDLE=3*3600e3;let hist=load('tercuman.hist',[]);
 function archive(){
  if(!msgs.length)return;
+ if(ROLE==='host')linkSend({type:'clear'});
  const t0=msgs[0].t||Date.now();
  hist.unshift({id:t0+'-'+Math.random().toString(36).slice(2,6),start:t0,end:msgs[msgs.length-1].t||t0,msgs});
  if(hist.length>150)hist.length=150;
  let ok=false;while(!ok&&hist.length){try{localStorage.setItem('tercuman.hist',JSON.stringify(hist));ok=true}catch(e){if(hist.length<2)break;hist.pop()}}
- msgs=[];save('tercuman.msgs',msgs);
+ msgs=[];saveMsgs();
 }
-archive(); /* every fresh open or reload starts a clean conversation; the old one is kept in history */
+if(ROLE==='host')archive(); /* every fresh open or reload starts a clean conversation; the old one is kept in history */
 
 /* ---------- speech out ---------- */
 const SS=window.speechSynthesis;let voices=[];const vCache={};
@@ -473,7 +523,10 @@ function speak(text,l){
  if(ttsC){speakingLang=l;render();ttsC.speak(text,{language:l}).catch(()=>{}).finally(done);return}
  if(SS){try{const u=new SpeechSynthesisUtterance(text);u.lang=L[l].bcp;u.onend=u.onerror=done;speakingLang=l;SS.speak(u);render()}catch(e){}}
 }
-function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';speak(m.tip&&L[t].tip?m[t]+'  '+L[t].tip:m[t],t)}}
+function speakMsg(m){if(prefs.speak&&!m.err){const t=m.from==='tr'?prefs.far:'tr';
+ /* with the other person on their own phone, each phone reads only what its owner needs to hear */
+ if(ROLE==='guest'&&t==='tr')return;if(ROLE==='host'&&peerOn()&&t!=='tr')return;
+speak(m.tip&&ROLE!=='guest'&&L[t].tip?m[t]+'  '+L[t].tip:m[t],t)}}
 
 /* ---------- speech in ---------- */
 function arm(){clearTimeout(silT);if(live&&(live.text||live.partial))silT=setTimeout(stopListen,1900)}
@@ -546,7 +599,7 @@ function stemSet(t){return new Set(String(t||'').toLocaleLowerCase().replace(/[^
 function sim(a,b){const A=stemSet(a),B=stemSet(b);if(!A.size||!B.size)return 1;let n=0;for(const x of A)if(B.has(x))n++;return 2*n/(A.size+B.size)}
 async function backfill(m){
  if(!m||m.err||m.row||m.back)return;const tgt=m.from==='tr'?(m.far||prefs.far):'tr',t=m[tgt];if(!t)return;
- const b=await webTr(t,tgt,m.from);if(b&&msgs.includes(m)){m.back=b;save('tercuman.msgs',msgs);render()}
+ const b=await webTr(t,tgt,m.from);if(b&&msgs.includes(m)){m.back=b;saveMsgs();render();linkSend({type:'upd',m})}
 }
 let editing=null,editDraft='';
 function openEdit(i){
@@ -562,7 +615,7 @@ async function reTranslate(i,text){
  for(const k of ['tr','hu','en','de'])delete m[k];
  m.from=r.from;m[r.from]=r.original;m[r.from==='tr'?far:'tr']=r.translation;m.edited=true;delete m.busy;delete m.tip;
  m.err=!r.translation;m.off=m.err&&!navigator.onLine;
- save('tercuman.msgs',msgs);render();speakMsg(m);backfill(m);
+ saveMsgs();render();linkSend({type:'upd',m});speakMsg(m);backfill(m);
 }
 async function send(side,text,row){
  const src=lang(side),far=prefs.far;
@@ -579,6 +632,8 @@ async function send(side,text,row){
 let typing=false;
 document.addEventListener('pointerdown',e=>{const a=document.activeElement;typing=!!(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&!e.target.closest('form.in,form.edit'))},true);
 document.addEventListener('click',e=>{
+ if(e.target.closest('#qrb')){$('#qrBig').hidden=false;return}
+ if(e.target.closest('#qrBig')){$('#qrBig').hidden=true;return}
  const ed=e.target.closest('form.edit');
  if(ed){if(e.target.closest('.ecancel'))closeEdit();return}
  const me=e.target.closest('#tr [data-me]');
@@ -588,11 +643,11 @@ document.addEventListener('click',e=>{
  const say=e.target.closest('.say');
  if(say){unlock();const b=say.closest('.them[data-i]'),m=msgs[+b.dataset.i],l=lang(b.closest('.half').id);if(m)speak(textFor(m,l),l);return}
  const half=e.target.closest('.half');
- if(half&&!e.target.closest('form.in,.chips,.camb')){
+ if(half&&!e.target.closest('form.in,.chips,.camb,.peer')){
   if(typing){typing=false;document.activeElement.blur();return}
   if(live)stopListen();else startListen(half.id);return}
  const sg=e.target.closest('.seg button');
- if(sg&&sg.dataset.far!==prefs.far){if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();archive();prefs.far=sg.dataset.far;applyLang();applyPrefs();render()}
+ if(sg&&sg.dataset.far!==prefs.far){if(live){live=null;if(rec){const r=rec;rec=null;try{r.abort()}catch(e){}}}stopSpeak();archive();prefs.far=sg.dataset.far;linkSend({type:'lang',far:prefs.far});applyLang();applyPrefs();render()}
 });
 document.addEventListener('submit',e=>{const f=e.target.closest('form.edit');if(!f)return;e.preventDefault();reTranslate(+f.dataset.ed,editDraft.trim())});
 document.addEventListener('input',e=>{if(e.target.id==='edT')editDraft=e.target.value});
@@ -662,7 +717,7 @@ $('#pShare').onclick=()=>{if(!openConv)return;const t=convText(openConv);
 P.del.onclick=function(){
  if(!openConv)return;
  if(!this.classList.contains('arm')){this.classList.add('arm');this.textContent='Emin misin? Tekrar bas';return}
- if(openConv.cur){msgs=[];save('tercuman.msgs',msgs);render()}else{hist=hist.filter(h=>h!==openConv);save('tercuman.hist',hist)}
+ if(openConv.cur){msgs=[];saveMsgs();render()}else{hist=hist.filter(h=>h!==openConv);save('tercuman.hist',hist)}
  P.srch.value='';
  showList();
 };
@@ -1077,6 +1132,75 @@ $('#dHide').addEventListener('click',e=>{e.stopPropagation();showDiag(false)});
 $('#dCopy').addEventListener('click',e=>{e.stopPropagation();const t=DIAG.join('\n');const ok=()=>{$('#dCopy').textContent='Kopyalandı'};try{navigator.clipboard.writeText(t).then(ok,()=>{})}catch(_){}});
 $('#cdiag').addEventListener('click',e=>e.stopPropagation());
 
+/* ---------- link layer ---------- */
+function peerOn(){return !!(LINK.up&&LINK.seen&&Date.now()-LINK.seen<30000)}
+async function linkKey(){if(!LINK.key)LINK.key=await crypto.subtle.importKey('raw',ub64u(LINK.keyRaw),'AES-GCM',false,['encrypt','decrypt']);return LINK.key}
+async function seal(o){const k=await linkKey(),iv=crypto.getRandomValues(new Uint8Array(12)),ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(o)));return b64u(iv)+'.'+b64u(ct)}
+async function unseal(t){const [a,b]=String(t).split('.'),k=await linkKey(),pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64u(a)},k,ub64u(b));return JSON.parse(new TextDecoder().decode(pt))}
+const topic=who=>`tercuman/v1/${LINK.room}/${who}`;
+/* while the connection is down, conversation messages wait in a queue and go out on reconnect */
+function linkSend(o){if(window.__dbg)console.log('LINK '+ROLE+' send '+o.type+(LINK.cl&&LINK.up?'':' (queued)'));
+ if(!LINK.cl||!LINK.up){if(LINK.room&&o.type!=='ping'&&o.type!=='hello'){LINK.q.push(o);if(LINK.q.length>60)LINK.q.shift()}return}seal(o).then(p=>LINK.cl.publish(topic(ROLE==='host'?'h':'g'),p,{qos:1})).catch(()=>{})}
+function brokerUrl(){let o='';try{o=localStorage.getItem('tercuman.broker')||''}catch(e){}return o||BROKERS[LINK.bi]||BROKERS[0]}
+async function linkStart(){
+ if(LINK.cl||!(window.crypto&&crypto.subtle))return;
+ if(ROLE==='host'){
+  /* the same room is kept for 12 hours, so a guest reconnects by itself after the app is reopened */
+  const r=load('tercuman.room',null);
+  if(r&&r.room&&r.key&&Date.now()-r.ts<12*3600e3){LINK.room=r.room;LINK.keyRaw=r.key}
+  else{LINK.room=rid(10);LINK.keyRaw=b64u(crypto.getRandomValues(new Uint8Array(16)));save('tercuman.room',{room:LINK.room,key:LINK.keyRaw,ts:Date.now()})}
+  drawQR();
+ }else{LINK.room=JOIN.room;LINK.keyRaw=JOIN.key;LINK.bi=JOIN.b}
+ try{await loadJS(MQTT_JS)}catch(e){linkUI();return}
+ connectBroker();
+ clearInterval(LINK.timer);LINK.timer=setInterval(()=>{linkSend({type:'ping'});linkUI()},10000);
+}
+function connectBroker(){
+ const cl=mqtt.connect(brokerUrl(),{clientId:'tc_'+rid(10),keepalive:20,reconnectPeriod:3000,connectTimeout:8000,clean:true,protocolVersion:4});
+ LINK.cl=cl;let ok=false;
+ cl.on('connect',()=>{ok=true;LINK.up=true;cl.subscribe(topic(ROLE==='host'?'g':'h'),{qos:1});linkSend({type:ROLE==='guest'?'hello':'ping'});const q=LINK.q.splice(0);q.forEach(linkSend);linkUI()});
+ cl.on('message',(t,payload)=>{unseal(payload.toString()).then(onLink).catch(()=>{})});
+ cl.on('close',()=>{LINK.up=false;linkUI()});cl.on('offline',()=>{LINK.up=false;linkUI()});
+ /* the host moves to the second server if the first cannot be reached; the QR code then carries that choice */
+ if(ROLE==='host')setTimeout(()=>{let o='';try{o=localStorage.getItem('tercuman.broker')||''}catch(e){}
+  if(!ok&&LINK.cl===cl&&LINK.bi===0&&!o){cl.end(true);LINK.cl=null;LINK.bi=1;drawQR();connectBroker()}},9000);
+}
+function onLink(o){
+ if(!o||!o.type)return;LINK.seen=Date.now();if(window.__dbg)console.log('LINK '+ROLE+' got '+o.type+' '+JSON.stringify(o).slice(0,90));
+ if(o.type==='msg'&&o.m&&!msgs.some(x=>x.id===o.m.id)){push(o.m,true);speakMsg(o.m)}
+ else if(o.type==='upd'&&o.m)updMsg(o.m);
+ else if(ROLE==='host'&&o.type==='hello')linkSend({type:'state',far:prefs.far,name:NAME,msgs});
+ else if(ROLE==='guest'){
+  if(o.type==='state'){if(o.far&&o.far!==prefs.far){prefs.far=o.far;applyLang()}const st=Array.isArray(o.msgs)?o.msgs:[],mine=msgs.filter(x=>!st.some(y=>y.id===x.id));msgs=st.concat(mine).sort((a,b)=>(a.t||0)-(b.t||0));render()}
+  else if(o.type==='clear'){msgs=[];render()}
+  else if(o.type==='lang'&&o.far){prefs.far=o.far;msgs=[];applyLang();render()}
+ }
+ linkUI();
+}
+/* a message changed on the other phone (back-translation arrived, or it was corrected) */
+function updMsg(m){
+ const i=msgs.findIndex(x=>x.id===m.id);if(i<0)return;const old=msgs[i],t=m.from==='tr'?(m.far||prefs.far):'tr';
+ msgs[i]=Object.assign({},m,{tip:old.tip});saveMsgs();render();
+ if(m.edited&&old[t]!==m[t])speakMsg(msgs[i]);
+}
+function joinUrl(){return location.origin+location.pathname+'#join='+LINK.room+'.'+LINK.keyRaw+'&l='+prefs.far+'&n='+encodeURIComponent(NAME||'')+'&b='+LINK.bi}
+async function drawQR(){
+ if(ROLE!=='host'||!LINK.room)return;
+ try{await loadJS(QR_JS);const q=qrcode(0,'L');q.addData(joinUrl());q.make();const svg=q.createSvgTag({cellSize:4,margin:0,scalable:true});$('#qrS').innerHTML=svg;$('#qrL').innerHTML=svg}catch(e){}
+ linkUI();
+}
+function linkUI(){
+ const T=L[prefs.far],on=peerOn();
+ if(ROLE==='host'){const q=$('#qrb');q.hidden=!$('#qrS').innerHTML;q.classList.toggle('on',on);$('#qrC').textContent=on?T.on:T.qr;$('#far').classList.toggle('hasqr',!q.hidden&&!on);$('#peerTr').hidden=!on}
+ else{const p=$('#peerFar');p.hidden=false;p.textContent=on?T.conn:T.lost;p.classList.toggle('off',!on)}
+}
+function guestStart(){
+ document.body.classList.add('guest');const T=L[prefs.far],n=JOIN.n||'Tercüman';
+ document.documentElement.lang=prefs.far;
+ $('#gjF use').setAttribute('href','#fl-'+prefs.far);$('#gjT').textContent=T.inv.replace('{n}',n);$('#gjN').textContent=T.jn.replace('{n}',n);$('#gjB').textContent=T.join;
+ $('#gjoin').hidden=false;
+ $('#gjB').addEventListener('click',()=>{unlock();$('#gjoin').hidden=true;linkStart();render()});
+}
 /* ---------- welcome ---------- */
 let NAME=load('tercuman.name','');
 const WEL=['Günaydın','Tünaydın','İyi akşamlar'];
@@ -1127,12 +1251,12 @@ spl.addEventListener('click',e=>{
  closeSplash();
 });
 let hiddenAt=0;const AWAY=2*60e3;
-function freshStart(){if(C.el.classList.contains('open'))closeCam();if(live)finish();stopSpeak();archive();applyLang();render();welcome()}
+function freshStart(){if(ROLE!=='host')return;if(C.el.classList.contains('open'))closeCam();if(live)finish();stopSpeak();archive();applyLang();render();welcome()}
 setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.6.5';
+const APP_VERSION='1.7.0';
 $('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
@@ -1147,7 +1271,8 @@ if('serviceWorker' in navigator&&!FRAMED){
  }).catch(()=>{});
 }
 applyLang();applyPrefs();render();placeOrb();
-if(SS&&!voices.length)setTimeout(welcome,250);else welcome();
+if(ROLE==='host'){if(SS&&!voices.length)setTimeout(welcome,250);else welcome();setTimeout(linkStart,1200)}
+else guestStart();
 }
 </script>
 </body>
