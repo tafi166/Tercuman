@@ -173,6 +173,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .ctop{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 14px 14px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
 .ctop button{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.45);font-size:28px;line-height:1}
 .clang{display:flex;align-items:center;gap:6px;font-weight:700;background:rgba(0,0,0,.45);border-radius:999px;padding:7px 12px;font-size:14px}
+.cver{margin-inline-start:auto;font-size:12px;opacity:.6}
 .clang .fl{width:20px;height:14px}
 #cst{position:absolute;left:50%;top:calc(max(12px,env(safe-area-inset-top)) + 64px);transform:translateX(-50%);background:rgba(0,0,0,.65);padding:8px 14px;border-radius:999px;font-size:14px;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
 .cbot{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 16px max(20px,env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.65))}
@@ -184,6 +185,9 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .cfail{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,86vw);background:rgba(20,20,20,.88);border-radius:20px;padding:18px;text-align:center;display:flex;flex-direction:column;gap:14px}
 .cfail[hidden]{display:none}
 .cfail p{margin:0;font-size:15px;line-height:1.4}
+.cfb.sec{background:rgba(255,255,255,.16);color:#fff}
+.cretry{min-height:44px;font-size:14px;text-decoration:underline;text-underline-offset:3px;opacity:.85}
+.cretry[hidden]{display:none}
 .cfb{display:block;min-height:50px;line-height:50px;border-radius:999px;background:#fff;color:#c4122f;font-weight:800;cursor:pointer}
 .cam.shot .cfail{display:none}
 .cam.nocam .chint,.cam.nocam #cSnap{visibility:hidden}
@@ -297,11 +301,11 @@ button.ln{display:block;width:100%;text-align:start}
   <img id="shotImg" alt="Çekilen fotoğraf">
   <div class="cov" id="cov"></div>
  </div>
- <div class="ctop"><button id="cClose" aria-label="Kamerayı kapat">×</button><span class="clang" id="cLang"></span></div>
+ <div class="ctop"><button id="cClose" aria-label="Kamerayı kapat">×</button><span class="clang" id="cLang"></span><span class="cver" id="cver"></span></div>
  <p id="cst" hidden></p>
  <div class="cbot"><p class="chint">Bir nesneye ya da yazıya dokun. Fotoğraf çekersen tüm yazıları çeviririm.</p>
   <div class="crow"><label class="cgal" aria-label="Galeriden seç ya da telefonun kamerasıyla çek"><input type="file" id="cFile" accept="image/*" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm1 12h14l-4.5-6-3.5 4.5-2.5-3L5 17Zm3.5-7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg></label><button class="snap" id="cSnap" aria-label="Fotoğraf çek"></button><span class="cgap"></span></div></div>
- <div class="cfail" id="cFail" hidden><p id="cFailT"></p><label class="cfb"><input type="file" id="cFile2" accept="image/*" hidden>Fotoğraf çek ya da galeriden seç</label></div>
+ <div class="cfail" id="cFail" hidden><p id="cFailT"></p><label class="cfb"><input type="file" id="cFile2" accept="image/*" capture="environment" hidden>Telefonun kamerasıyla çek</label><label class="cfb sec"><input type="file" id="cFile3" accept="image/*" hidden>Galeriden seç</label><button class="cretry" id="cRetry" hidden>Canlı kamerayı yeniden dene</button></div>
  <div class="sheet" id="sheet">
   <div class="sact"><div class="sseg" role="group" aria-label="Görünüm"><button id="vTr" aria-pressed="true">Çeviri</button><button id="vOr" aria-pressed="false">Orijinal</button></div><button class="pri" id="sSave">Kaydet</button><button id="sRe" class="ico" aria-label="Yeniden çek" title="Yeniden çek"><svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7Z"/></svg></button></div>
   <div class="slist" id="slist"></div>
@@ -718,8 +722,12 @@ function getOCR(){
 const CAM_ERR={NotAllowedError:'Kamera izni kapalı. Safari\'de "aA" > Web Sitesi Ayarları > Kamera > İzin Ver yap. Ana ekrandaki uygulamada izin her açılışta sorulabilir.',
  NotReadableError:'Kamera şu an başka bir uygulama tarafından kullanılıyor. Diğer uygulamayı kapatıp tekrar dene.',
  NotFoundError:'Bu cihazda kamera bulunamadı.',SecurityError:'Kameraya bu sayfadan erişilemiyor.',AbortError:'Kamera başlatılamadı, tekrar dene.'};
-function camFail(msg,waiting){if(!waiting)cstat('cam','');C.el.classList.add('nocam');$('#cFailT').textContent=msg+' Bu arada telefonun kendi kamerasıyla çekebilir ya da galeriden fotoğraf seçebilirsin.';$('#cFail').hidden=false}
-async function openCam(){
+function camFail(msg,waiting,retry){if(!waiting)cstat('cam','');C.el.classList.add('nocam');
+ $('#cFailT').textContent=msg+(STANDALONE?' Ana ekrana eklenen uygulamalarda bu bilinen bir iPhone sorunu; Safari\'de canlı kamera genelde açılır.':'')+' Telefonun kendi kamerasıyla çekip yazıları yine çevirebilirsin.';
+ $('#cRetry').hidden=!retry;$('#cFail').hidden=false}
+const STANDALONE=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+let camLive=load('tercuman.camLive','');
+async function openCam(force){
  if(live)stopListen();stopSpeak();tapId++;
  C.el.classList.add('open');C.el.classList.remove('shot','nocam');C.cov.innerHTML='';$('#cFail').hidden=true;
  $('#cLang').innerHTML=`${flagSvg(prefs.far)} ${L[prefs.far].trName} → ${flagSvg('tr')} Türkçe`;
@@ -729,8 +737,11 @@ async function openCam(){
  const myTap=tapId;
  /* iPhone home-screen apps sometimes never answer the camera request: after a few seconds the other way
     (the phone's own camera or the gallery) is offered, and the live picture still takes over if it arrives later */
+ /* if live camera did not work in this home-screen app before, do not start a request that may hang
+    (a hanging request can also keep the phone's own camera busy); offer the working way and a retry */
+ if(STANDALONE&&camLive==='0'&&!force){camFail('Bu uygulamada canlı kamera son seferde açılmadı.',false,true);return}
  cstat('cam','Kamera izni bekleniyor…');
- const slow=setTimeout(()=>{if(myTap===tapId&&!stream)camFail('Canlı kamera henüz yanıt vermedi. Biraz daha bekliyorum.',true)},4000);
+ const slow=setTimeout(()=>{if(myTap===tapId&&!stream){camLive='0';save('tercuman.camLive','0');camFail('Canlı kamera yanıt vermiyor.',true)}},4000);
  const tries=[{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},{facingMode:'environment'},true];
  let err=null,got=null;
  for(const v of tries){
@@ -740,7 +751,7 @@ async function openCam(){
  clearTimeout(slow);
  if(!got){if(myTap===tapId)camFail(CAM_ERR[err&&err.name]||('Kamera açılamadı'+(err&&err.name?' ('+err.name+')':'')+'.'));return}
  if(myTap!==tapId||!C.el.classList.contains('open')||C.el.classList.contains('shot')){got.getTracks().forEach(t=>t.stop());return}
- stream=got;$('#cFail').hidden=true;C.el.classList.remove('nocam');
+ stream=got;$('#cFail').hidden=true;C.el.classList.remove('nocam');camLive='1';save('tercuman.camLive','1');
  C.v.setAttribute('playsinline','');C.v.setAttribute('webkit-playsinline','');C.v.muted=true;
  C.v.srcObject=stream;
  /* play() can hang on some iPhones, so it is not awaited: wait for the first picture instead */
@@ -989,7 +1000,7 @@ async function fromFile(f){
   $('#cFail').hidden=true;translatePhoto(c);
  }catch(e){cstat('msg','Bu fotoğraf açılamadı.',2500)}
 }
-for(const id of ['cFile','cFile2'])$('#'+id).addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';fromFile(f)});
+for(const id of ['cFile','cFile2','cFile3'])$('#'+id).addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];e.target.value='';fromFile(f)});
 for(const el of document.querySelectorAll('.cgal,.cfb'))el.addEventListener('click',e=>e.stopPropagation());
 async function translatePhoto(frame){
  const id=++tapId;
@@ -1023,6 +1034,7 @@ $('#sSave').onclick=()=>{
 };
 $('#bCam').addEventListener('click',e=>{e.stopPropagation();openCam()});
 $('#cClose').addEventListener('click',e=>{e.stopPropagation();closeCam()});
+$('#cRetry').addEventListener('click',e=>{e.stopPropagation();openCam(true)});
 
 /* ---------- welcome ---------- */
 let NAME=load('tercuman.name','');
@@ -1079,11 +1091,16 @@ setInterval(()=>{if(dayPart()!==partNow)applyLang()},60e3);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)hiddenAt=Date.now();else if(hiddenAt&&Date.now()-hiddenAt>AWAY)freshStart()});
 window.addEventListener('pageshow',e=>{if(e.persisted)freshStart()});
 /* ---------- app version, offline start, connection state ---------- */
-const APP_VERSION='1.6.2'; /* keep equal to VERSION in sw.js */
-$('#ver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
+const APP_VERSION='1.6.3'; /* keep equal to VERSION in sw.js */
+$('#ver').textContent='v'+APP_VERSION;$('#cver').textContent='v'+APP_VERSION;$('#ver2').textContent='Sürüm '+APP_VERSION;
 function netState(){$('#net').hidden=navigator.onLine!==false}
 window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
-if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!FRAMED){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!FRAMED){
+ const t0=Date.now(),had=!!navigator.serviceWorker.controller;
+ /* a new version that arrives in the first seconds after opening is loaded right away, once */
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&Date.now()-t0<20000&&!sessionStorage.getItem('tercuman.upd')){try{sessionStorage.setItem('tercuman.upd','1')}catch(e){}location.reload()}});
+ window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{})});
+}
 applyLang();applyPrefs();render();placeOrb();
 if(SS&&!voices.length)setTimeout(welcome,250);else welcome();
 }

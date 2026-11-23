@@ -1,6 +1,6 @@
 /* Tercüman service worker: the app opens without internet.
    Keep VERSION equal to APP_VERSION in index.html; changing it makes phones pick up the new files. */
-const VERSION = '1.6.2';
+const VERSION = '1.6.3';
 const SHELL = 'tercuman-shell-' + VERSION;
 const LIBS = 'tercuman-libs-v1';
 
@@ -41,7 +41,8 @@ self.addEventListener('fetch', e => {
   /* the app itself: newest from the network, the saved copy when offline */
   if (url.origin === self.location.origin) {
     e.respondWith(
-      fetch(req).then(res => {
+      /* no-cache: always ask the server (GitHub keeps files 10 minutes otherwise), fall back to the saved copy offline */
+      fetch(req, { cache: 'no-cache' }).then(res => {
         if (res.ok) { const copy = res.clone(); caches.open(SHELL).then(c => c.put(req, copy)); }
         return res;
       }).catch(() => caches.match(req).then(r => r || (req.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
